@@ -6,14 +6,14 @@ import os
 import re
 
 
-def get_property(prop, project):
-    result = re.search(r'{}\s*=\s*[\'"]([^\'"]*)[\'"]'.format(prop), open(project + '/__init__.py').read())
-    return result.group(1)
+## read __version__
+with open('divtel/version.py') as f:
+    exec(f.read())
 
 long_description = open('README.md').read()
 
 setup(name='divtel',
-      version=get_property('__version__', 'divtel'),
+      version=__version__,
       description="Divergent pointing mode for Imaging Atmospheric Cherenkov Telescopes arrays",
       packages=find_packages(),
       install_requires=['astropy',
