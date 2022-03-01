@@ -1,0 +1,9 @@
+name: divtel
+
+dependencies:
+  - astropy
+  - matplotlib
+  - ipywidgets
+  - jupyterlab
+  - ipympl
+  - nodejs
