@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>divtel: Divergent pointing mode for Imaging Atmospheric Cherenkov Telescopes arrays &mdash; divtel 0.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="divtel API Documentation" href="docstring.html" />
+    <link rel="prev" title="Welcome to divtel’s documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> divtel
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">divtel: Divergent pointing mode for Imaging Atmospheric Cherenkov Telescopes arrays</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#install">👨‍💻 Install</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#users">Users</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#developers">Developers</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#license">🛡 License</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#citation">📃 Citation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="docstring.html">divtel API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">divtel</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>divtel: Divergent pointing mode for Imaging Atmospheric Cherenkov Telescopes arrays</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/README.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="divtel-divergent-pointing-mode-for-imaging-atmospheric-cherenkov-telescopes-arrays">
+<h1>divtel: Divergent pointing mode for Imaging Atmospheric Cherenkov Telescopes arrays<a class="headerlink" href="#divtel-divergent-pointing-mode-for-imaging-atmospheric-cherenkov-telescopes-arrays" title="Permalink to this headline"></a></h1>
+<div align="left">
+<p><a class="reference external" href="https://github.com/cta-observatory/divtel/actions?query=workflow%3Abuild"><img alt="Build status" src="https://github.com/cta-observatory/divtel/workflows/build/badge.svg?branch=master&amp;event=push" /></a>
+<a class="reference external" href="https://pypi.org/project/divtel/"><img alt="Python Version" src="https://img.shields.io/pypi/pyversions/divtel.svg" /></a>
+<a class="reference external" href="https://github.com/cta-observatory/divtel/releases"><img alt="Semantic Versions" src="https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--versions-e10079.svg" /></a>
+<a class="reference external" href="https://github.com/cta-observatory/divtel/blob/master/LICENSE"><img alt="License" src="https://img.shields.io/github/license/cta-observatory/divtel?style=flat" /></a></p>
+</div>
+<p>divtel makes toy simulations for the divergent pointing mode of Imaging Atmospheric Cherenkov Telescopes arrays.</p>
+<section id="install">
+<h2>👨‍💻 Install<a class="headerlink" href="#install" title="Permalink to this headline"></a></h2>
+<section id="users">
+<h3>Users<a class="headerlink" href="#users" title="Permalink to this headline"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">cta</span><span class="o">-</span><span class="n">observatory</span><span class="o">/</span><span class="n">divtel</span><span class="o">.</span><span class="n">git</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="n">divtel</span>
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">cta</span><span class="o">-</span><span class="n">observatory</span><span class="o">/</span><span class="n">divtel</span><span class="o">/</span><span class="n">archive</span><span class="o">/</span><span class="n">master</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>
+</pre></div>
+</div>
+</section>
+<section id="developers">
+<h3>Developers<a class="headerlink" href="#developers" title="Permalink to this headline"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">cta</span><span class="o">-</span><span class="n">observatory</span><span class="o">/</span><span class="n">divtel</span><span class="o">.</span><span class="n">git</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="s2">&quot;divtel[tests]&quot;</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="license">
+<h2>🛡 License<a class="headerlink" href="#license" title="Permalink to this headline"></a></h2>
+<p><a class="reference external" href="https://github.com/cta-observatory/divtel/blob/master/LICENSE"><img alt="License" src="https://img.shields.io/github/license/cta-observatory/divtel?style=flat" /></a></p>
+<p>This project is licensed under the terms of the <code class="docutils literal notranslate"><span class="pre">MIT</span></code> license. See <a class="reference external" href="https://github.com/cta-observatory/divtel/blob/master/LICENSE">LICENSE</a> for more details.</p>
+</section>
+<section id="citation">
+<h2>📃 Citation<a class="headerlink" href="#citation" title="Permalink to this headline"></a></h2>
+<div class="highlight-bibtex notranslate"><div class="highlight"><pre><span></span><span class="nc">@misc</span><span class="p">{</span><span class="nl">divtel</span><span class="p">,</span>
+  <span class="na">author</span> <span class="p">=</span> <span class="s">{Thomas Vuillaume, Alice Donini, Thomas Gasparetto}</span><span class="p">,</span>
+  <span class="na">title</span> <span class="p">=</span> <span class="s">{divtel: a python library to handle the divergent pointing mode for an barray of Imaging Atmospheric Cherenkov Telescopes}</span><span class="p">,</span>
+  <span class="na">year</span> <span class="p">=</span> <span class="s">{2022}</span><span class="p">,</span>
+  <span class="na">publisher</span> <span class="p">=</span> <span class="s">{GitHub}</span><span class="p">,</span>
+  <span class="na">journal</span> <span class="p">=</span> <span class="s">{GitHub repository}</span><span class="p">,</span>
+  <span class="na">howpublished</span> <span class="p">=</span> <span class="s">{\url{https://github.com/cta-observatory/divtel}}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to divtel’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="docstring.html" class="btn btn-neutral float-right" title="divtel API Documentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Thomas Vuillaume.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
