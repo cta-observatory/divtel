@@ -84,5 +84,5 @@ def tel_div_pointing(tel_position, g_point):
     """
     GT = np.sqrt(((tel_position - g_point) ** 2).sum())
     alt_tel = np.arcsin((tel_position[2] - g_point[2]) / GT)
-    az_tel = np.arctan2((tel_position[1] - g_point[1]), (tel_position[0] - g_point[0]))
+    az_tel = np.arctan2(-(tel_position[1] - g_point[1]), (tel_position[0] - g_point[0]))
     return alt_tel, az_tel
