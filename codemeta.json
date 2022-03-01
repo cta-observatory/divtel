@@ -1,0 +1,62 @@
+{
+    "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+    "@type": "SoftwareSourceCode",
+    "license": "https://spdx.org/licenses/MIT",
+    "codeRepository": "git+https://github.com/cta-observatory/divtel.git",
+    "contIntegration": "https://github.com/cta-observatory/divtel/actions",
+    "dateCreated": "2022-01-01",
+    "downloadUrl": "https://github.com/cta-observatory/divtel/archive/master.tar.gz",
+    "issueTracker": "https://github.com/cta-observatory/divtel/issues",
+    "name": "divtel",
+    "version": "0.0.0",
+    "description": "Divergent pointing mode for Imaging Atmospheric Cherenkov Telescopes arrays",
+    "applicationCategory": "Astronomy, Python",
+    "programmingLanguage": [
+        "Python 3"
+    ],
+    "softwareRequirements": [
+        "https://github.com/cta-observatory/divtel/blob/master/setup.py"
+    ],
+    "maintainer": {
+          "@type": "Person",
+          "@id": "https://orcid.org/ 0000-0002-5686-2078",
+          "givenName": "Thomas",
+          "familyName": "Vuillaume",
+          "email": "thomas.vuillaume@lapp.in2p3.fr",
+          "affiliation": {
+              "@type": "Organization",
+              "name": "Univ. Savoie Mont Blanc, CNRS, LAPP"
+          }
+      },
+    "author": [
+        {
+            "@type": "Person",
+            "@id": "https://orcid.org/ 0000-0002-5686-2078",
+            "givenName": "Thomas",
+            "familyName": "Vuillaume",
+            "email": "thomas.vuillaume@lapp.in2p3p.fr",
+            "affiliation": {
+                "@type": "Organization",
+                "name": "Univ. Savoie Mont-Blanc, CNRS, LAPP"
+            }
+        },
+        {
+            "@type": "Person",
+            "givenName": "Alice",
+            "familyName": "Donini"
+        },
+        {
+            "@type": "Person",
+            "givenName": "Thomas",
+            "familyName": "Gasparetto"
+        }
+    ],
+  "funder": [
+        {
+            "@type": "Organization",
+            "name": "European Commission",
+            "@id": "https://doi.org/10.13039/501100000780"
+        }
+    ],
+    "funding": "824064"
+}
