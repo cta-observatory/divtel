@@ -1,8 +1,6 @@
 divtel package
 ==============
 
-Submodules
-----------
 
 divtel.pointing module
 ----------------------
@@ -29,10 +27,3 @@ divtel.visualization module
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
-
-.. automodule:: divtel
-   :members:
-   :undoc-members:
-   :show-inheritance:
