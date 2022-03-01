@@ -18,12 +18,15 @@ def alt_az_to_vector(alt, az):
 
     Parameters
     ----------
-    alt: angle in rad
-    az: angle in rad
+    alt: float
+        angle in rad
+    az: float
+        angle in rad
 
     Returns
     -------
-    np.array([x, y, z])
+    vector: `np.array`
+        [x, y, z]
     """
     x = np.cos(alt.to(u.rad)) * np.cos(az.to(u.rad))
     y = -np.cos(alt.to(u.rad)) * np.sin(az.to(u.rad))

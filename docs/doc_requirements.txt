@@ -1,0 +1,6 @@
+sphinx>=3
+nbsphinx
+sphinx_rtd_theme
+myst-parser
+ipykernel
+sphinx-argparse

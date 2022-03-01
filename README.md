@@ -12,7 +12,7 @@
 
 divtel makes toy simulations for the divergent pointing mode of Imaging Atmospheric Cherenkov Telescopes arrays.
 
-## Install
+## 👨‍💻 Install
 
 ### Users
 ``` 
