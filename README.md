@@ -13,6 +13,8 @@ Divergent pointing mode for Imaging Atmospheric Cherenkov Telescopes arrays
 
 </div>
 
+divtel makes toy simulations for the divergent pointing mode of Imaging Atmospheric Cherenkov Telescopes arrays.
+
 
 ## 🛡 License
 
