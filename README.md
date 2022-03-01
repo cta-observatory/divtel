@@ -1,15 +1,12 @@
-# divtel
+# divtel: Divergent pointing mode for Imaging Atmospheric Cherenkov Telescopes arrays
 
-<div align="center">
+
+<div align="left">
 
 [![Build status](https://github.com/cta-observatory/divtel/workflows/build/badge.svg?branch=master&event=push)](https://github.com/cta-observatory/divtel/actions?query=workflow%3Abuild)
 [![Python Version](https://img.shields.io/pypi/pyversions/divtel.svg)](https://pypi.org/project/divtel/)
-
 [![Semantic Versions](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--versions-e10079.svg)](https://github.com/cta-observatory/divtel/releases)
 [![License](https://img.shields.io/github/license/cta-observatory/divtel?style=flat)](https://github.com/cta-observatory/divtel/blob/master/LICENSE)
-
-
-Divergent pointing mode for Imaging Atmospheric Cherenkov Telescopes arrays
 
 </div>
 
