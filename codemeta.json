@@ -8,7 +8,7 @@
     "downloadUrl": "https://github.com/cta-observatory/divtel/archive/master.tar.gz",
     "issueTracker": "https://github.com/cta-observatory/divtel/issues",
     "name": "divtel",
-    "version": "0.0.0",
+    "version": "0.1",
     "description": "Divergent pointing mode for Imaging Atmospheric Cherenkov Telescopes arrays",
     "applicationCategory": "Astronomy, Python",
     "programmingLanguage": [

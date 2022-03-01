@@ -12,6 +12,26 @@
 
 divtel makes toy simulations for the divergent pointing mode of Imaging Atmospheric Cherenkov Telescopes arrays.
 
+## Install
+
+### Users
+``` 
+git clone https://github.com/cta-observatory/divtel.git
+pip install divtel
+```
+
+or 
+
+```
+pip install https://github.com/cta-observatory/divtel/archive/master.tar.gz
+```
+
+### Developers
+
+``` 
+git clone https://github.com/cta-observatory/divtel.git
+pip install "divtel[tests]"
+```
 
 ## 🛡 License
 
