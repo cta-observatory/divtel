@@ -4,4 +4,4 @@ sphinx_rtd_theme
 myst-parser
 ipykernel
 sphinx-argparse
-pygments
+pygments==2.6.1
