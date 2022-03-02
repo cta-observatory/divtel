@@ -116,6 +116,18 @@ class Array:
     def barycenter(self):
         return self.positions_array.mean(axis=0)
 
+    @property
+    def pointing_altaz(self):
+        """
+        All telescopes pointing directions (alt, az) as an array
+
+        Returns
+        -------
+        pointing_directions: `astropy.Quantity`
+            2D array: [[alt1,az1], [alt2, az2], ...]
+        """
+        return np.array([np.array([tel.alt.to_value(u.rad), tel.az.to_value(u.rad)]) for tel in self.telescopes])*u.rad
+
     def divergent_pointing(self, div, alt_mean, az_mean):
         """
         Divergent pointing given a parameter div.
