@@ -6,8 +6,23 @@ from . import pointing
 
 
 class Telescope:
+    """
+    Describe a generic telescope
+
+    Parameters
+    ----------
+    x: `astropy.quantity`
+        x ground position
+    y: `astropy.quantity`
+        y ground position
+    z: `astropy.quantity`
+        z ground position
+    focal: `astropy.quantity`
+    camera_radius: `astropy.quantity`
+    """
 
     _id = 0
+
     def __init__(self, x, y, z, focal, camera_radius):
 
         self.x = x.to(u.m)
@@ -52,7 +67,6 @@ class Telescope:
         az_tel = np.arctan2((- self.y.value + object[1]), (- self.x.value + object[0]))
         self.point_to_altaz(alt_tel * u.rad, az_tel * u.rad)
 
-
     @property
     def pointing_vector(self):
         # return pointing.alt_az_to_vector(self.alt, self.az)
@@ -62,12 +76,28 @@ class Telescope:
 
 
 class Array:
+    """
+    Describe a telescope array
+
+    Parameters
+    ----------
+    telescope_list: [Telescope]
+        list of telescopes forming the array
+    """
 
     def __init__(self, telescope_list):
         self.telescopes = telescope_list
 
     @property
     def positions_array(self):
+        """
+        All telescopes positions
+
+        Returns
+        -------
+        positions_array: `numpy.array`
+            2D numpy array
+        """
         return np.array([tel.position for tel in self.telescopes])
 
     @property
@@ -77,7 +107,8 @@ class Array:
 
         Returns
         -------
-        np.array
+        pointing_vectors: `numpy.array`
+            2D numpy array
         """
         return np.array([tel.pointing_vector for tel in self.telescopes])
 
@@ -157,7 +188,7 @@ class Array:
             ylabel = 'z [m]'
 
         else:
-            breakpoint()
+            raise ValueError(f"projection should be either 'xy', ' yz' or 'xz' but is {projection}")
 
         scale = np.max([xx, yy]) / 10.
 
@@ -179,7 +210,7 @@ class Array:
         return ax
 
     def display_3d(self):
-        #TODO: fix pointing quiver length issue
+        # TODO: fix pointing quiver length issue
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
 

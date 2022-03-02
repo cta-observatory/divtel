@@ -14,7 +14,7 @@ import astropy.units as u
 
 def alt_az_to_vector(alt, az):
     """
-    Compute a pointing vector from an alt,az pointing direction
+    Compute a pointing vector coordinates (x,y,z) from an alt,az pointing direction
 
     Parameters
     ----------
@@ -25,13 +25,14 @@ def alt_az_to_vector(alt, az):
 
     Returns
     -------
-    vector: `np.array`
+    vector: `numpy.array`
         [x, y, z]
     """
     x = np.cos(alt.to(u.rad)) * np.cos(az.to(u.rad))
     y = -np.cos(alt.to(u.rad)) * np.sin(az.to(u.rad))
     z = np.sin(alt.to(u.rad))
     return np.array([x, y, z])
+
 
 def _norm_div(div, scale=100):
     """
