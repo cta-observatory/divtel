@@ -116,7 +116,7 @@ Alt is taken from ground (towards Z) and between -90 and 90 degrees</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="divtel.pointing.alt_az_to_vector">
 <span class="sig-prename descclassname"><span class="pre">divtel.pointing.</span></span><span class="sig-name descname"><span class="pre">alt_az_to_vector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">az</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.pointing.alt_az_to_vector" title="Permalink to this definition"></a></dt>
-<dd><p>Compute a pointing vector from an alt,az pointing direction</p>
+<dd><p>Compute a pointing vector coordinates (x,y,z) from an alt,az pointing direction</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -128,7 +128,7 @@ Alt is taken from ground (towards Z) and between -90 and 90 degrees</p>
 <dd class="field-even"><p><strong>vector</strong> – [x, y, z]</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><cite>np.array</cite></p>
+<dd class="field-odd"><p><cite>numpy.array</cite></p>
 </dd>
 </dl>
 </dd></dl>
@@ -174,6 +174,12 @@ Update telescope pointing</p>
 <dt class="sig sig-object py" id="divtel.telescope.Array">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">divtel.telescope.</span></span><span class="sig-name descname"><span class="pre">Array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">telescope_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.telescope.Array" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Describe a telescope array</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>telescope_list</strong> (<em>[</em><a class="reference internal" href="#divtel.telescope.Telescope" title="divtel.telescope.Telescope"><em>Telescope</em></a><em>]</em>) – list of telescopes forming the array</p>
+</dd>
+</dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="divtel.telescope.Array.barycenter">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">barycenter</span></span><a class="headerlink" href="#divtel.telescope.Array.barycenter" title="Permalink to this definition"></a></dt>
@@ -226,8 +232,11 @@ Update pointing of all telescopes of the array</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pointing_vectors</span></span><a class="headerlink" href="#divtel.telescope.Array.pointing_vectors" title="Permalink to this definition"></a></dt>
 <dd><p>all telescopes pointing vectors as an array</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>np.array</p>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>pointing_vectors</strong> – 2D numpy array</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><cite>numpy.array</cite></p>
 </dd>
 </dl>
 </dd></dl>
@@ -235,7 +244,16 @@ Update pointing of all telescopes of the array</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="divtel.telescope.Array.positions_array">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">positions_array</span></span><a class="headerlink" href="#divtel.telescope.Array.positions_array" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>All telescopes positions</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>positions_array</strong> – 2D numpy array</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><cite>numpy.array</cite></p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -243,6 +261,18 @@ Update pointing of all telescopes of the array</p>
 <dt class="sig sig-object py" id="divtel.telescope.Telescope">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">divtel.telescope.</span></span><span class="sig-name descname"><span class="pre">Telescope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">focal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">camera_radius</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.telescope.Telescope" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Describe a generic telescope</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<cite>astropy.quantity</cite>) – x ground position</p></li>
+<li><p><strong>y</strong> (<cite>astropy.quantity</cite>) – y ground position</p></li>
+<li><p><strong>z</strong> (<cite>astropy.quantity</cite>) – z ground position</p></li>
+<li><p><strong>focal</strong> (<cite>astropy.quantity</cite>) – </p></li>
+<li><p><strong>camera_radius</strong> (<cite>astropy.quantity</cite>) – </p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="divtel.telescope.Telescope.fov">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fov</span></span><a class="headerlink" href="#divtel.telescope.Telescope.fov" title="Permalink to this definition"></a></dt>
