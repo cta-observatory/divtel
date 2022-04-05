@@ -2,9 +2,7 @@
 # Licensed under an MIT license - see LICENSE
 
 from setuptools import setup, find_packages
-import os
 from pathlib import Path
-import re
 
 
 ## read __version__
@@ -30,4 +28,8 @@ setup(name='divtel',
       license='MIT',
       url='https://github.com/cta-observatory/divtel',
       long_description="Visit https://github.com/cta-observatory/divtel",
+      use_scm_version={
+          "write_to": Path(__file__).parent.joinpath("divtel/_version.py"),
+          "write_to_template": "__version__ = '{version}'",
+      },
       )
