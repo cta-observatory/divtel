@@ -11,7 +11,6 @@ import re
 with open(Path(__file__).parent.absolute().joinpath('divtel/version.py')) as f:
     exec(f.read())
 
-long_description = open(Path(__file__,).parent.joinpath('README.md')).read()
 
 setup(name='divtel',
       version=__version__,
