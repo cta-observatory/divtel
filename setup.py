@@ -24,6 +24,7 @@ setup(name='divtel',
                         'descartes==1.1.0',
                         'ipython',
                         'Shapely==1.8.0',
+                        'ipywidgets',
                         ],
       extras_require={'tests': ['pytest', 'pytest-ordering'],
                       'examples': ['ipywidgets', 'ipympl', 'nodejs']
