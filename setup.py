@@ -25,7 +25,7 @@ setup(name='divtel',
                       'examples': ['ipywidgets', 'ipympl', 'nodejs']
                       },
       package_data={},
-      author='T. Vuillaume, A. Donini, T. Gasparetto',
+      author='T. Vuillaume, A. Donini, D. Tak, T. Gasparetto',
       author_email='thomas.vuillaume[at]lapp.in2p3.fr',
       license='MIT',
       url='https://github.com/cta-observatory/divtel',

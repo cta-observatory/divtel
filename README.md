@@ -44,7 +44,7 @@ This project is licensed under the terms of the `MIT` license. See [LICENSE](htt
 
 ```bibtex
 @misc{divtel,
-  author = {Thomas Vuillaume, Alice Donini, Thomas Gasparetto},
+  author = {Thomas Vuillaume, Alice Donini, Donggeun Tak, Thomas Gasparetto},
   title = {divtel: a python library to handle the divergent pointing mode for an array of Imaging Atmospheric Cherenkov Telescopes},
   year = {2022},
   publisher = {GitHub},

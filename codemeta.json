@@ -42,6 +42,17 @@
         },
         {
             "@type": "Person",
+            "@id": "https://orcid.org/ 0000-0002-9852-2469",
+            "givenName": "Donggeun",
+            "familyName": "Tak",
+            "email": "donggeun.tak@gmail.com",
+            "affiliation": {
+                "@type": "Organization",
+                "name": "DESY, Zeuthen"
+            }
+        },
+        {
+            "@type": "Person",
             "givenName": "Alice",
             "familyName": "Donini"
         },

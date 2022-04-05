@@ -459,7 +459,7 @@ class Array:
         """
         return visual.multiplicity_plot(self, fig=fig)
 
-    def export_cfg(self, filename=None, outdir="./output/", verbose=False):
+    def export_cfg(self, filename=None, outdir="./", verbose=False):
         """
         Export cfg file.
 
@@ -467,6 +467,8 @@ class Array:
         ----------
         filename: str, optional
             A default name is 'CTA-ULTRA6-LaPalma-divX-azX-altX.cfg'
+
+        outdir: str, optional,
         
         verbose: bool, optional
         """
