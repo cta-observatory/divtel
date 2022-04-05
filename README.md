@@ -8,6 +8,7 @@
 [![Semantic Versions](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--versions-e10079.svg)](https://github.com/cta-observatory/divtel/releases)
 [![License](https://img.shields.io/github/license/cta-observatory/divtel?style=flat)](https://github.com/cta-observatory/divtel/blob/master/LICENSE)
 [![Documentation](https://img.shields.io/github/workflow/status/cta-observatory/divtel/Sphinx%20docs%20to%20gh-pages/master?label=Documentation)](https://cta-observatory.github.io/divtel/)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6415137.svg)](https://doi.org/10.5281/zenodo.6415137)
 </div>
 
 divtel makes toy simulations for the divergent pointing mode of Imaging Atmospheric Cherenkov Telescopes arrays.
@@ -16,14 +17,7 @@ divtel makes toy simulations for the divergent pointing mode of Imaging Atmosphe
 
 ### Users
 ``` 
-git clone https://github.com/cta-observatory/divtel.git
 pip install divtel
-```
-
-or 
-
-```
-pip install https://github.com/cta-observatory/divtel/archive/master.tar.gz
 ```
 
 ### Developers
@@ -43,12 +37,16 @@ This project is licensed under the terms of the `MIT` license. See [LICENSE](htt
 ## 📃 Citation
 
 ```bibtex
-@misc{divtel,
-  author = {Thomas Vuillaume, Alice Donini, Donggeun Tak, Thomas Gasparetto},
-  title = {divtel: a python library to handle the divergent pointing mode for an array of Imaging Atmospheric Cherenkov Telescopes},
-  year = {2022},
-  publisher = {GitHub},
-  journal = {GitHub repository},
-  howpublished = {\url{https://github.com/cta-observatory/divtel}}
+@software{thomas_vuillaume_2022_6415138,
+  author       = {Thomas Vuillaume and
+                  Alice Donini and 
+                  Thomas Gasparetto},
+  title        = {cta-observatory/divtel: v0.1},
+  month        = apr,
+  year         = 2022,
+  publisher    = {Zenodo},
+  version      = {v0.1},
+  doi          = {10.5281/zenodo.6415138},
+  url          = {https://doi.org/10.5281/zenodo.6415138}
 }
 ```
