@@ -42,8 +42,14 @@
         },
         {
             "@type": "Person",
+            "@id": "https://orcid.org/0000-0002-3066-724X",
             "givenName": "Alice",
-            "familyName": "Donini"
+            "familyName": "Donini",
+            "email": "alice.donini@inaf.it",
+            "affiliation": {
+                "@type": "Organization",
+                "name": "INAF, Astronomical Observatory of Rome"
+            }
         },
         {
             "@type": "Person",
