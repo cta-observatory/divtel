@@ -30,7 +30,8 @@ pip install https://github.com/cta-observatory/divtel/archive/master.tar.gz
 
 ``` 
 git clone https://github.com/cta-observatory/divtel.git
-pip install "divtel[tests]"
+cd divtel 
+pip install -e ".[tests]"
 ```
 
 ## 🛡 License
