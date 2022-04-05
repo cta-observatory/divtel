@@ -15,7 +15,7 @@ from astropy.coordinates import SkyCoord, ICRS
 
 def alt_az_to_vector(alt, az):
     """
-    Compute a pointing vector from an alt,az pointing direction
+    Compute a pointing vector from an alt, az pointing direction
     
     Parameters
     ----------
