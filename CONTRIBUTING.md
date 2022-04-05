@@ -7,3 +7,4 @@ Before submitting your code please do the following steps:
 3. Add tests for the new changes
 4. Edit documentation if you have changed something significant
 5. Open a pull request
+6. If this is your first contribution, add yourself to the `codemeta.json` file
