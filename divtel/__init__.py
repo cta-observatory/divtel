@@ -7,7 +7,7 @@ from .const import *
 
 from .cta import CTA_Info
 
-from .ArrayConfig import LoadConfig
+from .layout import LoadConfig
 
 from .version import __version__
 
