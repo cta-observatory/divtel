@@ -10,7 +10,7 @@ from . import utils as utils
 from . import visualization as visual
 from . import pointing
 
-from ..cta import CTA_Info
+from .cta import CTA_Info
 
 from astropy.coordinates import SkyCoord
 

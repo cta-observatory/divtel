@@ -15,7 +15,7 @@ from astroplan.plots import plot_sky
 from astroplan import FixedTarget
 
 from . import utils
-from ..const import COLORS
+from .const import COLORS
 from . import pointing
 
 import mpl_toolkits.axisartist.angle_helper as angle_helper
