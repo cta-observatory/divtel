@@ -19,6 +19,7 @@ setup(name='divtel',
       install_requires=['astropy',
                         'numpy',
                         'matplotlib',
+                        'setuptools_scm'
                         ],
       extras_require={'tests': ['pytest', 'pytest-ordering'],
                       'examples': ['ipywidgets', 'ipympl', 'nodejs']
