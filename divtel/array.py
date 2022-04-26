@@ -496,7 +496,7 @@ class Array:
                 else:
                     f.write('#  include <CTA-ULTRA6-MST-NectarCam.cfg>\n')
                 f.write('   TELESCOPE_THETA={:.2f}\n'.format(zd))
-                f.write('   TELESCOPE_PHI={:.2f}\n'.format(tel["az"]))
+                f.write('   TELESCOPE_PHI={:.2f}\n'.format(360 - tel["az"]))
             f.write('#else\n')
             f.write('   Error Invalid telescope for CTA-ULTRA6 La Palma configuration.\n')
             f.write('#endif\n')
