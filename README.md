@@ -39,7 +39,7 @@ This project is licensed under the terms of the `MIT` license. See [LICENSE](htt
 ```bibtex
 @software{thomas_vuillaume_2022_6415138,
   author       = {Thomas Vuillaume and
-                  Alice Donini and
+                  Alice Donini and 
                   Thomas Gasparetto},
   title        = {cta-observatory/divtel: v0.1},
   month        = apr,
