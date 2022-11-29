@@ -620,3 +620,5 @@ MigrationBackup/
 # Personal files my branch (IRENE)
 config/MAGIC/
 config/*.txt
+config/*.cfg
+
