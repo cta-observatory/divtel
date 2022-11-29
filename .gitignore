@@ -278,6 +278,7 @@ $RECYCLE.BIN/
 *.user
 *.userosscache
 *.sln.docstates
+config/MAGIC/
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
