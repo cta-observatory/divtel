@@ -278,7 +278,6 @@ $RECYCLE.BIN/
 *.user
 *.userosscache
 *.sln.docstates
-config/MAGIC/
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -617,3 +616,7 @@ healthchecksdb
 MigrationBackup/
 
 # End of https://www.gitignore.io/api/osx,python,pycharm,windows,visualstudio,visualstudiocode
+
+# Personal files my branch (IRENE)
+config/MAGIC/
+config/*.txt
