@@ -334,7 +334,7 @@ def multiplicity_plot(array, m_cut = 0, fig=None):
         colore = int(overlaps[i])
         pol_map = mapping(pol)
         ax.add_patch(PolygonPatch(pol_map, color=color_list[colore-1]))
-        patch_az = np.asarray(pol_map['coordinates'])[0][:,0]
+        patch_az = np.asarray(pol_map['coordinates'])[0][:][0]
         minmax.append([min(patch_az), max(patch_az)])
     minmax = np.asarray(minmax)
 
@@ -351,7 +351,7 @@ def multiplicity_plot(array, m_cut = 0, fig=None):
 
     ax.set_xlabel("Azimuth [deg]")
     ax.set_ylabel("Altitude [deg]")
-    ax.set_xlim(np.min(minmax[:,0])-5, np.max(minmax[:,1])+5)
+    ax.set_xlim(np.min(minmax[:,1])-5, np.max(minmax[:,1])+5)
     ax.set_ylim(np.min(array.table["alt"])-5, np.max(array.table["alt"])+5)
     
     ax.text(0.9, 0.9, r"Average: {:.1f} $\pm$ {:.1f}".format(ave_multi, np.sqrt(var_multi)), 
