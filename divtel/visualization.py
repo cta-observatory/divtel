@@ -351,7 +351,7 @@ def multiplicity_plot(array, m_cut = 0, fig=None):
 
     ax.set_xlabel("Azimuth [deg]")
     ax.set_ylabel("Altitude [deg]")
-    ax.set_xlim(np.min(minmax[:,1])-5, np.max(minmax[:,1])+5)
+    ax.set_xlim(np.min(array.table["az"])-5, np.max(array.table["az"])+5)
     ax.set_ylim(np.min(array.table["alt"])-5, np.max(array.table["alt"])+5)
     
     ax.text(0.9, 0.9, r"Average: {:.1f} $\pm$ {:.1f}".format(ave_multi, np.sqrt(var_multi)), 
