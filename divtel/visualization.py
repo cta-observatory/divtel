@@ -306,7 +306,7 @@ def interactive_polar(array, overwrite=True, group=False):
 
 def multiplicity_plot(array, m_cut = 0, fig=None):
 
-    m, overlaps, geoms = array.hFoV(full_output=True)
+    m, overlaps, geoms = array.hFoV(m_cut=m_cut,full_output=True)
     max_m = int(array.size_of_array)
     ave_multi = np.average(m[:,0], weights=m[:,1])
     var_multi = np.average((m[:,0]-ave_multi)**2, weights=m[:,1])
@@ -346,13 +346,15 @@ def multiplicity_plot(array, m_cut = 0, fig=None):
                                      boundaries = bounds,
                                      orientation='vertical',
                                      label='Multiplicity')
-    cb1.set_ticks(np.arange(0, max_m+1, step=2) + 1)
-    cb1.set_ticklabels(np.arange(0, max_m+1, step=2))
+    cb1.set_ticks(np.arange(0, max_m+1, step=4) + 1)
+    cb1.set_ticklabels(np.arange(0, max_m+1, step=4))
 
     ax.set_xlabel("Azimuth [deg]")
     ax.set_ylabel("Altitude [deg]")
-    ax.set_xlim(np.min(array.table["az"])-5, np.max(array.table["az"])+5)
-    ax.set_ylim(np.min(array.table["alt"])-5, np.max(array.table["alt"])+5)
+    ax.set_xlim(166,194)
+    ax.set_ylim(56,84)
+    #ax.set_xlim(np.min(array.table["az"])-5, np.max(array.table["az"])+5)
+    #ax.set_ylim(np.min(array.table["alt"])-5, np.max(array.table["alt"])+5)
     
     ax.text(0.9, 0.9, r"Average: {:.1f} $\pm$ {:.1f}".format(ave_multi, np.sqrt(var_multi)), 
             ha="right", transform=ax.transAxes)

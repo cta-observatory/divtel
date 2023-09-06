@@ -96,7 +96,7 @@ def tel_div_pointing(tel_position, G):
         azumith angle
     """
     GT = np.sqrt(((tel_position - G) ** 2).sum())
-    alt = np.arcsin((tel_position[2] - G[2]) / GT)
+    alt = np.abs(np.arcsin((tel_position[2] - G[2]) / GT))
     az = np.arctan2(-(tel_position[1] - G[1]), (tel_position[0] - G[0]))
     return alt, az
 

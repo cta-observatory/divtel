@@ -255,19 +255,26 @@ class Array:
 
         # multiplicity associated with each patch
         overlaps = np.array(count_overlaps)
+        eff_overlaps=[]
+        eff_geoms=[]
+        for i in range(len(overlaps)):
+            if overlaps[i]>m_cut:
+                eff_overlaps.append(overlaps[i])
+                eff_geoms.append(geoms[i])
         multiplicity = np.array([[i, hfov[overlaps==i].sum()] for i in set(overlaps)])
-
+        
         fov = sum(multiplicity[:,1][multiplicity[:,0]>=m_cut])*u.deg**2
 
         if full_output:
-            return multiplicity, overlaps, geoms
+            return multiplicity, eff_overlaps, eff_geoms
         elif return_multiplicity:
             m_ave = np.average(multiplicity[:,0], weights=multiplicity[:,1])
             m_var = np.average((multiplicity[:,0]-m_ave)**2, weights=multiplicity[:,1])
             return fov, m_ave, m_var
         else:
             return fov
-
+            
+    
     def update_frame(self, site=None, time=None, delta_t=None, verbose=False):
         """
         Update class.CTA_Info parameters (site and/or observation time)
@@ -366,13 +373,18 @@ class Array:
 
         self._div = div
         
-        if div > 1 or div < 0:
-            print("[Error] The div value should be between 0 and 1.")
+        if np.abs(div) > 1: #or div < 0:
+            print("[Error] The div abs value should be lower and 1.")
         elif div!=0:
             G = pointing.pointG_position(self.barycenter, self.div, self.pointing["alt"], self.pointing["az"])
             for tel in self.telescopes:
                 alt_tel, az_tel = pointing.tel_div_pointing(tel.position, G)
+                
+                if div < 0:
+                    az_tel=az_tel - np.pi 
+                	
                 tel.__point_to_altaz__(alt_tel*u.rad, az_tel*u.rad)
+                
         
             self.__make_table__()
     
@@ -449,7 +461,7 @@ class Array:
         """
         return visual.skymap_polar(self, group=group, fig=fig, filename=filename)
 
-    def multiplicity_plot(self, fig=None):
+    def multiplicity_plot(self,fig=None):
         """
         Plot multiplicity
 
