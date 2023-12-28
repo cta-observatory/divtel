@@ -7,3 +7,5 @@ dependencies:
   - jupyterlab
   - ipympl
   - nodejs
+pip:
+  - astroplan
