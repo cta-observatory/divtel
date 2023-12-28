@@ -622,4 +622,4 @@ config/MAGIC/
 config/*.txt
 config/*.cfg
 examples/notebooks
-
+hfov_evolution/
