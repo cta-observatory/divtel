@@ -1,0 +1,4 @@
+astroplan
+healpy
+shapely
+descartes
