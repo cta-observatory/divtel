@@ -2,3 +2,4 @@ astroplan
 healpy
 shapely
 descartes
+jupyter
