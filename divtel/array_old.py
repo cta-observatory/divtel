@@ -19,8 +19,6 @@ from shapely.geometry import LineString, Point
 
 import copy 
 
-import healpy as hp
-import tqdm
     
 class Array:
 
@@ -234,24 +232,48 @@ class Array:
             self.__convert_units__(toDeg=True)
         
         coord = self.get_pointing_coord(icrs=False)
-        nside = 512
-        map_multiplicity = np.zeros(hp.nside2npix(nside), dtype=np.int8)
-        counter = np.arange(0, hp.nside2npix(nside))
-        ra, dec = hp.pix2ang(nside, counter, True, lonlat=True)
-        coordinate = SkyCoord(ra=ra*u.deg, dec=dec*u.deg)
-        for i in tqdm.tqdm(range(len(self.telescopes))):
-            pointing = SkyCoord(ra=coord.az[i].degree, dec= coord.alt[i].degree, unit='deg')
-            r_fov = np.arctan((self.telescopes[i].camera_radius/self.telescopes[i].focal).to(u.dimensionless_unscaled)).to(u.deg)
-            mask = coordinate.separation(pointing) < r_fov
-            map_multiplicity[mask] += 1
+        
+        if max(self.table["az"])-min(self.table["az"]) > 180:
+            polygons = []
+            for az, alt, r in zip(coord.az.degree, coord.alt.degree, self.table["radius"]):
+                if az < 180:
+                    polygons.append(Point(az, alt).buffer(r))
+                else:
+                    polygons.append(Point(az-360, alt).buffer(r))
+        else:
+            polygons = [Point(az, alt).buffer(r) for az, alt, r in zip(coord.az.degree, coord.alt.degree, self.table["radius"])]
 
-       
-        mask_fov = map_multiplicity> m_cut
-        #mask_fov_eff = map_multiplicity>3
+        union = unary_union([LineString(list(pol.exterior.coords)) for pol in polygons])
+        geoms = [geom for geom in polygonize(union)]
+        hfov = [geom.area for geom in geoms]
 
-        hfov = hp.nside2pixarea(nside, True)*np.sum(mask_fov)
-        m_ave = np.mean(map_multiplicity[mask_fov])
-        return hfov, m_ave     
+        count_overlaps = np.zeros(len(geoms))
+        for i, geom in enumerate(geoms):
+            count_overlaps[i] = sum([1 for pol in polygons if abs(geom.difference(pol).area)<1e-5])
+
+        hfov = np.array(hfov)
+
+        # multiplicity associated with each patch
+        overlaps = np.array(count_overlaps)
+        eff_overlaps=[]
+        eff_geoms=[]
+        for i in range(len(overlaps)):
+            if overlaps[i]>m_cut:
+                eff_overlaps.append(overlaps[i])
+                eff_geoms.append(geoms[i])
+        multiplicity = np.array([[i, hfov[overlaps==i].sum()] for i in set(overlaps)])
+        
+        fov = sum(multiplicity[:,1][multiplicity[:,0]>=m_cut])*u.deg**2
+
+        if full_output:
+            return multiplicity, eff_overlaps, eff_geoms
+        elif return_multiplicity:
+            m_ave = np.average(multiplicity[:,0], weights=multiplicity[:,1])
+            m_var = np.average((multiplicity[:,0]-m_ave)**2, weights=multiplicity[:,1])
+            return fov, m_ave, m_var
+        else:
+            return fov
+            
     
     def update_frame(self, site=None, time=None, delta_t=None, verbose=False):
         """

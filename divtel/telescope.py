@@ -64,7 +64,7 @@ class Telescope:
         
         label = ["id", "x", "y", "z", "az", "alt", "zn", "focal", "radius", "fov", "p_x", "p_y", "p_z"]
         units = ["", u.m, u.m, u.m, u.rad, u.rad, u.rad, u.m, u.m, u.rad**2, "", "", ""]
-        dtype = [np.int] + [np.float for i in range(len(units)-1)]
+        dtype = [int] + [np.float64 for i in range(len(units)-1)]
         table = Table(np.asarray(properties, dtype="object"), names=label, units=units, dtype=dtype)
         
         for col in table.columns[4:]:
