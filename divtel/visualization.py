@@ -179,10 +179,8 @@ def interactive_barycenter(array, proj="xy", overwrite=True, group=False):
     return new_array
 
 
-def multiplicity_plot(array, m_cut, fig=None):
-    if m_cut == None:
-        m_cut=0
-
+def multiplicity_plot(array, fig=None):
+   
     nside = 512
     map_multiplicity = np.zeros(hp.nside2npix(nside), dtype=np.int8)
     counter = np.arange(0, hp.nside2npix(nside))
@@ -195,10 +193,8 @@ def multiplicity_plot(array, m_cut, fig=None):
         mask = coordinate.separation(pointing) < r_fov
         map_multiplicity[mask] += 1
     
-    mask_fov = map_multiplicity>m_cut
     
-    
-    R=np.sqrt(hp.nside2pixarea(nside, True)*np.sum(mask_fov)/np.pi) + 5
+    R=np.sqrt(array.hFoV()[0]/np.pi) + 5
     hp.cartview(map_multiplicity, rot=[array.pointing["az"].value, array.pointing["alt"].value],
                 lonra=[-R,R], latra=[-R,R], nest=True, cmap='viridis', title=f"{array.frame.site} div={array.div}")
     # Annotate with axis labels:

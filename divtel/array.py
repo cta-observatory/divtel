@@ -439,7 +439,7 @@ class Array:
         """
         return visual.skymap_polar(self, group=group, fig=fig, filename=filename)
 
-    def multiplicity_plot(self,fig=None):
+    def multiplicity_plot(self, fig=None):
         """
         Plot multiplicity
 
@@ -447,6 +447,8 @@ class Array:
         ----------
         fig: pyplot.figure, optional
         """
+        
+            
         return visual.multiplicity_plot(self, fig=fig)
 
     def export_cfg(self, filename=None, outdir="./", verbose=False):
