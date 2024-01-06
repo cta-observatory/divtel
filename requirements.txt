@@ -2,4 +2,3 @@ astroplan
 healpy
 jupyter
 tdqm
-healpy
