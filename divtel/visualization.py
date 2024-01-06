@@ -10,13 +10,14 @@ from astroplan.plots import plot_sky
 from astroplan import FixedTarget
 from . import utils
 from .const import COLORS
-from . import pointing
+#from . import pointing
 
 from matplotlib.transforms import Affine2D
 from astropy.visualization.wcsaxes import SphericalCircle
 
-from shapely.geometry import mapping
-from descartes import PolygonPatch
+import healpy as hp
+import tqdm
+
 
 def display_1d(table, proj, ax=None, labels=None, **kwargs):
     xb = utils.calc_mean(table, proj[0])
@@ -177,177 +178,31 @@ def interactive_barycenter(array, proj="xy", overwrite=True, group=False):
 
     return new_array
 
-def display_skymap(table, frame, ax=None, **kwargs):
-    ax = plt.figure().add_subplot(111, projection='polar') if ax is None else ax
 
-    radec = pointing.pointing_coord(table, frame, icrs=True)
-    point = SkyCoord(ra=radec.ra, dec=radec.dec)
-    target = FixedTarget(coord=point, name="source")
-
-    plot_sky(target, frame.observer, frame.t_obs, ax=ax, style_kwargs=kwargs)
-
-    return ax
-
-def skymap_polar(array, group=False, fig=None, filename=None):
-    if fig is None:
-        fig = plt.figure() 
-    else:
-        ax = fig.gca()
-        ax.set_xticklabels([])
-        ax.set_yticklabels([])
-
-    tr = Affine2D().scale(np.pi/180., 1.).translate(+np.pi/2., 0) + plt.polar().get_transform()
-
-    n = 20
-    extreme_finder = angle_helper.ExtremeFinderCycle(10, 10,
-                                                     lon_cycle=360,
-                                                     lat_cycle=None,
-                                                     lon_minmax=None,
-                                                     lat_minmax=(-90, 90),
-                                                     )
-
-    grid_locator1 = angle_helper.LocatorDMS(12)
-
-    tick_formatter1 = angle_helper.FormatterDMS()
-
-    grid_helper = GridHelperCurveLinear(tr,
-                                        extreme_finder=extreme_finder,
-                                        grid_locator1=grid_locator1,
-                                        tick_formatter1=tick_formatter1
-                                        )
-
-    ax1 = plt.subplot(projection=grid_helper)
-
-    array.__convert_units__(toDeg=True)
-    tel_group, labels = array.group_by(group)
-
-    for tel_table, label in zip(tel_group.groups, labels):
-        s = ax1.scatter(tel_table["az"], tel_table["alt"], label=label,
-            s=20, edgecolor="black", transform=ax1.transData, zorder=10)
-        
-        for tel in tel_table:
-            r = SphericalCircle((tel["az"] * u.deg, tel["alt"] * u.deg), tel["radius"] * u.deg, 
-                                color=s.get_facecolor()[0], alpha=0.1, transform=ax1.transData)
-            ax1.add_patch(r)
-            ax1.annotate(tel["id"], (tel["az"], tel["alt"]), fontsize=12, xytext=(4, 4), 
-                color="black", textcoords='offset pixels', zorder=10)
-
-    ax1.grid(True)
-    ax1.set_xlabel("Azimuth [deg]", fontsize=20)
-    ax1.set_ylabel("Altitude [deg]", fontsize=20)
-    ax1.legend(loc=1)
-
-    if filename is not None:
-        plt.savefig(filename)
-        plt.show(block=False)
-
-def interactive_polar(array, overwrite=True, group=False):
-    if overwrite:
-        new_array = array
-    else:
-        new_array = copy.deepcopy(array)
-
-    fig = plt.figure()
-
-    def update(div=0, az=0, alt=0):
-        new_array.divergent_pointing(div, az=az, alt=alt, units='deg')
-        new_array.__convert_units__(toDeg=True)
-        plt.cla()
-        new_array.skymap_polar(group=group, fig=fig)
-        fig.canvas.draw_idle()
-
-    div_s = widgets.FloatLogSlider(value=new_array.div, base=10, min=-4, max=0, step=0.2, description='Divergence')
-    az_s = widgets.FloatSlider(value=new_array.pointing["az"].value, min=0, max=360, step=0.01, description='Azimuth [deg]')
-    alt_s = widgets.FloatSlider(value=new_array.pointing["alt"].value, min=0, max=90, step=0.01, description='Altitude [deg]')
+def multiplicity_plot(array, fig=None):
+   
+    nside = 512
+    map_multiplicity = np.zeros(hp.nside2npix(nside), dtype=np.int8)
+    counter = np.arange(0, hp.nside2npix(nside))
+    ra, dec = hp.pix2ang(nside, counter, True, lonlat=True)
+    coordinate = SkyCoord(ra=ra*u.deg, dec=dec*u.deg)
+    coord = array.get_pointing_coord(icrs=False)
+    for i in tqdm.tqdm(range(len(array.telescopes))):
+        pointing = SkyCoord(ra=coord.az[i].degree, dec=coord.alt[i].degree, unit='deg')
+        r_fov = np.arctan((array.telescopes[i].camera_radius/array.telescopes[i].focal).to(u.dimensionless_unscaled)).to(u.deg)
+        mask = coordinate.separation(pointing) < r_fov
+        map_multiplicity[mask] += 1
     
-    ui = widgets.HBox([div_s, alt_s, az_s])
-    out = widgets.interactive_output(update, {'div': div_s, 'az': az_s, 'alt': alt_s})
-    display(ui, out)
-
-    return new_array
-
-
-def multiplicity_plot(array, m_cut=0, fig=None):
-
-    m, overlaps, geoms = array.hFoV(m_cut=m_cut, full_output=True)
-    max_m = int(array.size_of_array)
-    ave_multi = np.average(m[:, 0], weights=m[:, 1])
-    var_multi = np.average((m[:, 0] - ave_multi) ** 2, weights=m[:, 1])
-
-    if fig is None:
-        fig, (ax, ax_mul) = plt.subplots(1, 2, figsize=(10, 4))
-        ax_cb = fig.add_axes([0.44, 0.15, 0.01, 0.7])
-
-    cmap = plt.cm.get_cmap('rainbow')
-    color_list = cmap(np.linspace(0, 1, max_m))
-    bounds = np.arange(max_m + 1) + 1
-
-    ax_cb = fig.add_axes([0.44, 0.15, 0.01, 0.7])
-
-    minmax = []
-    for i, pol in enumerate(geoms):
-        colore = int(overlaps[i])
-        pol_map = mapping(pol)
-        ax.add_patch(PolygonPatch(pol_map, color=color_list[colore - 1]))
-        patch_az = np.asarray(pol_map['coordinates'])[0][:][0]
-        minmax.append([min(patch_az), max(patch_az)])
-    minmax = np.asarray(minmax)
-
-    norm = plt.colors.BoundaryNorm(bounds, cmap.N)
-
-    cb1 = mpl.colorbar.ColorbarBase(ax_cb,
-                                    norm=norm,
-                                    cmap=cmap,
-                                    boundaries=bounds,
-                                    orientation='vertical',
-                                    label='Multiplicity')
-    cb1.set_ticks(np.arange(0, max_m + 1, step=4) + 1)
-    cb1.set_ticklabels(np.arange(0, max_m + 1, step=4))
-
-    ax.set_xlabel("Azimuth [deg]")
-    ax.set_ylabel("Altitude [deg]")
-    ax.set_xlim(np.min(array.table["az"]) - 5, np.max(array.table["az"]) + 5)
-    ax.set_ylim(np.min(array.table["alt"]) - 5, np.max(array.table["alt"]) + 5)
-
-    ax.text(0.9, 0.9, r"Average: {:.1f} $\pm$ {:.1f}".format(ave_multi, np.sqrt(var_multi)),
-            ha="right", transform=ax.transAxes)
-
-    ax_mul.bar(m[:, 0], m[:, 1])
-    ax_mul.text(0.9, 0.9, "Total hFoV = {:.0f}".format(sum(m[:, 1][m[:, 0] >= m_cut])),
-                ha="right", transform=ax_mul.transAxes)
-    ax_mul.set_xticks(np.arange(0, max_m + 1, step=2))
-    ax_mul.set_xlim(0.5, max_m + 0.5)
-    ax_mul.set_ylabel('HFOV')
-    ax_mul.set_xlabel('Multiplicity')
-
+    
+    R=np.sqrt(array.hFoV()[0]/np.pi) + 5
+    hp.cartview(map_multiplicity, rot=[array.pointing["az"].value, array.pointing["alt"].value],
+                lonra=[-R,R], latra=[-R,R], nest=True, cmap='viridis', title=f"{array.frame.site} div={array.div}")
+    # Annotate with axis labels:
+    plt.annotate('Right Ascension (degrees)', xy=(0.5, -0.05), xycoords='axes fraction', ha='center', va='center')
+    plt.annotate('Declination (degrees)', 
+                 xy=(-0.05, 0.5), xycoords='axes fraction', 
+                 ha='center', va='center', rotation='vertical')
+    hp.graticule(dpar=5, dmer=5, coord='G', color='gray', lw=0.5)
+    
     plt.show()
 
-def interactive_multiplicity(array, overwrite=True):
-
-    if overwrite:
-        new_array = array
-    else:
-        new_array = copy.deepcopy(array)
-
-    fig, (ax, ax_mul) = plt.subplots(1, 2, figsize=(10, 4))
-    ax_cb = fig.add_axes([0.44, 0.15, 0.01, 0.7])
-
-    def update(div=0, az=0, alt=0):
-
-        new_array.divergent_pointing(div, az=az, alt=alt, units='deg')
-        new_array.__convert_units__(toDeg=True)
-        plt.cla()
-        new_array.multiplicity_plot(fig=(fig, (ax, ax_mul)))
-        fig.canvas.draw_idle()
-
-    div_s = widgets.FloatLogSlider(value=new_array.div, base=10, min=-4, max=0, step=0.2, description='Divergence')
-    az_s = widgets.FloatSlider(value=new_array.pointing["az"].value, min=0, max=360, step=0.01,
-                               description='Azimuth [deg]')
-    alt_s = widgets.FloatSlider(value=new_array.pointing["alt"].value, min=0, max=90, step=0.01,
-                                description='Altitude [deg]')
-
-    ui = widgets.HBox([div_s, alt_s, az_s])
-    out = widgets.interactive_output(update, {'div': div_s, 'az': az_s, 'alt': alt_s})
-    display(ui, out)
-
-    return new_array
