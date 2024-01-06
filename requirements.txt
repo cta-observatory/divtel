@@ -1,5 +1,5 @@
 astroplan
 healpy
-shapely
-descartes
 jupyter
+tdqm
+healpy
