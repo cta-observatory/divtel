@@ -14,9 +14,6 @@ from .cta import CTA_Info
 
 from astropy.coordinates import SkyCoord
 
-from shapely.ops import unary_union, polygonize
-from shapely.geometry import LineString, Point
-
 import copy 
 
 import healpy as hp
@@ -221,14 +218,7 @@ class Array:
             hFoV
         m_ave: float
             average of multiplicity
-        m_var: float
-            variance of multiplicity
-        multiplicity: array
-            array containing multiplicity and corresponding hFoV
-        overlaps: array
-            array containing the number of overlaps for each patch
-        geoms: shapely.ops.polygonize
-            geometry of each patch
+       
         """
         if self.table.units == 'rad':
             self.__convert_units__(toDeg=True)
