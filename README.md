@@ -23,8 +23,9 @@ pip install divtel
 ### Developers
 
 ``` 
-git clone https://github.com/cta-observatory/divtel.git
-cd divtel 
+git clone -b irene_tests https://github.com/cta-observatory/divtel.git
+cd divtel
+pip install -r requirements.txt
 pip install -e ".[tests]"
 ```
 
