@@ -25,6 +25,7 @@ pip install divtel
 ``` 
 git clone -b irene_tests https://github.com/cta-observatory/divtel.git
 cd divtel
+conda env create  -f environment.yml
 pip install -r requirements.txt
 pip install -e ".[tests]"
 ```
