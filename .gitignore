@@ -122,6 +122,9 @@ fabric.properties
 # setuptools_scm generated version file
 divtel/_version.py
 
+# uv lockfile: divtel is a library, so consumers resolve their own versions
+uv.lock
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

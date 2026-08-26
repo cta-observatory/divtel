@@ -26,7 +26,7 @@ jobs:
         run: |
           sudo apt-get update && sudo apt-get install -y pandoc
           python -m pip install --upgrade pip
-          pip install ".[docs,examples]"
+          pip install ".[examples]" --group docs
 
       - name: Build and Commit
         uses: sphinx-notes/pages@v2

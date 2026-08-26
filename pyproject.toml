@@ -47,14 +47,21 @@ dependencies = [
     "numpy>=1.23",
 ]
 
+# Consumer-facing optional feature: published in the wheel metadata, so
+# `pip install divtel[examples]` works for users of the released package.
 [project.optional-dependencies]
-tests = [
-    "pytest>=7.0",
-]
 examples = [
     "ipympl>=0.9",
     "ipywidgets>=8.0",
     "jupyterlab>=4.0",
+]
+
+# Development-only dependencies (PEP 735). These are deliberately *not*
+# published in the wheel metadata -- they are for working on divtel, not for
+# using it. `uv sync` installs the "dev" group by default.
+[dependency-groups]
+tests = [
+    "pytest>=7.0",
 ]
 docs = [
     "myst-parser>=2.0",
@@ -65,7 +72,8 @@ docs = [
     "ipykernel>=6.0",
 ]
 dev = [
-    "divtel[tests,examples,docs]",
+    {include-group = "tests"},
+    {include-group = "docs"},
     "build>=1.0",
     "ruff>=0.6",
 ]
