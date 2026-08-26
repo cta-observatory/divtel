@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>divtel: Divergent pointing mode for Imaging Atmospheric Cherenkov Telescopes arrays &mdash; divtel 0.2.dev13+g3b770994f documentation</title>
+  <title>divtel: Divergent pointing mode for Imaging Atmospheric Cherenkov Telescopes arrays &mdash; divtel 0.2.dev16+gb8cef41ea documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=7b3e6dc4"></script>
+      <script src="_static/documentation_options.js?v=a125af91"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -104,11 +104,33 @@
 </section>
 <section id="developers">
 <h3>Developers<a class="headerlink" href="#developers" title="Link to this heading"></a></h3>
+<p>With <a class="reference external" href="https://docs.astral.sh/uv/">uv</a> (recommended):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">cta</span><span class="o">-</span><span class="n">observatory</span><span class="o">/</span><span class="n">divtel</span><span class="o">.</span><span class="n">git</span>
-<span class="n">cd</span> <span class="n">divtel</span> 
-<span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="s2">".[tests]"</span>
+<span class="n">cd</span> <span class="n">divtel</span>
+<span class="n">uv</span> <span class="n">sync</span>
 </pre></div>
 </div>
+<p><code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">sync</span></code> creates a virtual environment in <code class="docutils literal notranslate"><span class="pre">.venv</span></code>, installs divtel in editable
+mode, and pulls in the development dependencies (pytest, sphinx, ruff) declared
+as <a class="reference external" href="https://peps.python.org/pep-0735/">PEP 735</a> dependency groups. Add
+<code class="docutils literal notranslate"><span class="pre">--extra</span> <span class="pre">examples</span></code> if you also want to run the notebooks in <code class="docutils literal notranslate"><span class="pre">examples/</span></code>.</p>
+<p>With pip (requires pip &gt;= 25.1 for <code class="docutils literal notranslate"><span class="pre">--group</span></code>):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">cta</span><span class="o">-</span><span class="n">observatory</span><span class="o">/</span><span class="n">divtel</span><span class="o">.</span><span class="n">git</span>
+<span class="n">cd</span> <span class="n">divtel</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="o">.</span> <span class="o">--</span><span class="n">group</span> <span class="n">dev</span>
+</pre></div>
+</div>
+<p>Then run the tests:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pytest</span>
+</pre></div>
+</div>
+<blockquote>
+<div><p><strong>Note:</strong> install divtel before importing it, even from a source checkout.
+The version is derived from git by
+<a class="reference external" href="https://setuptools-scm.readthedocs.io/">setuptools_scm</a> at install time and
+written to <code class="docutils literal notranslate"><span class="pre">divtel/_version.py</span></code>; importing an uninstalled source tree reports
+<code class="docutils literal notranslate"><span class="pre">__version__</span> <span class="pre">==</span> <span class="pre">&quot;0.0.0&quot;</span></code>.</p>
+</div></blockquote>
 </section>
 </section>
 <section id="license">
