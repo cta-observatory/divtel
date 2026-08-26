@@ -145,8 +145,11 @@ def setup(app):
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'sphinx_rtd_theme'
+html_theme = 'furo'
 
-# No custom static files yet; point html_static_path at a directory when there
-# are some, otherwise Sphinx warns about the missing path on every build.
-html_static_path = []
+html_theme_options = {
+    'sidebar_hide_name': True,
+}
+
+html_static_path = ['_static']
+html_css_files = ['custom.css']
