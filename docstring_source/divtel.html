@@ -1,22 +1,23 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>divtel package &mdash; divtel 0.1 documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+  <title>divtel package &mdash; divtel 0.2.dev13+g3b770994f documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=7b3e6dc4"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -29,11 +30,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../index.html" class="icon icon-home"> divtel
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            divtel
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -43,9 +48,18 @@
 <li class="toctree-l1"><a class="reference internal" href="../README.html">divtel: Divergent pointing mode for Imaging Atmospheric Cherenkov Telescopes arrays</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../docstring.html">divtel API Documentation</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">divtel package</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#module-divtel.pointing">divtel.pointing module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-divtel.telescope">divtel.telescope module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-divtel.visualization">divtel.visualization module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-divtel.pointing">divtel.pointing module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#divtel.pointing.alt_az_to_vector"><code class="docutils literal notranslate"><span class="pre">alt_az_to_vector()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#divtel.pointing.pointG_position"><code class="docutils literal notranslate"><span class="pre">pointG_position()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#divtel.pointing.tel_div_pointing"><code class="docutils literal notranslate"><span class="pre">tel_div_pointing()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-divtel.telescope">divtel.telescope module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#divtel.telescope.Array"><code class="docutils literal notranslate"><span class="pre">Array</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#divtel.telescope.Telescope"><code class="docutils literal notranslate"><span class="pre">Telescope</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#divtel-visualization-module">divtel.visualization module</a></li>
 </ul>
 </li>
 </ul>
@@ -66,9 +80,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../docstring.html">divtel API Documentation</a> &raquo;</li>
-      <li>divtel package</li>
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../docstring.html">divtel API Documentation</a></li>
+      <li class="breadcrumb-item active">divtel package</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/docstring_source/divtel.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -78,34 +92,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  
-<style>
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<section id="divtel-package">
-<h1>divtel package<a class="headerlink" href="#divtel-package" title="Permalink to this headline"></a></h1>
+  <section id="divtel-package">
+<h1>divtel package<a class="headerlink" href="#divtel-package" title="Link to this heading"></a></h1>
 <section id="module-divtel.pointing">
-<span id="divtel-pointing-module"></span><h2>divtel.pointing module<a class="headerlink" href="#module-divtel.pointing" title="Permalink to this headline"></a></h2>
+<span id="divtel-pointing-module"></span><h2>divtel.pointing module<a class="headerlink" href="#module-divtel.pointing" title="Link to this heading"></a></h2>
 <p>Functions to define telescopes pointings
 We use the same reference frame as simtel_array:
 X is pointing North
@@ -115,19 +105,19 @@ Az is taken clock-wise from X (towards Y) and between -180 and 180 degrees
 Alt is taken from ground (towards Z) and between -90 and 90 degrees</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="divtel.pointing.alt_az_to_vector">
-<span class="sig-prename descclassname"><span class="pre">divtel.pointing.</span></span><span class="sig-name descname"><span class="pre">alt_az_to_vector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">az</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.pointing.alt_az_to_vector" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">divtel.pointing.</span></span><span class="sig-name descname"><span class="pre">alt_az_to_vector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">az</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.pointing.alt_az_to_vector" title="Link to this definition"></a></dt>
 <dd><p>Compute a pointing vector coordinates (x,y,z) from an alt,az pointing direction</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>alt</strong> (<em>float</em>) – angle in rad</p></li>
 <li><p><strong>az</strong> (<em>float</em>) – angle in rad</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>vector</strong> – [x, y, z]</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><cite>numpy.array</cite></p>
 </dd>
 </dl>
@@ -135,18 +125,18 @@ Alt is taken from ground (towards Z) and between -90 and 90 degrees</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="divtel.pointing.pointG_position">
-<span class="sig-prename descclassname"><span class="pre">divtel.pointing.</span></span><span class="sig-name descname"><span class="pre">pointG_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">barycenter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">div</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alt_mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">az_mean</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.pointing.pointG_position" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">divtel.pointing.</span></span><span class="sig-name descname"><span class="pre">pointG_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">barycenter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">div</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alt_mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">az_mean</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.pointing.pointG_position" title="Link to this definition"></a></dt>
 <dd><p>Compute the position of g_point for the pointing</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>barycenter</strong> (<em>np.array</em><em>(</em><em>[</em><em>x</em><em>,</em><em>y</em><em>,</em><em>z</em><em>]</em><em>)</em>) – position of the barycenter of the array</p></li>
-<li><p><strong>div</strong> (<em>float</em>) – </p></li>
+<li><p><strong>div</strong> (<em>float</em>)</p></li>
 <li><p><strong>alt_mean</strong> (<cite>astropy.Quantity</cite>) – mean pointing altitude in radians from which to diverge</p></li>
 <li><p><strong>az_mean</strong> (<cite>astropy.Quantity</cite>) – mean pointing azimuth in radians from which to diverge</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>Numpy array [Gx, Gy, Gz]</p>
 </dd>
 </dl>
@@ -154,14 +144,14 @@ Alt is taken from ground (towards Z) and between -90 and 90 degrees</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="divtel.pointing.tel_div_pointing">
-<span class="sig-prename descclassname"><span class="pre">divtel.pointing.</span></span><span class="sig-name descname"><span class="pre">tel_div_pointing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tel_position</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g_point</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.pointing.tel_div_pointing" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">divtel.pointing.</span></span><span class="sig-name descname"><span class="pre">tel_div_pointing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tel_position</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g_point</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.pointing.tel_div_pointing" title="Link to this definition"></a></dt>
 <dd><p>Divergent pointing to a point G.
 Update telescope pointing</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>tel_position</strong> (<em>np.array</em><em>(</em><em>[</em><em>x</em><em>, </em><em>y</em><em>, </em><em>z</em><em>]</em><em>)</em>) – telescope coordinates</p></li>
-<li><p><strong>g_point</strong> (<em>numpy.array</em><em>(</em><em>[</em><em>Gx</em><em>, </em><em>Gy</em><em>, </em><em>Gz</em><em>]</em><em>)</em>) – </p></li>
+<li><p><strong>g_point</strong> (<em>numpy.array</em><em>(</em><em>[</em><em>Gx</em><em>, </em><em>Gy</em><em>, </em><em>Gz</em><em>]</em><em>)</em>)</p></li>
 </ul>
 </dd>
 </dl>
@@ -169,38 +159,38 @@ Update telescope pointing</p>
 
 </section>
 <section id="module-divtel.telescope">
-<span id="divtel-telescope-module"></span><h2>divtel.telescope module<a class="headerlink" href="#module-divtel.telescope" title="Permalink to this headline"></a></h2>
+<span id="divtel-telescope-module"></span><h2>divtel.telescope module<a class="headerlink" href="#module-divtel.telescope" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="divtel.telescope.Array">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">divtel.telescope.</span></span><span class="sig-name descname"><span class="pre">Array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">telescope_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.telescope.Array" title="Permalink to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">divtel.telescope.</span></span><span class="sig-name descname"><span class="pre">Array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">telescope_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.telescope.Array" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Describe a telescope array</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>telescope_list</strong> (<em>[</em><a class="reference internal" href="#divtel.telescope.Telescope" title="divtel.telescope.Telescope"><em>Telescope</em></a><em>]</em>) – list of telescopes forming the array</p>
 </dd>
 </dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="divtel.telescope.Array.barycenter">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">barycenter</span></span><a class="headerlink" href="#divtel.telescope.Array.barycenter" title="Permalink to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">barycenter</span></span><a class="headerlink" href="#divtel.telescope.Array.barycenter" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="divtel.telescope.Array.display_2d">
-<span class="sig-name descname"><span class="pre">display_2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">projection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'xy'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.telescope.Array.display_2d" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">display_2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">projection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'xy'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.telescope.Array.display_2d" title="Link to this definition"></a></dt>
 <dd><p>Display the array</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>projection</strong> (<em>str</em>) – ‘xy’, ‘xz’ or ‘yz’</p></li>
-<li><p><strong>ax</strong> (<cite>matplotlib.pyplot.axes</cite>) – </p></li>
-<li><p><strong>kwargs</strong> (args for <cite>pyplot.scatter</cite>) – </p></li>
+<li><p><strong>ax</strong> (<cite>matplotlib.pyplot.axes</cite>)</p></li>
+<li><p><strong>kwargs</strong> (args for <cite>pyplot.scatter</cite>)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>ax</strong></p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><cite>matplotlib.pyplot.axes</cite></p>
 </dd>
 </dl>
@@ -208,18 +198,18 @@ Update telescope pointing</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="divtel.telescope.Array.display_3d">
-<span class="sig-name descname"><span class="pre">display_3d</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#divtel.telescope.Array.display_3d" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">display_3d</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#divtel.telescope.Array.display_3d" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="divtel.telescope.Array.divergent_pointing">
-<span class="sig-name descname"><span class="pre">divergent_pointing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">div</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alt_mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">az_mean</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.telescope.Array.divergent_pointing" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">divergent_pointing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">div</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alt_mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">az_mean</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.telescope.Array.divergent_pointing" title="Link to this definition"></a></dt>
 <dd><p>Divergent pointing given a parameter div.
 Update pointing of all telescopes of the array</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>div</strong> (<em>float between 0 and 1</em>) – </p></li>
+<li><p><strong>div</strong> (<em>float between 0 and 1</em>)</p></li>
 <li><p><strong>alt_mean</strong> (<cite>astropy.Quantity</cite>) – mean alt pointing</p></li>
 <li><p><strong>az_mean</strong> (<cite>astropy.Quantity</cite>) – mean az pointing</p></li>
 </ul>
@@ -229,13 +219,13 @@ Update pointing of all telescopes of the array</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="divtel.telescope.Array.pointing_altaz">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pointing_altaz</span></span><a class="headerlink" href="#divtel.telescope.Array.pointing_altaz" title="Permalink to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">pointing_altaz</span></span><a class="headerlink" href="#divtel.telescope.Array.pointing_altaz" title="Link to this definition"></a></dt>
 <dd><p>All telescopes pointing directions (alt, az) as an array</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>pointing_directions</strong> – 2D array: [[alt1,az1], [alt2, az2], …]</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><cite>astropy.Quantity</cite></p>
 </dd>
 </dl>
@@ -243,13 +233,13 @@ Update pointing of all telescopes of the array</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="divtel.telescope.Array.pointing_vectors">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pointing_vectors</span></span><a class="headerlink" href="#divtel.telescope.Array.pointing_vectors" title="Permalink to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">pointing_vectors</span></span><a class="headerlink" href="#divtel.telescope.Array.pointing_vectors" title="Link to this definition"></a></dt>
 <dd><p>all telescopes pointing vectors as an array</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>pointing_vectors</strong> – 2D numpy array</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><cite>numpy.array</cite></p>
 </dd>
 </dl>
@@ -257,13 +247,13 @@ Update pointing of all telescopes of the array</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="divtel.telescope.Array.positions_array">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">positions_array</span></span><a class="headerlink" href="#divtel.telescope.Array.positions_array" title="Permalink to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">positions_array</span></span><a class="headerlink" href="#divtel.telescope.Array.positions_array" title="Link to this definition"></a></dt>
 <dd><p>All telescopes positions</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>positions_array</strong> – 2D numpy array</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><cite>numpy.array</cite></p>
 </dd>
 </dl>
@@ -273,92 +263,62 @@ Update pointing of all telescopes of the array</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="divtel.telescope.Telescope">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">divtel.telescope.</span></span><span class="sig-name descname"><span class="pre">Telescope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">focal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">camera_radius</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.telescope.Telescope" title="Permalink to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">divtel.telescope.</span></span><span class="sig-name descname"><span class="pre">Telescope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">focal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">camera_radius</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.telescope.Telescope" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Describe a generic telescope</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<cite>astropy.quantity</cite>) – x ground position</p></li>
 <li><p><strong>y</strong> (<cite>astropy.quantity</cite>) – y ground position</p></li>
 <li><p><strong>z</strong> (<cite>astropy.quantity</cite>) – z ground position</p></li>
-<li><p><strong>focal</strong> (<cite>astropy.quantity</cite>) – </p></li>
-<li><p><strong>camera_radius</strong> (<cite>astropy.quantity</cite>) – </p></li>
+<li><p><strong>focal</strong> (<cite>astropy.quantity</cite>)</p></li>
+<li><p><strong>camera_radius</strong> (<cite>astropy.quantity</cite>)</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="divtel.telescope.Telescope.fov">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fov</span></span><a class="headerlink" href="#divtel.telescope.Telescope.fov" title="Permalink to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">fov</span></span><a class="headerlink" href="#divtel.telescope.Telescope.fov" title="Link to this definition"></a></dt>
 <dd><p>Area of the field of view in rad**2</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="divtel.telescope.Telescope.point_to_altaz">
-<span class="sig-name descname"><span class="pre">point_to_altaz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">az</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.telescope.Telescope.point_to_altaz" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">point_to_altaz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">az</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.telescope.Telescope.point_to_altaz" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="divtel.telescope.Telescope.point_to_object">
-<span class="sig-name descname"><span class="pre">point_to_object</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.telescope.Telescope.point_to_object" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">point_to_object</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.telescope.Telescope.point_to_object" title="Link to this definition"></a></dt>
 <dd><p>Point to object.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>object</strong> (<em>numpy.array</em><em>(</em><em>[</em><em>x</em><em>, </em><em>y</em><em>, </em><em>z</em><em>]</em><em>)</em>) – </p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>object</strong> (<em>numpy.array</em><em>(</em><em>[</em><em>x</em><em>, </em><em>y</em><em>, </em><em>z</em><em>]</em><em>)</em>)</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="divtel.telescope.Telescope.pointing_vector">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pointing_vector</span></span><a class="headerlink" href="#divtel.telescope.Telescope.pointing_vector" title="Permalink to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">pointing_vector</span></span><a class="headerlink" href="#divtel.telescope.Telescope.pointing_vector" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="divtel.telescope.Telescope.position">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">position</span></span><a class="headerlink" href="#divtel.telescope.Telescope.position" title="Permalink to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">position</span></span><a class="headerlink" href="#divtel.telescope.Telescope.position" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="divtel.telescope.Telescope.zenith">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">zenith</span></span><a class="headerlink" href="#divtel.telescope.Telescope.zenith" title="Permalink to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">zenith</span></span><a class="headerlink" href="#divtel.telescope.Telescope.zenith" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 </section>
-<section id="module-divtel.visualization">
-<span id="divtel-visualization-module"></span><h2>divtel.visualization module<a class="headerlink" href="#module-divtel.visualization" title="Permalink to this headline"></a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="divtel.visualization.display_array_pointing_in_sky">
-<span class="sig-prename descclassname"><span class="pre">divtel.visualization.</span></span><span class="sig-name descname"><span class="pre">display_array_pointing_in_sky</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.visualization.display_array_pointing_in_sky" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="divtel.visualization.polar_stuff">
-<span class="sig-prename descclassname"><span class="pre">divtel.visualization.</span></span><span class="sig-name descname"><span class="pre">polar_stuff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">telescope</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.visualization.polar_stuff" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="divtel.visualization.sky_fov">
-<span class="sig-prename descclassname"><span class="pre">divtel.visualization.</span></span><span class="sig-name descname"><span class="pre">sky_fov</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">telescope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.visualization.sky_fov" title="Permalink to this definition"></a></dt>
-<dd><p>Display the telescope FoV in the sky</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>telescope</strong> (<cite>Telescope</cite>) – </p></li>
-<li><p><strong>ax</strong> (<cite>matplotlib.pyplot.axes</cite>) – </p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>ax</strong></p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><cite>matplotlib.pyplot.axes</cite></p>
-</dd>
-</dl>
-</dd></dl>
-
+<section id="divtel-visualization-module">
+<h2>divtel.visualization module<a class="headerlink" href="#divtel-visualization-module" title="Link to this heading"></a></h2>
 </section>
 </section>
 
