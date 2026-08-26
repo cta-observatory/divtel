@@ -1,0 +1,96 @@
+[build-system]
+requires = ["setuptools>=77", "setuptools_scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "divtel"
+description = "Divergent pointing mode for Imaging Atmospheric Cherenkov Telescopes arrays"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.10"
+dynamic = ["version"]
+
+authors = [
+    { name = "Thomas Vuillaume", email = "thomas.vuillaume@lapp.in2p3.fr" },
+    { name = "Alice Donini", email = "alice.donini@inaf.it" },
+    { name = "Thomas Gasparetto" },
+]
+maintainers = [
+    { name = "Thomas Vuillaume", email = "thomas.vuillaume@lapp.in2p3.fr" },
+]
+
+keywords = [
+    "astronomy",
+    "astrophysics",
+    "cherenkov",
+    "cta",
+    "iact",
+    "divergent-pointing",
+]
+
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Astronomy",
+]
+
+dependencies = [
+    "astropy>=5.0",
+    "matplotlib>=3.6",
+    "numpy>=1.23",
+]
+
+[project.optional-dependencies]
+tests = [
+    "pytest>=7.0",
+]
+examples = [
+    "ipympl>=0.9",
+    "ipywidgets>=8.0",
+    "jupyterlab>=4.0",
+]
+docs = [
+    "myst-parser>=2.0",
+    "nbsphinx>=0.9",
+    "sphinx>=7.0",
+    "sphinx-argparse>=0.4",
+    "sphinx-rtd-theme>=2.0",
+    "ipykernel>=6.0",
+]
+dev = [
+    "divtel[tests,examples,docs]",
+    "build>=1.0",
+    "ruff>=0.6",
+]
+
+[project.urls]
+Homepage = "https://github.com/cta-observatory/divtel"
+Documentation = "https://cta-observatory.github.io/divtel/"
+Repository = "https://github.com/cta-observatory/divtel.git"
+Issues = "https://github.com/cta-observatory/divtel/issues"
+
+[tool.setuptools.packages.find]
+include = ["divtel*"]
+
+[tool.setuptools.package-data]
+divtel = ["data/*.txt"]
+
+[tool.setuptools_scm]
+version_file = "divtel/_version.py"
+
+[tool.pytest.ini_options]
+testpaths = ["divtel"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]

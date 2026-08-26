@@ -15,11 +15,11 @@
         "Python 3"
     ],
     "softwareRequirements": [
-        "https://github.com/cta-observatory/divtel/blob/master/setup.py"
+        "https://github.com/cta-observatory/divtel/blob/master/pyproject.toml"
     ],
     "maintainer": {
           "@type": "Person",
-          "@id": "https://orcid.org/ 0000-0002-5686-2078",
+          "@id": "https://orcid.org/0000-0002-5686-2078",
           "givenName": "Thomas",
           "familyName": "Vuillaume",
           "email": "thomas.vuillaume@lapp.in2p3.fr",
@@ -31,10 +31,10 @@
     "author": [
         {
             "@type": "Person",
-            "@id": "https://orcid.org/ 0000-0002-5686-2078",
+            "@id": "https://orcid.org/0000-0002-5686-2078",
             "givenName": "Thomas",
             "familyName": "Vuillaume",
-            "email": "thomas.vuillaume@lapp.in2p3p.fr",
+            "email": "thomas.vuillaume@lapp.in2p3.fr",
             "affiliation": {
                 "@type": "Organization",
                 "name": "Univ. Savoie Mont-Blanc, CNRS, LAPP"

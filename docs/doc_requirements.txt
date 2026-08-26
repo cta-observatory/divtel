@@ -1,7 +1,9 @@
-sphinx>=3
-nbsphinx
-sphinx-rtd-theme
-myst-parser
-ipykernel
-sphinx-argparse
-pygments==2.7.4
+# Mirrors the "docs" extra in pyproject.toml.
+# Consumed by the sphinx-notes/pages action in .github/workflows/doc.yml.
+sphinx>=7.0
+sphinx-rtd-theme>=2.0
+sphinx-argparse>=0.4
+myst-parser>=2.0
+nbsphinx>=0.9
+ipykernel>=6.0
+pygments>=2.20
