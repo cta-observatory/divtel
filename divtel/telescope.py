@@ -1,7 +1,6 @@
 import numpy as np
 import astropy.units as u
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 from . import pointing
 
 
@@ -235,8 +234,8 @@ class Array:
         yb = scale * max_range * np.mgrid[-1:2:2, -1:2:2, -1:2:2][1].flatten() + scale * (y.max() + y.min())
         zb = scale * max_range * np.mgrid[-0.01:2:2, -0.01:2:2, -0.01:2:2][2].flatten() + scale * (z.max() + z.min())
         # Comment or uncomment following both lines to test the fake bounding box:
-        for xb, yb, zb in zip(xb, yb, zb):
-            ax.plot([xb], [yb], [zb], 'w')
+        for x_arrow, y_arrow, z_arrow in zip(xb, yb, zb):
+            ax.plot([x_arrow], [y_arrow], [z_arrow], 'w')
 
         ax.quiver(x, y, z,
                   self.pointing_vectors[:, 0],
