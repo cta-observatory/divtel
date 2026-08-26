@@ -26,6 +26,9 @@ jobs:
         run: |
           sudo apt-get update && sudo apt-get install -y pandoc
           python -m pip install --upgrade pip
+          # `marimo export html-wasm` shells out to uv to resolve the
+          # notebook's imports, and refuses to run without it.
+          pip install uv
           pip install ".[examples]" --group docs
 
       - name: Build docs

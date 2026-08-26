@@ -132,11 +132,28 @@ def _export_marimo(app, exception):
     if outdir.exists():
         shutil.rmtree(outdir)
 
-    subprocess.run(
+    # marimo shells out to uv to resolve the notebook's imports, so a machine
+    # without it fails here rather than at install time.
+    if not shutil.which('uv'):
+        raise RuntimeError(
+            'uv is required to export the marimo notebook to WebAssembly; '
+            'install it with `pip install uv`'
+        )
+
+    export = subprocess.run(
         [sys.executable, '-m', 'marimo', 'export', 'html-wasm',
          str(MARIMO_NOTEBOOK), '-o', str(outdir), '--mode', 'run'],
-        check=True,
+        capture_output=True,
+        text=True,
     )
+    if export.returncode != 0:
+        # Sphinx reports only the exit status of a failed handler, which says
+        # nothing about what marimo objected to. Carry its output into the
+        # exception so the build log explains itself.
+        raise RuntimeError(
+            f'marimo export failed (exit {export.returncode}):\n'
+            f'{export.stdout}\n{export.stderr}'
+        )
 
     # marimo seeds its exports with editor scaffolding; it has no business
     # being published as part of the documentation.
