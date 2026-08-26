@@ -13,7 +13,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          # setuptools_scm needs tags; the gh-pages push needs the history
+          # setuptools_scm needs tags to derive the version, which ends up in
+          # the wheel filename the exported notebook installs.
           fetch-depth: 0
 
       - uses: actions/setup-python@v5
@@ -21,20 +22,21 @@ jobs:
           python-version: "3.12"
           cache: pip
 
-      - name: Installing requirements
-        shell: bash -l {0}
+      - name: Install requirements
         run: |
           sudo apt-get update && sudo apt-get install -y pandoc
           python -m pip install --upgrade pip
           pip install ".[examples]" --group docs
 
-      - name: Build and Commit
-        uses: sphinx-notes/pages@v2
-        with:
-          requirements_path: docs/doc_requirements.txt
+      - name: Build docs
+        # conf.py executes the notebooks, then exports the marimo notebook to
+        # WebAssembly and builds a divtel wheel for it, so the build needs the
+        # package and the docs group installed in *this* environment.
+        run: sphinx-build -b html docs docs/_build/html
 
-      - name: Push changes
-        uses: ad-m/github-push-action@master
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: gh-pages
+          publish_dir: docs/_build/html
+          publish_branch: gh-pages
