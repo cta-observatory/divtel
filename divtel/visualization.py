@@ -37,9 +37,9 @@ def display_hyper_fov(array, ax=None, m_cut=1, cmap="viridis", show_area=True):
 
     Notes
     -----
-    The sky is drawn as a flat (azimuth, altitude) plane, so areas are
-    increasingly overestimated as the array points higher -- see
-    `Array.hyper_fov`.
+    Drawn in an equal-area projection centred on the array's mean pointing, so
+    the axes are degrees of offset from that direction and the areas are true
+    solid angles -- see `Array.hyper_fov`.
     """
     from matplotlib.collections import PatchCollection
     from matplotlib.colors import BoundaryNorm
@@ -80,8 +80,8 @@ def display_hyper_fov(array, ax=None, m_cut=1, cmap="viridis", show_area=True):
 
     ax.autoscale_view()
     ax.set_aspect("equal", adjustable="datalim")
-    ax.set_xlabel("azimuth [deg]")
-    ax.set_ylabel("altitude [deg]")
+    ax.set_xlabel("offset from array pointing [deg]")
+    ax.set_ylabel("offset from array pointing [deg]")
     ax.margins(0.08)
 
     colourbar = ax.figure.colorbar(collection, ax=ax,
