@@ -55,6 +55,39 @@ pytest
 > written to `divtel/_version.py`; importing an uninstalled source tree reports
 > `__version__ == "0.0.0"`.
 
+## 📚 Documentation
+
+The docs are published to <https://cta-observatory.github.io/divtel/>. To build
+them locally:
+
+```
+uv sync --group docs --extra examples
+sphinx-build -b html docs docs/_build/html
+```
+
+GitHub Pages serves static files only, so it cannot preview the result:
+`file://` will not work, and the interactive demo needs a real HTTP origin.
+Serve the build instead:
+
+```
+python -m http.server 8000 -d docs/_build/html
+```
+
+### The interactive demo
+
+`examples/marimo/interactive_display.py` is a [marimo](https://marimo.io)
+notebook. Sphinx exports it to WebAssembly during the build, so the published
+page ships its own Python interpreter and runs entirely in the reader's
+browser — sliders included, with no server and nothing to install.
+
+
+To work on the demo:
+
+```
+marimo edit examples/marimo/interactive_display.py
+```
+
+
 ## 🛡 License
 
 [![License](https://img.shields.io/github/license/cta-observatory/divtel?style=flat)](https://github.com/cta-observatory/divtel/blob/master/LICENSE)

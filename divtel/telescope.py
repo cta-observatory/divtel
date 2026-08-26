@@ -214,11 +214,12 @@ class Array:
         ax.set_ylabel(ylabel)
         ax.set_xlabel(xlabel)
         ax.grid('on')
+        # Pad through the margins rather than by setting limits outright:
+        # `axis('equal')` keeps the axes box and stretches the data limits to
+        # square up the aspect, so pinning both limits afterwards leaves it
+        # nothing to stretch and it drops the y limits with a warning.
+        ax.margins(0.25)
         ax.axis('equal')
-        xlim = ax.get_xlim()
-        ylim = ax.get_ylim()
-        ax.set_xlim(xlim[0] - 0.25 * np.abs(xlim[0]), xlim[1] + 0.25 * np.abs(xlim[1]))
-        ax.set_ylim(ylim[0] - 0.25 * np.abs(ylim[0]), ylim[1] + 0.25 * np.abs(ylim[1]))
         return ax
 
     def display_3d(self):
