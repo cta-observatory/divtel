@@ -80,7 +80,9 @@ class Telescope:
         """
         GT = np.sqrt(((self.position - object) ** 2).sum())
         alt_tel = np.arcsin((-self.z.value + object[2]) / GT)
-        az_tel = np.arctan2((- self.y.value + object[1]), (- self.x.value + object[0]))
+        # Az runs clock-wise from X towards Y (see divtel.pointing), so the
+        # Y offset enters negated: az = arctan2(-dy, dx).
+        az_tel = np.arctan2(self.y.value - object[1], object[0] - self.x.value)
         self.point_to_altaz(alt_tel * u.rad, az_tel * u.rad)
 
     @property
