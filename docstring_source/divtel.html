@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Examples" href="../examples.html"><link rel="prev" title="divtel API Documentation" href="../docstring.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>divtel package - divtel 0.2.dev35+ge76bb238b documentation</title>
+        <title>divtel package - divtel 0.2.dev38+g25bf7043e documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">divtel 0.2.dev35+ge76bb238b documentation</div></a>
+      <a href="../index.html"><div class="brand">divtel 0.2.dev38+g25bf7043e documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -273,14 +273,14 @@ Alt is taken from ground (towards Z) and between -90 and 90 degrees</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>barycenter</strong> (<em>np.array</em><em>(</em><em>[</em><em>x</em><em>,</em><em>y</em><em>,</em><em>z</em><em>]</em><em>)</em>) – position of the barycenter of the array</p></li>
+<li><p><strong>barycenter</strong> (<cite>astropy.Quantity</cite> or np.array([x,y,z])) – position of the barycenter of the array; a plain array is read as metres</p></li>
 <li><p><strong>div</strong> (<em>float</em>)</p></li>
 <li><p><strong>alt_mean</strong> (<cite>astropy.Quantity</cite>) – mean pointing altitude in radians from which to diverge</p></li>
 <li><p><strong>az_mean</strong> (<cite>astropy.Quantity</cite>) – mean pointing azimuth in radians from which to diverge</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>Numpy array [Gx, Gy, Gz]</p>
+<dd class="field-even"><p><cite>astropy.Quantity</cite> [Gx, Gy, Gz], in metres</p>
 </dd>
 </dl>
 </dd></dl>
@@ -293,9 +293,15 @@ Update telescope pointing</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>tel_position</strong> (<em>np.array</em><em>(</em><em>[</em><em>x</em><em>, </em><em>y</em><em>, </em><em>z</em><em>]</em><em>)</em>) – telescope coordinates</p></li>
-<li><p><strong>g_point</strong> (<em>numpy.array</em><em>(</em><em>[</em><em>Gx</em><em>, </em><em>Gy</em><em>, </em><em>Gz</em><em>]</em><em>)</em>)</p></li>
+<li><p><strong>tel_position</strong> (<cite>astropy.Quantity</cite> or np.array([x, y, z])) – telescope coordinates; a plain array is read as metres</p></li>
+<li><p><strong>g_point</strong> (<cite>astropy.Quantity</cite> or numpy.array([Gx, Gy, Gz]))</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>(alt, az)</strong> – pointing direction, in radians</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple of <cite>astropy.Quantity</cite></p>
 </dd>
 </dl>
 </dd></dl>
@@ -316,7 +322,16 @@ Update telescope pointing</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="divtel.telescope.Array.barycenter">
 <span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">barycenter</span></span><a class="headerlink" href="#divtel.telescope.Array.barycenter" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Barycenter of the array</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>[x, y, z] in metres</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><cite>astropy.Quantity</cite></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="divtel.telescope.Array.display_2d">
@@ -356,6 +371,9 @@ Update pointing of all telescopes of the array</p>
 <li><p><strong>alt_mean</strong> (<cite>astropy.Quantity</cite>) – mean alt pointing</p></li>
 <li><p><strong>az_mean</strong> (<cite>astropy.Quantity</cite>) – mean az pointing</p></li>
 </ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – if div is outside [0, 1]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -433,10 +451,10 @@ equal-area projection, so polygon areas are in deg**2.</p></li>
 <dd><p>All telescopes positions</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>positions_array</strong> – 2D numpy array</p>
+<dd class="field-odd"><p><strong>positions_array</strong> – 2D array of [x, y, z] in metres</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><cite>numpy.array</cite></p>
+<dd class="field-even"><p><cite>astropy.Quantity</cite></p>
 </dd>
 </dl>
 </dd></dl>
@@ -490,7 +508,7 @@ equal-area projection, so polygon areas are in deg**2.</p></li>
 <dd><p>Point to object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>object</strong> (<em>numpy.array</em><em>(</em><em>[</em><em>x</em><em>, </em><em>y</em><em>, </em><em>z</em><em>]</em><em>)</em>)</p>
+<dd class="field-odd"><p><strong>object</strong> (<cite>astropy.Quantity</cite> or numpy.array([x, y, z])) – position of the object; a plain array is read as metres</p>
 </dd>
 </dl>
 </dd></dl>
@@ -503,7 +521,16 @@ equal-area projection, so polygon areas are in deg**2.</p></li>
 <dl class="py property">
 <dt class="sig sig-object py" id="divtel.telescope.Telescope.position">
 <span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">position</span></span><a class="headerlink" href="#divtel.telescope.Telescope.position" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Ground position of the telescope</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>[x, y, z] in metres</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><cite>astropy.Quantity</cite></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="divtel.telescope.Telescope.zenith">
@@ -687,7 +714,7 @@ solid angles – see <cite>Array.hyper_fov</cite>.</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=ce27eec2"></script>
+</div><script src="../_static/documentation_options.js?v=555f4481"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
