@@ -48,7 +48,23 @@ class Telescope:
         """
         Area of the field of view in rad**2
         """
-        return u.Quantity(np.pi * (self.camera_radius / self.focal)**2, u.rad**2)
+        # camera_radius / focal is dimensionless, so it has to be stripped of
+        # its unit before being declared an angle -- astropy will not convert
+        # dimensionless to rad**2 on its own.
+        half_angle = (self.camera_radius / self.focal).to_value(u.dimensionless_unscaled)
+        return u.Quantity(np.pi * half_angle**2, u.rad**2)
+
+    @property
+    def fov_radius(self):
+        """
+        Angular radius of the field of view
+
+        Returns
+        -------
+        `astropy.Quantity`
+            half-angle subtended by the camera, in radians
+        """
+        return u.Quantity(np.arctan2(self.camera_radius, self.focal), u.rad)
 
     @property
     def position(self):
@@ -149,6 +165,76 @@ class Array:
             for tel in self.telescopes:
                 alt_tel, az_tel = pointing.tel_div_pointing(tel.position, g_point)
                 tel.point_to_altaz(alt_tel*u.rad, az_tel*u.rad)
+
+    def hyper_fov(self, m_cut=1):
+        """
+        Hyper field of view: the sky area covered by the array's cameras.
+
+        Each telescope sees a disc on the sky. Pointing divergently spreads
+        those discs out, trading depth of coverage for width: where several
+        discs overlap a shower is seen by several telescopes and can be
+        reconstructed stereoscopically, where only one covers the sky it
+        cannot. The union of the discs is cut into the patches formed by their
+        boundaries, and each patch is labelled with its multiplicity -- how
+        many telescopes see it.
+
+        The discs are treated as circles in the (azimuth, altitude) plane, as
+        in the original implementation. That plane is not the sky: azimuth
+        converges towards the zenith, so areas here are increasingly
+        overestimated as the array points higher. Compare arrays at equal
+        altitude rather than reading an absolute solid angle off this.
+
+        Parameters
+        ----------
+        m_cut: int
+            only count patches seen by at least this many telescopes.
+            The default of 1 measures the whole covered area; 2 measures the
+            part that can be reconstructed stereoscopically.
+
+        Returns
+        -------
+        area: `astropy.Quantity`
+            covered area in deg**2, counting only patches above `m_cut`
+        patches: list of (`shapely.Polygon`, int)
+            each patch and the number of telescopes seeing it, for plotting
+
+        Examples
+        --------
+        With every telescope pointing the same way the discs coincide, so the
+        hyper FoV is one camera's worth of sky seen by the whole array; fully
+        divergent, it is `n` cameras' worth seen singly.
+        """
+        from shapely.geometry import LineString, Point
+        from shapely.ops import polygonize, unary_union
+
+        alt = np.array([tel.alt.to_value(u.deg) for tel in self.telescopes])
+        az = np.array([tel.az.to_value(u.deg) for tel in self.telescopes])
+        radius = np.array([tel.fov_radius.to_value(u.deg) for tel in self.telescopes])
+
+        # Azimuth wraps. If the array straddles the 0/360 seam, unwrap it onto
+        # a continuous interval so the discs stay adjacent instead of landing
+        # at opposite ends of the plane.
+        if az.max() - az.min() > 180:
+            az = np.where(az < 180, az, az - 360)
+
+        # quad_segs raises the polygon resolution of the discs; the default of
+        # 16 segments per quarter circle costs ~0.2% of each area.
+        discs = [Point(a, h).buffer(r, quad_segs=64) for a, h, r in zip(az, alt, radius)]
+
+        # Cutting the union of the *boundaries* gives the arrangement: every
+        # region bounded by disc edges, each of which lies wholly inside or
+        # wholly outside each disc.
+        boundaries = unary_union([LineString(d.exterior.coords) for d in discs])
+        patches = list(polygonize(boundaries))
+
+        labelled = []
+        for patch in patches:
+            probe = patch.representative_point()
+            multiplicity = sum(1 for disc in discs if disc.contains(probe))
+            labelled.append((patch, multiplicity))
+
+        area = sum(p.area for p, m in labelled if m >= m_cut)
+        return u.Quantity(area, u.deg ** 2), labelled
 
     def display_2d(self, projection='xy', ax=None, **kwargs):
         """

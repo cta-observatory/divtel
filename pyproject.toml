@@ -45,6 +45,9 @@ dependencies = [
     "astropy>=5.0",
     "matplotlib>=3.6",
     "numpy>=1.23",
+    # Polygon arithmetic for the hyper field of view: the overlapping camera
+    # footprints are cut into patches and their areas summed.
+    "shapely>=2.0",
 ]
 
 # Consumer-facing optional feature: published in the wheel metadata, so
