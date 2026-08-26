@@ -37,12 +37,13 @@ def _():
     import matplotlib.pyplot as plt
 
     from divtel.telescope import Telescope, Array
+    from divtel.visualization import display_hyper_fov
 
     # Render figures as SVG. marimo's PNG path stamps an explicit pixel width
     # on the image -- figsize x 100 -- which overflows a frame narrower than
     # the figure. SVG carries no such width, so it scales to its container.
     plt.rcParams["savefig.format"] = "svg"
-    return Array, Telescope, mo, np, plt, u
+    return Array, Telescope, display_hyper_fov, mo, np, plt, u
 
 
 @app.cell(hide_code=True)
@@ -60,7 +61,7 @@ def _(mo):
 @app.cell
 def _(mo):
     div = mo.ui.slider(
-        0, 1, step=0.01, value=0.3, label="divergence", show_value=True,
+        0, 1, step=0.005, value=0.02, label="divergence", show_value=True,
         full_width=True,
     )
     alt = mo.ui.slider(
@@ -115,17 +116,20 @@ def _(plt, pointed):
 
 
 @app.cell(hide_code=True)
-def _(np, plt, pointed):
-    def _plot3d(array):
-        fig = plt.figure(figsize=(5, 4))
-        ax = fig.add_subplot(111, projection="3d")
+def _(display_hyper_fov, np, plt, pointed):
+    def _plot_sky(array):
+        # One figure rather than two cells: the demo is embedded in a frame of
+        # fixed height, so the panels have to share a row to stay in view.
+        fig = plt.figure(figsize=(11, 4.2), layout="constrained")
+        ax3d = fig.add_subplot(1, 2, 1, projection="3d")
+        ax_fov = fig.add_subplot(1, 2, 2)
 
         positions = array.positions_array
         pointing_vectors = array.pointing_vectors
         x, y, z = positions[:, 0], positions[:, 1], positions[:, 2]
         span = np.ptp(positions, axis=0).max()
 
-        ax.quiver(
+        ax3d.quiver(
             x, y, z,
             pointing_vectors[:, 0],
             pointing_vectors[:, 1],
@@ -133,17 +137,19 @@ def _(np, plt, pointed):
             length=span,
             color="black",
         )
-        ax.scatter(x, y, z, color="tab:blue", s=25)
+        ax3d.scatter(x, y, z, color="tab:blue", s=25)
+        ax3d.set_xlim(x.min() - span, x.max() + span)
+        ax3d.set_ylim(y.min() - span, y.max() + span)
+        ax3d.set_zlim(0, 2 * span)
+        ax3d.set_xlabel("x [m]")
+        ax3d.set_ylabel("y [m]")
+        ax3d.set_zlabel("z [m]")
+        ax3d.set_title("pointing on the ground")
 
-        ax.set_xlim(x.min() - span, x.max() + span)
-        ax.set_ylim(y.min() - span, y.max() + span)
-        ax.set_zlim(0, 2 * span)
-        ax.set_xlabel("x [m]")
-        ax.set_ylabel("y [m]")
-        ax.set_zlabel("z [m]")
+        display_hyper_fov(array, ax=ax_fov, m_cut=2)
         return fig
 
-    _plot3d(pointed)
+    _plot_sky(pointed)
     return
 
 
