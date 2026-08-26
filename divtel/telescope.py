@@ -158,7 +158,19 @@ class Array:
             mean alt pointing
         az_mean: `astropy.Quantity`
             mean az pointing
+
+        Raises
+        ------
+        ValueError
+            if div is outside [0, 1]
         """
+        # Outside [0, 1] the geometry stops meaning anything: div > 1 makes
+        # arcsin return nan (a RuntimeWarning at most), and div < 0 puts G in
+        # front of the array rather than behind it, so every telescope ends up
+        # pointing below the horizon while the caller asked for alt_mean.
+        if not 0 <= div <= 1:
+            raise ValueError(f"div must be between 0 and 1, got {div}")
+
         if div == 0:
             for tel in self.telescopes:
                 tel.point_to_altaz(alt_mean, az_mean)
