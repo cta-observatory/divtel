@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Examples" href="../examples.html"><link rel="prev" title="divtel API Documentation" href="../docstring.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>divtel package - divtel 0.2.dev27+g8fb791226 documentation</title>
+        <title>divtel package - divtel 0.2.dev31+g16b0b4ec2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">divtel 0.2.dev27+g8fb791226 documentation</div></a>
+      <a href="../index.html"><div class="brand">divtel 0.2.dev31+g16b0b4ec2 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -360,6 +360,42 @@ Update pointing of all telescopes of the array</p>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="divtel.telescope.Array.hyper_fov">
+<span class="sig-name descname"><span class="pre">hyper_fov</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m_cut</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.telescope.Array.hyper_fov" title="Link to this definition">¶</a></dt>
+<dd><p>Hyper field of view: the sky area covered by the array’s cameras.</p>
+<p>Each telescope sees a disc on the sky. Pointing divergently spreads
+those discs out, trading depth of coverage for width: where several
+discs overlap a shower is seen by several telescopes and can be
+reconstructed stereoscopically, where only one covers the sky it
+cannot. The union of the discs is cut into the patches formed by their
+boundaries, and each patch is labelled with its multiplicity – how
+many telescopes see it.</p>
+<p>The discs are treated as circles in the (azimuth, altitude) plane, as
+in the original implementation. That plane is not the sky: azimuth
+converges towards the zenith, so areas here are increasingly
+overestimated as the array points higher. Compare arrays at equal
+altitude rather than reading an absolute solid angle off this.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>m_cut</strong> (<em>int</em>) – only count patches seen by at least this many telescopes.
+The default of 1 measures the whole covered area; 2 measures the
+part that can be reconstructed stereoscopically.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>area</strong> (<cite>astropy.Quantity</cite>) – covered area in deg**2, counting only patches above <cite>m_cut</cite></p></li>
+<li><p><strong>patches</strong> (list of (<cite>shapely.Polygon</cite>, int)) – each patch and the number of telescopes seeing it, for plotting</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>With every telescope pointing the same way the discs coincide, so the
+hyper FoV is one camera’s worth of sky seen by the whole array; fully
+divergent, it is <cite>n</cite> cameras’ worth seen singly.</p>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="divtel.telescope.Array.pointing_altaz">
 <span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">pointing_altaz</span></span><a class="headerlink" href="#divtel.telescope.Array.pointing_altaz" title="Link to this definition">¶</a></dt>
@@ -426,6 +462,20 @@ Update pointing of all telescopes of the array</p>
 <dd><p>Area of the field of view in rad**2</p>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="divtel.telescope.Telescope.fov_radius">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">fov_radius</span></span><a class="headerlink" href="#divtel.telescope.Telescope.fov_radius" title="Link to this definition">¶</a></dt>
+<dd><p>Angular radius of the field of view</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>half-angle subtended by the camera, in radians</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><cite>astropy.Quantity</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="divtel.telescope.Telescope.point_to_altaz">
 <span class="sig-name descname"><span class="pre">point_to_altaz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">az</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.telescope.Telescope.point_to_altaz" title="Link to this definition">¶</a></dt>
@@ -464,8 +514,43 @@ Update pointing of all telescopes of the array</p>
 <span id="divtel-visualization-module"></span><h2>divtel.visualization module<a class="headerlink" href="#module-divtel.visualization" title="Link to this heading">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="divtel.visualization.display_array_pointing_in_sky">
-<span class="sig-prename descclassname"><span class="pre">divtel.visualization.</span></span><span class="sig-name descname"><span class="pre">display_array_pointing_in_sky</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.visualization.display_array_pointing_in_sky" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">divtel.visualization.</span></span><span class="sig-name descname"><span class="pre">display_array_pointing_in_sky</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.visualization.display_array_pointing_in_sky" title="Link to this definition">¶</a></dt>
+<dd><p>Deprecated alias for <cite>display_hyper_fov</cite>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="divtel.visualization.display_hyper_fov">
+<span class="sig-prename descclassname"><span class="pre">divtel.visualization.</span></span><span class="sig-name descname"><span class="pre">display_hyper_fov</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_cut</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'viridis'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.visualization.display_hyper_fov" title="Link to this definition">¶</a></dt>
+<dd><p>Display the array’s hyper field of view on the sky.</p>
+<p>Each telescope sees a disc; divergent pointing spreads those discs out,
+widening the sky the array covers at the cost of how many telescopes see
+any given part of it. This draws the union of the discs, shaded by
+multiplicity – the number of telescopes seeing each patch. Patches seen by
+two or more can be reconstructed stereoscopically; patches seen by one
+cannot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<cite>Array</cite>)</p></li>
+<li><p><strong>ax</strong> (<cite>matplotlib.pyplot.axes</cite>, optional)</p></li>
+<li><p><strong>m_cut</strong> (<em>int</em>) – multiplicity counted towards the area reported in the title; patches
+below it are still drawn, faded.</p></li>
+<li><p><strong>cmap</strong> (<em>str</em>) – colormap used to shade multiplicity</p></li>
+<li><p><strong>show_area</strong> (<em>bool</em>) – title the axes with the covered area</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ax</strong></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>matplotlib.pyplot.axes</cite></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The sky is drawn as a flat (azimuth, altitude) plane, so areas are
+increasingly overestimated as the array points higher – see
+<cite>Array.hyper_fov</cite>.</p>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="divtel.visualization.polar_stuff">
@@ -563,6 +648,7 @@ Update pointing of all telescopes of the array</p>
 <li><a class="reference internal" href="#divtel.telescope.Array.display_2d"><code class="docutils literal notranslate"><span class="pre">Array.display_2d()</span></code></a></li>
 <li><a class="reference internal" href="#divtel.telescope.Array.display_3d"><code class="docutils literal notranslate"><span class="pre">Array.display_3d()</span></code></a></li>
 <li><a class="reference internal" href="#divtel.telescope.Array.divergent_pointing"><code class="docutils literal notranslate"><span class="pre">Array.divergent_pointing()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.telescope.Array.hyper_fov"><code class="docutils literal notranslate"><span class="pre">Array.hyper_fov()</span></code></a></li>
 <li><a class="reference internal" href="#divtel.telescope.Array.pointing_altaz"><code class="docutils literal notranslate"><span class="pre">Array.pointing_altaz</span></code></a></li>
 <li><a class="reference internal" href="#divtel.telescope.Array.pointing_vectors"><code class="docutils literal notranslate"><span class="pre">Array.pointing_vectors</span></code></a></li>
 <li><a class="reference internal" href="#divtel.telescope.Array.positions_array"><code class="docutils literal notranslate"><span class="pre">Array.positions_array</span></code></a></li>
@@ -570,6 +656,7 @@ Update pointing of all telescopes of the array</p>
 </li>
 <li><a class="reference internal" href="#divtel.telescope.Telescope"><code class="docutils literal notranslate"><span class="pre">Telescope</span></code></a><ul>
 <li><a class="reference internal" href="#divtel.telescope.Telescope.fov"><code class="docutils literal notranslate"><span class="pre">Telescope.fov</span></code></a></li>
+<li><a class="reference internal" href="#divtel.telescope.Telescope.fov_radius"><code class="docutils literal notranslate"><span class="pre">Telescope.fov_radius</span></code></a></li>
 <li><a class="reference internal" href="#divtel.telescope.Telescope.point_to_altaz"><code class="docutils literal notranslate"><span class="pre">Telescope.point_to_altaz()</span></code></a></li>
 <li><a class="reference internal" href="#divtel.telescope.Telescope.point_to_object"><code class="docutils literal notranslate"><span class="pre">Telescope.point_to_object()</span></code></a></li>
 <li><a class="reference internal" href="#divtel.telescope.Telescope.pointing_vector"><code class="docutils literal notranslate"><span class="pre">Telescope.pointing_vector</span></code></a></li>
@@ -581,6 +668,7 @@ Update pointing of all telescopes of the array</p>
 </li>
 <li><a class="reference internal" href="#module-divtel.visualization">divtel.visualization module</a><ul>
 <li><a class="reference internal" href="#divtel.visualization.display_array_pointing_in_sky"><code class="docutils literal notranslate"><span class="pre">display_array_pointing_in_sky()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.visualization.display_hyper_fov"><code class="docutils literal notranslate"><span class="pre">display_hyper_fov()</span></code></a></li>
 <li><a class="reference internal" href="#divtel.visualization.polar_stuff"><code class="docutils literal notranslate"><span class="pre">polar_stuff()</span></code></a></li>
 <li><a class="reference internal" href="#divtel.visualization.sky_fov"><code class="docutils literal notranslate"><span class="pre">sky_fov()</span></code></a></li>
 </ul>
@@ -596,7 +684,7 @@ Update pointing of all telescopes of the array</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=32c99f1f"></script>
+</div><script src="../_static/documentation_options.js?v=c49d3a9d"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
