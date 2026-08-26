@@ -80,6 +80,10 @@ notebook. Sphinx exports it to WebAssembly during the build, so the published
 page ships its own Python interpreter and runs entirely in the reader's
 browser — sliders included, with no server and nothing to install.
 
+That export shells out to [uv](https://docs.astral.sh/uv/), so `uv` must be on
+your `PATH` to build the docs — `uv sync` above already provides it, but a
+pip-based checkout needs `pip install uv`.
+
 
 To work on the demo:
 
