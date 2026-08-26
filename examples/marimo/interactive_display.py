@@ -47,19 +47,6 @@ def _():
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md("""
-    # Divergent pointing
-
-    In divergent mode each telescope is offset from the array's mean
-    direction, trading photon statistics per shower for a wider combined
-    field of view. The **divergence** parameter runs from `0` (all
-    telescopes parallel) to `1` (fully radial).
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
     # Belt and braces alongside the SVG format above: nothing in the output
     # should be able to out-run its container when embedded in a frame.
     mo.Html(
@@ -130,7 +117,7 @@ def _(plt, pointed):
 @app.cell(hide_code=True)
 def _(np, plt, pointed):
     def _plot3d(array):
-        fig = plt.figure(figsize=(5.5, 5))
+        fig = plt.figure(figsize=(5, 4))
         ax = fig.add_subplot(111, projection="3d")
 
         positions = array.positions_array
