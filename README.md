@@ -22,11 +22,38 @@ pip install divtel
 
 ### Developers
 
-``` 
-git clone https://github.com/cta-observatory/divtel.git
-cd divtel 
-pip install -e ".[tests]"
+With [uv](https://docs.astral.sh/uv/) (recommended):
+
 ```
+git clone https://github.com/cta-observatory/divtel.git
+cd divtel
+uv sync
+```
+
+`uv sync` creates a virtual environment in `.venv`, installs divtel in editable
+mode, and pulls in the development dependencies (pytest, sphinx, ruff) declared
+as [PEP 735](https://peps.python.org/pep-0735/) dependency groups. Add
+`--extra examples` if you also want to run the notebooks in `examples/`.
+
+With pip (requires pip >= 25.1 for `--group`):
+
+```
+git clone https://github.com/cta-observatory/divtel.git
+cd divtel
+pip install -e . --group dev
+```
+
+Then run the tests:
+
+```
+pytest
+```
+
+> **Note:** install divtel before importing it, even from a source checkout.
+> The version is derived from git by
+> [setuptools_scm](https://setuptools-scm.readthedocs.io/) at install time and
+> written to `divtel/_version.py`; importing an uninstalled source tree reports
+> `__version__ == "0.0.0"`.
 
 ## 🛡 License
 
