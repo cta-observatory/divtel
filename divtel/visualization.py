@@ -1,8 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import mpl_toolkits.axisartist.angle_helper as angle_helper
-from mpl_toolkits.axisartist import Subplot
-from mpl_toolkits.axisartist import SubplotHost, ParasiteAxesAuxTrans
+from mpl_toolkits.axisartist import HostAxes
 from mpl_toolkits.axisartist.grid_helper_curvelinear import GridHelperCurveLinear
 from matplotlib.projections import PolarAxes
 from matplotlib.transforms import Affine2D
@@ -40,8 +39,9 @@ def polar_stuff(fig, telescope):
     # its coordinates, needs a special method to find the extremes
     # (min, max of the coordinate within the view).
 
-    # 20, 20 : number of sampling points along x, y direction
-    n = 1
+    # number of sampling points along the x and y directions; the grid finder
+    # needs more than one or it sees a zero-width interval and divides by it.
+    n = 20
     extreme_finder = angle_helper.ExtremeFinderCycle(n, n,
                                                      lon_cycle=360,
                                                      lat_cycle=None,
@@ -65,7 +65,7 @@ def polar_stuff(fig, telescope):
                                         tick_formatter1=tick_formatter1
                                         )
 
-    ax1 = SubplotHost(fig, 1, 1, 1, grid_helper=grid_helper)
+    ax1 = fig.add_subplot(1, 1, 1, axes_class=HostAxes, grid_helper=grid_helper)
 
     # make ticklabels of right and top axis visible.
     ax1.axis["right"].major_ticklabels.set_visible(True)
@@ -76,13 +76,10 @@ def polar_stuff(fig, telescope):
     # let bottom axis shows ticklabels for 2nd coordinate (radius)
     ax1.axis["bottom"].get_helper().nth_coord_ticks = 1
 
-    fig.add_subplot(ax1)
-
-    # A parasite axes with given transform
-    ax2 = ParasiteAxesAuxTrans(ax1, tr, "equal")
-    # note that ax2.transData == tr + ax1.transData
-    # Anything you draw in ax2 will match the ticks and grids of ax1.
-    ax1.parasites.append(ax2)
+    # A parasite axes with the given transform: ax2.transData == tr +
+    # ax1.transData, so anything drawn in ax2 matches the ticks and grids of
+    # ax1. get_aux_axes builds it and registers it as a parasite for us.
+    ax2 = ax1.get_aux_axes(tr, viewlim_mode="equal")
     # intp = cbook.simple_linear_interpolation
     #ax2.plot(intp(np.array([0, 30]), 50),
     #         intp(np.array([10., 10.]), 50),

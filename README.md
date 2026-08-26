@@ -80,9 +80,13 @@ notebook. Sphinx exports it to WebAssembly during the build, so the published
 page ships its own Python interpreter and runs entirely in the reader's
 browser — sliders included, with no server and nothing to install.
 
-That export shells out to [uv](https://docs.astral.sh/uv/), so `uv` must be on
-your `PATH` to build the docs — `uv sync` above already provides it, but a
-pip-based checkout needs `pip install uv`.
+That export shells out to [uv](https://docs.astral.sh/uv/), which is why `uv`
+is itself a documentation dependency.
+
+The Jupyter version in `examples/notebooks/interactive_display.ipynb` is kept
+for running locally, but is deliberately not built into the site: its
+`ipywidgets` sliders need a Python kernel, so on a static page they would
+render as controls that cannot move.
 
 
 To work on the demo:

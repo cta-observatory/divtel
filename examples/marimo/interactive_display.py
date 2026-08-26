@@ -1,7 +1,7 @@
 import marimo
 
 __generated_with = "0.24.0"
-app = marimo.App(width="medium")
+app = marimo.App(width="full")
 
 
 @app.cell(hide_code=True)
@@ -38,24 +38,22 @@ def _():
 
     from divtel.telescope import Telescope, Array
 
+    # Render figures as SVG. marimo's PNG path stamps an explicit pixel width
+    # on the image -- figsize x 100 -- which overflows a frame narrower than
+    # the figure. SVG carries no such width, so it scales to its container.
+    plt.rcParams["savefig.format"] = "svg"
     return Array, Telescope, mo, np, plt, u
 
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md("""
-    # Divergent pointing
-
-    In divergent mode each telescope is offset from the array's mean
-    direction, trading photon statistics per shower for a wider combined
-    field of view. The **divergence** parameter runs from `0` (all
-    telescopes parallel) to `1` (fully radial).
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _():
+    # Belt and braces alongside the SVG format above: nothing in the output
+    # should be able to out-run its container when embedded in a frame.
+    mo.Html(
+        """<style>
+          img, svg { max-width: 100%; height: auto; }
+        </style>"""
+    )
     return
 
 
@@ -107,7 +105,7 @@ def _(alt, array, az, div, u):
 @app.cell(hide_code=True)
 def _(plt, pointed):
     def _plot(array):
-        fig, axes = plt.subplots(1, 3, figsize=(13, 3.6), layout="constrained")
+        fig, axes = plt.subplots(1, 3, figsize=(11, 3.2), layout="constrained")
         for ax, projection in zip(axes, ("xz", "xy", "yz")):
             array.display_2d(projection=projection, ax=ax)
         return fig
@@ -119,7 +117,7 @@ def _(plt, pointed):
 @app.cell(hide_code=True)
 def _(np, plt, pointed):
     def _plot3d(array):
-        fig = plt.figure(figsize=(5.5, 5))
+        fig = plt.figure(figsize=(5, 4))
         ax = fig.add_subplot(111, projection="3d")
 
         positions = array.positions_array
