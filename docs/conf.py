@@ -23,12 +23,6 @@ sys.path.insert(0, os.path.abspath('..'))
 HERE = Path(__file__).parent.resolve()
 REPO_ROOT = HERE.parent
 
-# Notebooks
-notebook_dir = '../examples/notebooks/'
-os.makedirs('examples', exist_ok=True)
-[shutil.copy(notebook_dir + file, 'examples') for file in os.listdir(notebook_dir) if file.endswith('.ipynb')]
-
-
 # -- Project information -----------------------------------------------------
 
 project = 'divtel'
@@ -48,7 +42,6 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinxarg.ext',
     'sphinx.ext.napoleon',
-    'nbsphinx',
     'myst_parser',
 ]
 
@@ -65,30 +58,6 @@ source_suffix = [
     '.rst',
     '.md',
 ]
-
-# nbsphinx
-nbsphinx_allow_errors = False
-nbsphinx_execute = 'always'  # disable with 'never', force with 'always'
-
-# Point readers at the live version. The rendered notebook shows ipywidgets
-# sliders, but they cannot move: `@interact` re-runs Python on every change and
-# a static host has no kernel to run it. The marimo build below does.
-nbsphinx_prolog = """
-.. raw:: html
-
-    <div class="admonition tip">
-      <p class="admonition-title">Interactive version</p>
-      <p>
-        The sliders below are a static snapshot &mdash; moving them needs a
-        Python kernel, which a static page has not got.
-        <a href="../marimo/index.html"><strong>Open the interactive
-        version</strong></a> for sliders that work. Nothing is installed and
-        nothing is uploaded: Python runs on your own machine, compiled to
-        WebAssembly.
-      </p>
-    </div>
-"""
-
 
 # -- Interactive (marimo / WebAssembly) --------------------------------------
 # GitHub Pages only serves static files, so the interactive demo is a marimo
@@ -178,7 +147,6 @@ def setup(app):
 #
 html_theme = 'sphinx_rtd_theme'
 
-# Add any paths that contain custom static files (such as style sheets) here,
-# relative to this directory. They are copied after the builtin static files,
-# so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+# No custom static files yet; point html_static_path at a directory when there
+# are some, otherwise Sphinx warns about the missing path on every build.
+html_static_path = []

@@ -65,15 +65,14 @@ tests = [
 ]
 docs = [
     "myst-parser>=2.0",
-    "nbsphinx>=0.9",
     "sphinx>=7.0",
     "sphinx-argparse>=0.4",
     "sphinx-rtd-theme>=2.0",
-    "ipykernel>=6.0",
-    # Exports the interactive demo to WebAssembly so it stays live on GitHub
-    # Pages, which can only serve static files.
-    "marimo>=0.14",
     "pygments>=2.20",
+    # Exports the interactive demo to WebAssembly so it stays live on GitHub
+    # Pages, which can only serve static files. Shells out to uv.
+    "marimo>=0.14",
+    "uv>=0.5",
 ]
 dev = [
     {include-group = "tests"},
