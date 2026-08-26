@@ -119,6 +119,9 @@ fabric.properties
 .idea/**/markdown-navigator/
 
 ### Python ###
+# setuptools_scm generated version file
+divtel/_version.py
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

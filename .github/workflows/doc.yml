@@ -4,29 +4,35 @@ on:
   push:
     branches:
       - master
-
-# workflow_dispatch:        # Un comment line if you also want to trigger action manually
+  workflow_dispatch:
 
 jobs:
   sphinx_docs_to_gh-pages:
     runs-on: ubuntu-latest
     name: Sphinx docs to gh-pages
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
+          # setuptools_scm needs tags; the gh-pages push needs the history
           fetch-depth: 0
-      - uses: actions/checkout@master
+
+      - uses: actions/setup-python@v5
         with:
-          fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
+          python-version: "3.12"
+          cache: pip
+
       - name: Installing requirements
         shell: bash -l {0}
         run: |
-         pip install ".[examples]"
-         sudo apt install pandoc
+          sudo apt-get update && sudo apt-get install -y pandoc
+          python -m pip install --upgrade pip
+          pip install ".[docs,examples]"
+
       - name: Build and Commit
         uses: sphinx-notes/pages@v2
         with:
           requirements_path: docs/doc_requirements.txt
+
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
