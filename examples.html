@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="prev" title="divtel package" href="docstring_source/divtel.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>Examples - divtel 0.2.dev31+g16b0b4ec2 documentation</title>
+        <title>Examples - divtel 0.2.dev33+gffe9be6ef documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">divtel 0.2.dev31+g16b0b4ec2 documentation</div></a>
+      <a href="index.html"><div class="brand">divtel 0.2.dev33+gffe9be6ef documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -264,10 +264,9 @@ counts only the part still seen by at least two.</p>
 swings the pointings by tens of degrees, so the discs come apart within the
 first few hundredths of the slider. Push it past roughly 0.08 and the array
 covers four separate patches of sky with no stereoscopic overlap at all.</p>
-<p>The sky is drawn as a flat azimuth-altitude plane, which is not the sky:
-azimuth converges towards the zenith, so the quoted areas are increasingly
-overestimated the higher the array points. Compare arrays at equal altitude
-rather than reading an absolute solid angle off it.</p>
+<p>The sky panel is drawn in an equal-area projection centred on the array’s
+mean pointing, so its axes are degrees of offset from that direction and the
+quoted area is a true solid angle, whatever the array is pointing at.</p>
 <p>The demo is built from <code class="docutils literal notranslate"><span class="pre">examples/marimo/interactive_display.py</span></code>. To run or
 edit it locally:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">marimo</span> <span class="n">edit</span> <span class="n">examples</span><span class="o">/</span><span class="n">marimo</span><span class="o">/</span><span class="n">interactive_display</span><span class="o">.</span><span class="n">py</span>
@@ -322,7 +321,7 @@ Jupyter session instead.</p>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=c49d3a9d"></script>
+</div><script src="_static/documentation_options.js?v=e33a6dad"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>

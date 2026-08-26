@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Examples" href="../examples.html"><link rel="prev" title="divtel API Documentation" href="../docstring.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>divtel package - divtel 0.2.dev31+g16b0b4ec2 documentation</title>
+        <title>divtel package - divtel 0.2.dev33+gffe9be6ef documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">divtel 0.2.dev31+g16b0b4ec2 documentation</div></a>
+      <a href="../index.html"><div class="brand">divtel 0.2.dev33+gffe9be6ef documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -362,7 +362,7 @@ Update pointing of all telescopes of the array</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="divtel.telescope.Array.hyper_fov">
-<span class="sig-name descname"><span class="pre">hyper_fov</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m_cut</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.telescope.Array.hyper_fov" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">hyper_fov</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m_cut</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rim_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">128</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.telescope.Array.hyper_fov" title="Link to this definition">¶</a></dt>
 <dd><p>Hyper field of view: the sky area covered by the array’s cameras.</p>
 <p>Each telescope sees a disc on the sky. Pointing divergently spreads
 those discs out, trading depth of coverage for width: where several
@@ -371,29 +371,32 @@ reconstructed stereoscopically, where only one covers the sky it
 cannot. The union of the discs is cut into the patches formed by their
 boundaries, and each patch is labelled with its multiplicity – how
 many telescopes see it.</p>
-<p>The discs are treated as circles in the (azimuth, altitude) plane, as
-in the original implementation. That plane is not the sky: azimuth
-converges towards the zenith, so areas here are increasingly
-overestimated as the array points higher. Compare arrays at equal
-altitude rather than reading an absolute solid angle off this.</p>
+<p>The geometry is done on the sphere, via a Lambert azimuthal equal-area
+projection centred on the array’s mean pointing. That projection
+preserves area exactly, so the patch areas are true solid angles, and
+it has no pole – working directly in the (azimuth, altitude) plane
+instead breaks down near the zenith, where telescopes a fraction of a
+degree apart on the sky are hundreds of degrees apart in azimuth.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>m_cut</strong> (<em>int</em>) – only count patches seen by at least this many telescopes.
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m_cut</strong> (<em>int</em>) – only count patches seen by at least this many telescopes.
 The default of 1 measures the whole covered area; 2 measures the
-part that can be reconstructed stereoscopically.</p>
+part that can be reconstructed stereoscopically.</p></li>
+<li><p><strong>rim_points</strong> (<em>int</em>) – number of points sampled around each camera’s rim. The default is
+accurate to about 0.01% of a disc’s area.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
 <li><p><strong>area</strong> (<cite>astropy.Quantity</cite>) – covered area in deg**2, counting only patches above <cite>m_cut</cite></p></li>
-<li><p><strong>patches</strong> (list of (<cite>shapely.Polygon</cite>, int)) – each patch and the number of telescopes seeing it, for plotting</p></li>
+<li><p><strong>patches</strong> (list of (<cite>shapely.Polygon</cite>, int)) – each patch and the number of telescopes seeing it. Coordinates are
+degrees of offset from the array’s mean pointing, in the
+equal-area projection, so polygon areas are in deg**2.</p></li>
 </ul>
 </p>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
-<p>With every telescope pointing the same way the discs coincide, so the
-hyper FoV is one camera’s worth of sky seen by the whole array; fully
-divergent, it is <cite>n</cite> cameras’ worth seen singly.</p>
 </dd></dl>
 
 <dl class="py property">
@@ -547,9 +550,9 @@ below it are still drawn, faded.</p></li>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>The sky is drawn as a flat (azimuth, altitude) plane, so areas are
-increasingly overestimated as the array points higher – see
-<cite>Array.hyper_fov</cite>.</p>
+<p>Drawn in an equal-area projection centred on the array’s mean pointing, so
+the axes are degrees of offset from that direction and the areas are true
+solid angles – see <cite>Array.hyper_fov</cite>.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -684,7 +687,7 @@ increasingly overestimated as the array points higher – see
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=c49d3a9d"></script>
+</div><script src="../_static/documentation_options.js?v=e33a6dad"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
