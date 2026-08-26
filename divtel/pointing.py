@@ -34,19 +34,20 @@ def alt_az_to_vector(alt, az):
     return np.array([x, y, z])
 
 
-def _norm_div(div, scale=100):
+def _norm_div(div, scale=100 * u.m):
     """
     Transformation function from div parameter to norm to compute the position of g_point
 
      Parameters
     ----------
     div: float
-    scale: float
+    scale: `astropy.Quantity`
         telescope distance from barycenter at which div = divergence_angle/90deg
 
     Returns
     -------
-    float
+    `astropy.Quantity`
+        distance, in metres
     """
     return scale/np.tan(np.arcsin(div))
 
@@ -56,8 +57,8 @@ def pointG_position(barycenter, div, alt_mean, az_mean):
 
     Parameters
     ----------
-    barycenter: np.array([x,y,z])
-        position of the barycenter of the array
+    barycenter: `astropy.Quantity` or np.array([x,y,z])
+        position of the barycenter of the array; a plain array is read as metres
     div: float
     alt_mean: `astropy.Quantity`
         mean pointing altitude in radians from which to diverge
@@ -66,13 +67,14 @@ def pointG_position(barycenter, div, alt_mean, az_mean):
 
     Returns
     -------
-    Numpy array [Gx, Gy, Gz]
+    `astropy.Quantity` [Gx, Gy, Gz], in metres
     """
+    barycenter = u.Quantity(barycenter, u.m)
     norm = _norm_div(div)
     g_x = barycenter[0] - norm * np.cos(alt_mean) * np.cos(az_mean)
     g_y = barycenter[1] + norm * np.cos(alt_mean) * np.sin(az_mean)
     g_z = barycenter[2] - norm * np.sin(alt_mean)
-    return np.array([g_x, g_y, g_z])
+    return u.Quantity([g_x, g_y, g_z])
 
 
 def tel_div_pointing(tel_position, g_point):
@@ -82,11 +84,18 @@ def tel_div_pointing(tel_position, g_point):
 
     Parameters
     ----------
-    tel_position: np.array([x, y, z])
-        telescope coordinates
-    g_point: numpy.array([Gx, Gy, Gz])
+    tel_position: `astropy.Quantity` or np.array([x, y, z])
+        telescope coordinates; a plain array is read as metres
+    g_point: `astropy.Quantity` or numpy.array([Gx, Gy, Gz])
+
+    Returns
+    -------
+    (alt, az): tuple of `astropy.Quantity`
+        pointing direction, in radians
     """
+    tel_position = u.Quantity(tel_position, u.m)
+    g_point = u.Quantity(g_point, u.m)
     GT = np.sqrt(((tel_position - g_point) ** 2).sum())
     alt_tel = np.arcsin((tel_position[2] - g_point[2]) / GT)
     az_tel = np.arctan2(-(tel_position[1] - g_point[1]), (tel_position[0] - g_point[0]))
-    return alt_tel, az_tel
+    return alt_tel.to(u.rad), az_tel.to(u.rad)

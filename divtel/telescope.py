@@ -68,7 +68,17 @@ class Telescope:
 
     @property
     def position(self):
-        return np.array([self.x.to(u.m).value, self.y.to(u.m).value, self.z.to(u.m).value]*u.m)
+        """
+        Ground position of the telescope
+
+        Returns
+        -------
+        `astropy.Quantity`
+            [x, y, z] in metres
+        """
+        return np.array([self.x.to_value(u.m),
+                         self.y.to_value(u.m),
+                         self.z.to_value(u.m)]) * u.m
 
     def point_to_object(self, object):
         """
@@ -76,14 +86,16 @@ class Telescope:
 
         Parameters
         ----------
-        object: numpy.array([x, y, z])
+        object: `astropy.Quantity` or numpy.array([x, y, z])
+            position of the object; a plain array is read as metres
         """
+        object = u.Quantity(object, u.m)
         GT = np.sqrt(((self.position - object) ** 2).sum())
-        alt_tel = np.arcsin((-self.z.value + object[2]) / GT)
+        alt_tel = np.arcsin((object[2] - self.z) / GT)
         # Az runs clock-wise from X towards Y (see divtel.pointing), so the
         # Y offset enters negated: az = arctan2(-dy, dx).
-        az_tel = np.arctan2(self.y.value - object[1], object[0] - self.x.value)
-        self.point_to_altaz(alt_tel * u.rad, az_tel * u.rad)
+        az_tel = np.arctan2(self.y - object[1], object[0] - self.x)
+        self.point_to_altaz(alt_tel.to(u.rad), az_tel.to(u.rad))
 
     @property
     def pointing_vector(self):
@@ -113,10 +125,10 @@ class Array:
 
         Returns
         -------
-        positions_array: `numpy.array`
-            2D numpy array
+        positions_array: `astropy.Quantity`
+            2D array of [x, y, z] in metres
         """
-        return np.array([tel.position for tel in self.telescopes])
+        return u.Quantity([tel.position for tel in self.telescopes])
 
     @property
     def pointing_vectors(self):
@@ -132,6 +144,14 @@ class Array:
 
     @property
     def barycenter(self):
+        """
+        Barycenter of the array
+
+        Returns
+        -------
+        `astropy.Quantity`
+            [x, y, z] in metres
+        """
         return self.positions_array.mean(axis=0)
 
     @property
@@ -158,7 +178,19 @@ class Array:
             mean alt pointing
         az_mean: `astropy.Quantity`
             mean az pointing
+
+        Raises
+        ------
+        ValueError
+            if div is outside [0, 1]
         """
+        # Outside [0, 1] the geometry stops meaning anything: div > 1 makes
+        # arcsin return nan (a RuntimeWarning at most), and div < 0 puts G in
+        # front of the array rather than behind it, so every telescope ends up
+        # pointing below the horizon while the caller asked for alt_mean.
+        if not 0 <= div <= 1:
+            raise ValueError(f"div must be between 0 and 1, got {div}")
+
         if div == 0:
             for tel in self.telescopes:
                 tel.point_to_altaz(alt_mean, az_mean)
@@ -166,7 +198,7 @@ class Array:
             g_point = pointing.pointG_position(self.barycenter, div, alt_mean, az_mean)
             for tel in self.telescopes:
                 alt_tel, az_tel = pointing.tel_div_pointing(tel.position, g_point)
-                tel.point_to_altaz(alt_tel*u.rad, az_tel*u.rad)
+                tel.point_to_altaz(alt_tel, az_tel)
 
     def hyper_fov(self, m_cut=1, rim_points=128):
         """
@@ -295,31 +327,35 @@ class Array:
         if 'color' not in kwargs:
             kwargs['color'] = 'black'
 
+        # Axes are labelled in metres, so hand matplotlib bare numbers.
+        positions_array = self.positions_array.to_value(u.m)
+        barycenter = self.barycenter.to_value(u.m)
+
         if projection == 'xy':
-            xx = self.positions_array[:, 1]
-            yy = self.positions_array[:, 0]
-            xb = self.barycenter[1]
-            yb = self.barycenter[0]
+            xx = positions_array[:, 1]
+            yy = positions_array[:, 0]
+            xb = barycenter[1]
+            yb = barycenter[0]
             xv = self.pointing_vectors[:, 1]
             yv = self.pointing_vectors[:, 0]
             xlabel = 'y [m]'
             ylabel = 'x [m]'
 
         elif projection == 'xz':
-            xx = self.positions_array[:, 0]
-            yy = self.positions_array[:, 2]
-            xb = self.barycenter[0]
-            yb = self.barycenter[2]
+            xx = positions_array[:, 0]
+            yy = positions_array[:, 2]
+            xb = barycenter[0]
+            yb = barycenter[2]
             xv = self.pointing_vectors[:, 0]
             yv = self.pointing_vectors[:, 2]
             xlabel = 'x [m]'
             ylabel = 'z [m]'
 
         elif projection == 'yz':
-            xx = self.positions_array[:, 1]
-            yy = self.positions_array[:, 2]
-            xb = self.barycenter[1]
-            yb = self.barycenter[2]
+            xx = positions_array[:, 1]
+            yy = positions_array[:, 2]
+            xb = barycenter[1]
+            yb = barycenter[2]
             xv = self.pointing_vectors[:, 1]
             yv = self.pointing_vectors[:, 2]
             xlabel = 'y [m]'
@@ -353,9 +389,10 @@ class Array:
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
 
-        x = self.positions_array[:, 0]
-        y = self.positions_array[:, 1]
-        z = self.positions_array[:, 2]
+        positions_array = self.positions_array.to_value(u.m)
+        x = positions_array[:, 0]
+        y = positions_array[:, 1]
+        z = positions_array[:, 2]
         max_range = np.array([x.max() - x.min(), y.max() - y.min(), z.max() - z.min()]).max()
         scale = 1
         xb = scale * max_range * np.mgrid[-1:2:2, -1:2:2, -1:2:2][0].flatten() + scale * (x.max() + x.min())

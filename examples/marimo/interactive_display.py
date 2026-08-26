@@ -124,7 +124,7 @@ def _(plt, pointed):
 
 
 @app.cell(hide_code=True)
-def _(display_hyper_fov, np, plt, pointed):
+def _(display_hyper_fov, np, plt, pointed, u):
     def _plot_sky(array):
         # One figure rather than two cells: the demo is embedded in a frame of
         # fixed height, so the panels have to share a row to stay in view.
@@ -132,7 +132,8 @@ def _(display_hyper_fov, np, plt, pointed):
         ax3d = fig.add_subplot(1, 2, 1, projection="3d")
         ax_fov = fig.add_subplot(1, 2, 2)
 
-        positions = array.positions_array
+        # Axes are labelled in metres, so hand matplotlib bare numbers.
+        positions = array.positions_array.to_value(u.m)
         pointing_vectors = array.pointing_vectors
         x, y, z = positions[:, 0], positions[:, 1], positions[:, 2]
         span = np.ptp(positions, axis=0).max()
