@@ -1,0 +1,46 @@
+/* Furo sizes its content column for prose (46rem). A little wider suits the
+   API tables here without making the prose pages tiring to read. */
+:root {
+  --content-width: 54rem;
+}
+
+/* The interactive demo wants far more room than prose does, so let it bleed
+   out of the column -- rightwards only, into the space the hidden table of
+   contents would have taken. Bleeding left would slide it under the
+   navigation sidebar. */
+.divtel-demo {
+  --demo-bleed: 0px;
+  width: calc(100% + var(--demo-bleed));
+  margin: 1.5rem 0;
+}
+
+@media (min-width: 82em) {
+  .divtel-demo {
+    --demo-bleed: 5rem;
+  }
+}
+
+@media (min-width: 100em) {
+  .divtel-demo {
+    --demo-bleed: 12rem;
+  }
+}
+
+/* An iframe cannot size itself to its content across documents, so the height
+   is tied to the viewport rather than guessed in pixels: it scrolls
+   internally, and the link below opens it unconstrained. */
+.divtel-demo iframe {
+  display: block;
+  width: 100%;
+  height: min(1100px, 90vh);
+  min-height: 620px;
+  border: 1px solid var(--color-background-border);
+  border-radius: 6px;
+  background: var(--color-background-primary);
+}
+
+.divtel-demo__fallback {
+  font-size: 0.9em;
+  margin-top: 0.5rem;
+  color: var(--color-foreground-secondary);
+}
