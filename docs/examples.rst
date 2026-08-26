@@ -38,10 +38,9 @@ swings the pointings by tens of degrees, so the discs come apart within the
 first few hundredths of the slider. Push it past roughly 0.08 and the array
 covers four separate patches of sky with no stereoscopic overlap at all.
 
-The sky is drawn as a flat azimuth-altitude plane, which is not the sky:
-azimuth converges towards the zenith, so the quoted areas are increasingly
-overestimated the higher the array points. Compare arrays at equal altitude
-rather than reading an absolute solid angle off it.
+The sky panel is drawn in an equal-area projection centred on the array's
+mean pointing, so its axes are degrees of offset from that direction and the
+quoted area is a true solid angle, whatever the array is pointing at.
 
 The demo is built from ``examples/marimo/interactive_display.py``. To run or
 edit it locally::

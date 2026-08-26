@@ -166,7 +166,7 @@ class Array:
                 alt_tel, az_tel = pointing.tel_div_pointing(tel.position, g_point)
                 tel.point_to_altaz(alt_tel*u.rad, az_tel*u.rad)
 
-    def hyper_fov(self, m_cut=1):
+    def hyper_fov(self, m_cut=1, rim_points=128):
         """
         Hyper field of view: the sky area covered by the array's cameras.
 
@@ -178,11 +178,12 @@ class Array:
         boundaries, and each patch is labelled with its multiplicity -- how
         many telescopes see it.
 
-        The discs are treated as circles in the (azimuth, altitude) plane, as
-        in the original implementation. That plane is not the sky: azimuth
-        converges towards the zenith, so areas here are increasingly
-        overestimated as the array points higher. Compare arrays at equal
-        altitude rather than reading an absolute solid angle off this.
+        The geometry is done on the sphere, via a Lambert azimuthal equal-area
+        projection centred on the array's mean pointing. That projection
+        preserves area exactly, so the patch areas are true solid angles, and
+        it has no pole -- working directly in the (azimuth, altitude) plane
+        instead breaks down near the zenith, where telescopes a fraction of a
+        degree apart on the sky are hundreds of degrees apart in azimuth.
 
         Parameters
         ----------
@@ -190,36 +191,69 @@ class Array:
             only count patches seen by at least this many telescopes.
             The default of 1 measures the whole covered area; 2 measures the
             part that can be reconstructed stereoscopically.
+        rim_points: int
+            number of points sampled around each camera's rim. The default is
+            accurate to about 0.01% of a disc's area.
 
         Returns
         -------
         area: `astropy.Quantity`
             covered area in deg**2, counting only patches above `m_cut`
         patches: list of (`shapely.Polygon`, int)
-            each patch and the number of telescopes seeing it, for plotting
-
-        Examples
-        --------
-        With every telescope pointing the same way the discs coincide, so the
-        hyper FoV is one camera's worth of sky seen by the whole array; fully
-        divergent, it is `n` cameras' worth seen singly.
+            each patch and the number of telescopes seeing it. Coordinates are
+            degrees of offset from the array's mean pointing, in the
+            equal-area projection, so polygon areas are in deg**2.
         """
-        from shapely.geometry import LineString, Point
+        from shapely.geometry import LineString, Polygon
         from shapely.ops import polygonize, unary_union
 
-        alt = np.array([tel.alt.to_value(u.deg) for tel in self.telescopes])
-        az = np.array([tel.az.to_value(u.deg) for tel in self.telescopes])
-        radius = np.array([tel.fov_radius.to_value(u.deg) for tel in self.telescopes])
+        directions = self.pointing_vectors
+        radii = np.array([tel.fov_radius.to_value(u.rad) for tel in self.telescopes])
 
-        # Azimuth wraps. If the array straddles the 0/360 seam, unwrap it onto
-        # a continuous interval so the discs stay adjacent instead of landing
-        # at opposite ends of the plane.
-        if az.max() - az.min() > 180:
-            az = np.where(az < 180, az, az - 360)
+        # Centre the projection on the mean pointing. If the array points every
+        # which way the mean can vanish, and any direction is as good as
+        # another; the zenith is the natural choice.
+        centre = directions.mean(axis=0)
+        norm = np.linalg.norm(centre)
+        centre = centre / norm if norm > 1e-9 else np.array([0.0, 0.0, 1.0])
 
-        # quad_segs raises the polygon resolution of the discs; the default of
-        # 16 segments per quarter circle costs ~0.2% of each area.
-        discs = [Point(a, h).buffer(r, quad_segs=64) for a, h, r in zip(az, alt, radius)]
+        # Any two vectors completing an orthonormal frame with `centre`.
+        seed = np.array([1.0, 0.0, 0.0])
+        if abs(centre @ seed) > 0.9:
+            seed = np.array([0.0, 1.0, 0.0])
+        east = np.cross(centre, seed)
+        east /= np.linalg.norm(east)
+        north = np.cross(centre, east)
+
+        def project(vectors):
+            """Lambert azimuthal equal-area, in degrees from the centre."""
+            along = vectors @ centre
+            if np.any(along <= -1 + 1e-9):
+                raise ValueError(
+                    "the array points in opposite directions; no single "
+                    "projection of the sky can hold it"
+                )
+                
+            scale = np.sqrt(2.0 / (1.0 + along)) * np.degrees(1.0)
+            return np.column_stack([scale * (vectors @ east),
+                                    scale * (vectors @ north)])
+
+        # Sample each camera's rim on the sphere and project it, rather than
+        # drawing a circle in the projection: away from the centre the image of
+        # a circle is not one, and it is the true shape we need.
+        angles = np.linspace(0, 2 * np.pi, rim_points, endpoint=False)
+        discs = []
+        for direction, radius in zip(directions, radii):
+            a = np.cross(direction, centre)
+            if np.linalg.norm(a) < 1e-9:
+                a = east.copy()
+            a /= np.linalg.norm(a)
+            b = np.cross(direction, a)
+
+            rim = (np.cos(radius) * direction
+                   + np.sin(radius) * (np.cos(angles)[:, None] * a
+                                       + np.sin(angles)[:, None] * b))
+            discs.append(Polygon(project(rim)))
 
         # Cutting the union of the *boundaries* gives the arrangement: every
         # region bounded by disc edges, each of which lies wholly inside or
@@ -231,7 +265,11 @@ class Array:
         for patch in patches:
             probe = patch.representative_point()
             multiplicity = sum(1 for disc in discs if disc.contains(probe))
-            labelled.append((patch, multiplicity))
+            # A ring of discs encloses a hole, and polygonize returns that hole
+            # as a patch like any other. No telescope sees it, so it is not
+            # part of the field of view at all.
+            if multiplicity > 0:
+                labelled.append((patch, multiplicity))
 
         area = sum(p.area for p, m in labelled if m >= m_cut)
         return u.Quantity(area, u.deg ** 2), labelled

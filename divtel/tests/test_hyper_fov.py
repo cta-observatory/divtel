@@ -22,8 +22,10 @@ def hess_1():
 
 
 def single_disc_area(array):
-    radius = array.telescopes[0].fov_radius.to_value(u.deg)
-    return np.pi * radius**2
+    """Exact area of one camera's spherical cap, in deg**2."""
+    radius = array.telescopes[0].fov_radius.to_value(u.rad)
+    steradians = 2 * np.pi * (1 - np.cos(radius))
+    return steradians * np.degrees(1.0) ** 2
 
 
 def test_fov_radius_matches_fov_area():
@@ -112,3 +114,49 @@ def test_azimuth_wrap_is_unwrapped(hess_1):
     # Those two discs are 2 deg apart and 5.7 deg across, so they must overlap.
     assert max(m for _, m in patches) >= 2
     assert area.to_value(u.deg**2) < 4 * single_disc_area(hess_1)
+
+
+def test_zenith_pointing_still_overlaps(hess_1):
+    """Near the zenith the discs overlap as much as anywhere else.
+
+    Azimuth converges at the pole, so telescopes a fraction of a degree apart
+    on the sky can be hundreds of degrees apart in azimuth. Doing the geometry
+    in the (azimuth, altitude) plane put these four discs 270 degrees apart and
+    reported four separate patches of sky where there is very nearly one.
+    """
+    hess_1.divergent_pointing(0.005, 90 * u.deg, 0 * u.deg)
+
+    directions = hess_1.pointing_vectors
+    separations = [
+        np.degrees(np.arccos(np.clip(directions[i] @ directions[j], -1, 1)))
+        for i in range(len(directions))
+        for j in range(i + 1, len(directions))
+    ]
+    fov_radius = hess_1.telescopes[0].fov_radius.to_value(u.deg)
+    assert max(separations) < fov_radius, "premise: the discs must overlap"
+
+    area, patches = hess_1.hyper_fov(m_cut=1)
+    assert max(m for _, m in patches) == len(hess_1.telescopes)
+    # Barely more than one camera's worth of sky, not four.
+    assert area.to_value(u.deg**2) < 1.4 * single_disc_area(hess_1)
+
+
+def test_zenith_matches_an_equivalent_lower_pointing(hess_1):
+    """The same array is the same size wherever it is pointed."""
+    hess_1.divergent_pointing(0, 90 * u.deg, 0 * u.deg)
+    at_zenith = hess_1.hyper_fov(m_cut=1)[0]
+
+    hess_1.divergent_pointing(0, 20 * u.deg, 137 * u.deg)
+    low = hess_1.hyper_fov(m_cut=1)[0]
+
+    assert at_zenith.to_value(u.deg**2) == pytest.approx(
+        low.to_value(u.deg**2), rel=1e-6
+    )
+
+
+def test_no_patch_is_seen_by_nobody(hess_1):
+    """A ring of discs encloses a hole; it is not part of the field of view."""
+    for div in (0.005, 0.02, 0.05, 0.1, 0.3):
+        hess_1.divergent_pointing(div, 90 * u.deg, 0 * u.deg)
+        _, patches = hess_1.hyper_fov(m_cut=1)
+        assert all(m >= 1 for _, m in patches), f"multiplicity 0 patch at div={div}"
