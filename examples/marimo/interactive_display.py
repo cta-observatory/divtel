@@ -21,10 +21,18 @@ async def _():
         # relative URLs resolve against assets/ rather than the page. marimo
         # always emits index.html alongside assets/, so stepping up one level
         # reaches the export root whatever subpath the site is deployed under.
-        base = "../wheels/"
+        base = "../pypi/"
         # setuptools_scm bakes the version into the wheel filename, so the
         # docs build writes a manifest rather than us hardcoding it here.
-        manifest = json.loads(await (await pyfetch(base + "manifest.json")).string())
+        response = await pyfetch(base + "manifest.json")
+        if response.status != 200:
+            # Without this the JSON decode fails on a 404 page and the reader
+            # is told only "see console for details".
+            raise RuntimeError(
+                f"could not fetch {base}manifest.json (HTTP {response.status}). "
+                "The divtel wheel is missing from the published site."
+            )
+        manifest = json.loads(await response.string())
         await micropip.install(base + manifest["divtel"])
     return
 

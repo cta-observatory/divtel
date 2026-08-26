@@ -89,6 +89,12 @@ def _build_divtel_wheel(destination):
     else:
         raise RuntimeError('could not build a divtel wheel for the marimo export')
 
+    # `uv build` drops a .gitignore of "*" beside its output, on the assumption
+    # that build artefacts are never committed. Here they are the payload, and
+    # publishing to gh-pages goes through git: left in place it hides the wheel
+    # from the deploy, and the published notebook cannot install divtel.
+    (destination / '.gitignore').unlink(missing_ok=True)
+
     return sorted(destination.glob('divtel-*.whl'))[0]
 
 
@@ -130,7 +136,12 @@ def _export_marimo(app, exception):
 
     # setuptools_scm bakes the version into the wheel filename, so record it in
     # a manifest the notebook can read instead of hardcoding it there.
-    wheelhouse = outdir / 'wheels'
+    #
+    # Do not rename this to `wheels`: publishing to gh-pages honours the
+    # repository's .gitignore, and the standard Python template ignores
+    # `wheels/`. The directory built fine and was then dropped on the way out,
+    # leaving the published notebook unable to install divtel.
+    wheelhouse = outdir / 'pypi'
     wheelhouse.mkdir(parents=True, exist_ok=True)
     wheel = _build_divtel_wheel(wheelhouse)
     (wheelhouse / 'manifest.json').write_text(json.dumps({'divtel': wheel.name}))
