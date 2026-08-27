@@ -495,6 +495,11 @@ class Array:
         `hyper_fov` reports how much sky the array covers; this reports how well
         it covers it. Both matter, and divergence trades one for the other.
 
+        Only sky the array sees at all appears here. A ring of discs encloses a
+        hole no telescope sees, and `hyper_fov` drops those patches, so there is
+        no zero-multiplicity entry and the areas sum to the covered area rather
+        than to the whole sky.
+
         Parameters
         ----------
         patches: list of (`shapely.Polygon`, int), optional
@@ -533,13 +538,26 @@ class Array:
         Mean and variance of the multiplicity, weighted by area.
 
         One number for how divergent a configuration is, and one for how evenly.
-        A parallel array has every patch seen by every telescope, so the mean is
-        the number of telescopes and the variance is zero; as divergence grows
-        the mean falls towards one.
+        Over the patches `hyper_fov` cuts the sky into, with multiplicity m_i
+        and area A_i,
+
+            <m>      = sum(m_i A_i) / sum(A_i)
+            Var(m)   = sum((m_i - <m>)**2 A_i) / sum(A_i)
 
         Weighting is by solid angle, so a patch counts for as much sky as it
         covers -- an unweighted mean over patches would let a sliver of overlap
         count for as much as the whole field.
+
+        A parallel array has every patch seen by every telescope, so the mean is
+        the number of telescopes and the variance is zero; as divergence grows
+        the mean falls towards one. Equivalently, since each disc contributes
+        its area to every patch it covers, the mean is the array's total camera
+        solid angle divided by the sky it covers.
+
+        The average runs over the sky the array sees, not the whole sky -- see
+        `multiplicity_profile`. It also ignores `m_cut`: `hyper_fov` applies
+        that only to the area it returns, never to the patch list, so patches
+        from a cut run give the same answer as patches from an uncut one.
 
         Parameters
         ----------
