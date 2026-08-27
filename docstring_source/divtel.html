@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Examples" href="../examples.html"><link rel="prev" title="divtel API Documentation" href="../docstring.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>divtel package - divtel 0.2.dev43+gd0504043b documentation</title>
+        <title>divtel package - divtel 0.2.dev45+g604e5a843 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">divtel 0.2.dev43+gd0504043b documentation</div></a>
+      <a href="../index.html"><div class="brand">divtel 0.2.dev45+g604e5a843 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -359,6 +359,17 @@ Update telescope pointing</p>
 <span class="sig-name descname"><span class="pre">display_3d</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#divtel.telescope.Array.display_3d" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="divtel.telescope.Array.div">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">div</span></span><a class="headerlink" href="#divtel.telescope.Array.div" title="Link to this definition">¶</a></dt>
+<dd><p>Divergence parameter last passed to <cite>divergent_pointing</cite></p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="divtel.telescope.Array.divergent_pointing">
 <span class="sig-name descname"><span class="pre">divergent_pointing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">div</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alt_mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">az_mean</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.telescope.Array.divergent_pointing" title="Link to this definition">¶</a></dt>
@@ -374,6 +385,45 @@ Update pointing of all telescopes of the array</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>ValueError</strong> – if div is outside [0, 1]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="divtel.telescope.Array.export_cfg">
+<span class="sig-name descname"><span class="pre">export_cfg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'./'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tel_configs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.telescope.Array.export_cfg" title="Link to this definition">¶</a></dt>
+<dd><p>Write the array pointing as a sim_telarray configuration file.</p>
+<p>sim_telarray selects a telescope by defining <cite>TELESCOPE</cite>, so the file
+is one <cite>#if</cite>/<cite>#elif</cite> chain: block 0 holds the array-wide defaults and
+blocks 1..N hold one telescope each.</p>
+<p>Angles are converted to sim_telarray’s convention, which is not
+divtel’s: it takes a zenith angle rather than an altitude, and its
+azimuth runs the opposite way round, so</p>
+<blockquote>
+<div><p>TELESCOPE_THETA = 90 - alt
+TELESCOPE_PHI   = (360 - az) mod 360</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<em>str</em><em>, </em><em>optional</em>) – defaults to ‘CTA-ULTRA6-LaPalma-divX-azX-altX.cfg’, built from the
+divergence and mean pointing of the array</p></li>
+<li><p><strong>outdir</strong> (str or <cite>pathlib.Path</cite>, optional) – directory to write into; must exist</p></li>
+<li><p><strong>tel_configs</strong> (<em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – config file each telescope <a href="#id1"><span class="problematic" id="id2">`</span></a>#include`s, in array order. Defaults
+to the La Palma layout the writer was built for: the first four
+telescopes are LSTs, the rest MSTs with NectarCam.</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – echo the file to stdout once written</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the file that was written</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>pathlib.Path</cite></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – if the array has never been pointed, or <cite>tel_configs</cite> does not
+    have one entry per telescope</p>
 </dd>
 </dl>
 </dd></dl>
@@ -413,6 +463,23 @@ degrees of offset from the array’s mean pointing, in the
 equal-area projection, so polygon areas are in deg**2.</p></li>
 </ul>
 </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="divtel.telescope.Array.mean_pointing">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">mean_pointing</span></span><a class="headerlink" href="#divtel.telescope.Array.mean_pointing" title="Link to this definition">¶</a></dt>
+<dd><p>Direction the array was last asked to diverge from</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>(alt, az)</strong></p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple of <cite>astropy.Quantity</cite>, in degrees</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – if the array has never been pointed</p>
 </dd>
 </dl>
 </dd></dl>
@@ -677,8 +744,11 @@ solid angles – see <cite>Array.hyper_fov</cite>.</p>
 <li><a class="reference internal" href="#divtel.telescope.Array.barycenter"><code class="docutils literal notranslate"><span class="pre">Array.barycenter</span></code></a></li>
 <li><a class="reference internal" href="#divtel.telescope.Array.display_2d"><code class="docutils literal notranslate"><span class="pre">Array.display_2d()</span></code></a></li>
 <li><a class="reference internal" href="#divtel.telescope.Array.display_3d"><code class="docutils literal notranslate"><span class="pre">Array.display_3d()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.telescope.Array.div"><code class="docutils literal notranslate"><span class="pre">Array.div</span></code></a></li>
 <li><a class="reference internal" href="#divtel.telescope.Array.divergent_pointing"><code class="docutils literal notranslate"><span class="pre">Array.divergent_pointing()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.telescope.Array.export_cfg"><code class="docutils literal notranslate"><span class="pre">Array.export_cfg()</span></code></a></li>
 <li><a class="reference internal" href="#divtel.telescope.Array.hyper_fov"><code class="docutils literal notranslate"><span class="pre">Array.hyper_fov()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.telescope.Array.mean_pointing"><code class="docutils literal notranslate"><span class="pre">Array.mean_pointing</span></code></a></li>
 <li><a class="reference internal" href="#divtel.telescope.Array.pointing_altaz"><code class="docutils literal notranslate"><span class="pre">Array.pointing_altaz</span></code></a></li>
 <li><a class="reference internal" href="#divtel.telescope.Array.pointing_vectors"><code class="docutils literal notranslate"><span class="pre">Array.pointing_vectors</span></code></a></li>
 <li><a class="reference internal" href="#divtel.telescope.Array.positions_array"><code class="docutils literal notranslate"><span class="pre">Array.positions_array</span></code></a></li>
@@ -714,7 +784,7 @@ solid angles – see <cite>Array.hyper_fov</cite>.</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=bfb01d12"></script>
+</div><script src="../_static/documentation_options.js?v=fa334133"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
