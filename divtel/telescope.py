@@ -359,6 +359,15 @@ class Array:
         ------
         ValueError
             if div is outside [0, 1]
+
+        Notes
+        -----
+        Divergence spreads telescopes on both sides of the mean pointing, so
+        one asked for near the horizon pushes some of them underground -- a
+        real mount cannot follow that, it rails at its lowest elevation and
+        stops. A telescope whose computed altitude comes out negative is
+        pointed at the horizon instead (altitude 0), at whatever azimuth the
+        geometry gave it; nothing else about the array's pointing changes.
         """
         # Outside [0, 1] the geometry stops meaning anything: div > 1 makes
         # arcsin return nan (a RuntimeWarning at most), and div < 0 puts G in
@@ -372,13 +381,14 @@ class Array:
         self._az_mean = az_mean.to(u.deg)
 
         if div == 0:
+            alt_tel = np.maximum(alt_mean, 0 * u.deg)
             for tel in self.telescopes:
-                tel.point_to_altaz(alt_mean, az_mean)
+                tel.point_to_altaz(alt_tel, az_mean)
         else:
             g_point = pointing.pointG_position(self.barycenter, div, alt_mean, az_mean)
             for tel in self.telescopes:
                 alt_tel, az_tel = pointing.tel_div_pointing(tel.position, g_point)
-                tel.point_to_altaz(alt_tel, az_tel)
+                tel.point_to_altaz(np.maximum(alt_tel, 0 * u.rad), az_tel)
 
     def hyper_fov(self, m_cut=1, rim_points=128):
         """
@@ -399,6 +409,12 @@ class Array:
         instead breaks down near the zenith, where telescopes a fraction of a
         degree apart on the sky are hundreds of degrees apart in azimuth.
 
+        The projection's own x and y axes are azimuth and altitude: x is
+        offset in azimuth (increasing to the right, as azimuth increases
+        north-to-east), y is offset in altitude (increasing upward). That
+        holds everywhere the array can point, not just near the centre --
+        the sky map looks the way the telescopes actually move.
+
         Parameters
         ----------
         m_cut: int
@@ -414,9 +430,10 @@ class Array:
         area: `astropy.Quantity`
             covered area in deg**2, counting only patches above `m_cut`
         patches: list of (`shapely.Polygon`, int)
-            each patch and the number of telescopes seeing it. Coordinates are
-            degrees of offset from the array's mean pointing, in the
-            equal-area projection, so polygon areas are in deg**2.
+            each patch and the number of telescopes seeing it. x is degrees of
+            offset in azimuth from the array's mean pointing, y degrees of
+            offset in altitude, both in the equal-area projection, so polygon
+            areas are in deg**2.
         """
         from shapely.geometry import LineString, Polygon
         from shapely.ops import polygonize, unary_union
@@ -431,13 +448,15 @@ class Array:
         norm = np.linalg.norm(centre)
         centre = centre / norm if norm > 1e-9 else np.array([0.0, 0.0, 1.0])
 
-        # Any two vectors completing an orthonormal frame with `centre`.
-        seed = np.array([1.0, 0.0, 0.0])
-        if abs(centre @ seed) > 0.9:
-            seed = np.array([0.0, 1.0, 0.0])
-        east = np.cross(centre, seed)
-        east /= np.linalg.norm(east)
-        north = np.cross(centre, east)
+        # The tangent-plane basis at the centre, towards increasing azimuth
+        # and altitude. Built from the pointing's own alt/az rather than from
+        # a basis fixed to some external axis, so the frame turns continuously
+        # as the array points around the sky instead of jumping when the
+        # pointing crosses whatever axis a fixed basis happened to be seeded
+        # from -- and it means x and y can be read directly as az and alt.
+        alt_c = np.arcsin(np.clip(centre[2], -1.0, 1.0)) * u.rad
+        az_c = np.arctan2(-centre[1], centre[0]) * u.rad
+        east, north = pointing.local_frame(alt_c, az_c)
 
         def project(vectors):
             """Lambert azimuthal equal-area, in degrees from the centre."""

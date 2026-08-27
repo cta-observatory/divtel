@@ -39,6 +39,40 @@ def alt_az_to_vector(alt, az):
     return np.array([x, y, z])
 
 
+def local_frame(alt, az):
+    """
+    Unit tangent vectors at an alt/az pointing, towards increasing az and alt.
+
+    These are the directions an observer standing at that pointing and
+    looking up would call "sideways" (towards increasing azimuth) and "up"
+    (towards increasing altitude). They are exact, not approximations valid
+    only near the pointing: alt/az is an orthogonal coordinate system on the
+    sphere, so the two are always unit length and always perpendicular to
+    each other and to `alt_az_to_vector(alt, az)`, at every pointing.
+
+    Used to orient a small flat map -- a camera's field of view, or the sky
+    map `Array.hyper_fov` builds -- around a pointing, so that moving along
+    one returned vector reads as "more altitude" and the other as "more
+    azimuth", whatever the pointing itself is.
+
+    Parameters
+    ----------
+    alt, az: `astropy.Quantity`
+
+    Returns
+    -------
+    (increasing_az, increasing_alt): tuple of `numpy.array`
+        unit vectors [x, y, z]
+    """
+    alt = alt.to_value(u.rad)
+    az = az.to_value(u.rad)
+    increasing_az = np.array([-np.sin(az), -np.cos(az), 0.0])
+    increasing_alt = np.array([-np.sin(alt) * np.cos(az),
+                               np.sin(alt) * np.sin(az),
+                               np.cos(alt)])
+    return increasing_az, increasing_alt
+
+
 def _norm_div(div, scale=100 * u.m):
     """
     Transformation function from div parameter to norm to compute the position of g_point
