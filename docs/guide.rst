@@ -309,14 +309,86 @@ and so on:
     <Quantity [242. , 131.3,  70.8,   8. ,   0.6] deg2>
 
 :meth:`~divtel.telescope.Array.multiplicity_moments` boils that down to two
-numbers -- the mean multiplicity and its variance, both weighted by solid angle
-so a patch counts for as much sky as it covers:
+numbers:
 
 .. code-block:: python
 
     >>> mean, variance = array.multiplicity_moments()
     >>> f"{mean:.2f} +- {np.sqrt(variance):.2f}"
     '1.66 +- 0.81'
+
+
+How the mean is defined
+-----------------------
+
+:meth:`~divtel.telescope.Array.hyper_fov` cuts the sky into disjoint patches,
+each lying wholly inside or wholly outside every telescope's camera disc, so
+each has a well-defined multiplicity :math:`m_i` and an area :math:`A_i`. The
+mean and variance are those, **weighted by solid angle**:
+
+.. math::
+
+   \langle m \rangle = \frac{\sum_i m_i A_i}{\sum_i A_i}
+   \qquad
+   \mathrm{Var}(m) = \frac{\sum_i \left(m_i - \langle m \rangle\right)^2 A_i}{\sum_i A_i}
+
+Weighting by area rather than counting patches matters: the patches are the
+regions cut out by overlapping discs, so a two-telescope array makes as many
+slivers as it does large regions, and an unweighted mean would let a sliver
+count for as much sky as the whole field. The areas are true solid angles --
+``hyper_fov`` works in an equal-area projection -- and the patches partition
+the covered area exactly, so nothing is counted twice.
+
+Working the example above by hand:
+
+.. code-block:: text
+
+    m :  [1       2       3      4     5   ]
+    A :  [242.02  131.34  70.81  7.99  0.55]  deg²    sum = 452.70
+
+    (1*242.02 + 2*131.34 + 3*70.81 + 4*7.99 + 5*0.55) / 452.70  =  1.6607
+
+Two things follow from the definition that are easy to trip over.
+
+**The average is over the covered sky, not the whole sky.** A ring of discs
+encloses a hole that no telescope sees; ``hyper_fov`` drops those patches, so
+they never reach this average. Read it as *given a point the array sees at all,
+how many telescopes see it*. Sky the array misses does not drag the mean down,
+which is exactly why the mean and the hyper FoV are two independent numbers
+rather than one restating the other.
+
+**The mean ignores** ``m_cut``. ``hyper_fov`` applies ``m_cut`` only to the
+area it returns; the patch list is always every patch with :math:`m \geq 1`.
+So passing patches from a cut run changes nothing:
+
+.. code-block:: python
+
+    >>> for cut in (1, 2, 3):
+    ...     _, patches = array.hyper_fov(m_cut=cut)
+    ...     print(cut, len(patches), round(array.multiplicity_moments(patches=patches)[0], 4))
+    1 105 1.6607
+    2 105 1.6607
+    3 105 1.6607
+
+This matters when reading a
+:func:`~divtel.visualization.multiplicity_plot` title, which quotes the
+``m_cut`` area and the mean side by side: the area respects the cut and the
+mean does not.
+
+There is a shortcut worth knowing. Each telescope's disc contributes its own
+area to every patch it covers, so :math:`\sum_i m_i A_i` is just the total
+camera solid angle of the array, and
+
+.. math::
+
+   \langle m \rangle = \frac{\sum_\mathrm{telescopes} \Omega_\mathrm{camera}}
+                              {\Omega_\mathrm{covered}}
+
+the total camera solid angle divided by the sky actually covered. That makes
+the two limits obvious: pointed in parallel every camera lands on the same
+disc, so the sum is :math:`n` times the union and the mean is the number of
+telescopes with zero variance; fully diverged the discs are disjoint, the union
+*equals* the sum, and the mean is one.
 
 The mean is the summary of how divergent a configuration is, and it moves
 opposite the area. On this array, pointed at 70 degrees:
