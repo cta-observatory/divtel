@@ -1,0 +1,569 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="./">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="Examples" href="examples.html"><link rel="prev" title="divtel" href="index.html">
+
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
+        <title>User guide - divtel 0.2.dev49+g15a9f19e1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=8758fcc1" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">divtel 0.2.dev49+g15a9f19e1 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
+  
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docstring.html">API documentation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="README.html">divtel: Divergent pointing mode for Imaging Atmospheric Cherenkov Telescopes arrays</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="_sources/guide.rst.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="user-guide">
+<h1>User guide<a class="headerlink" href="#user-guide" title="Link to this heading">¶</a></h1>
+<p>divtel is a small toy model of an Imaging Atmospheric Cherenkov Telescope
+(IACT) array. You place telescopes on the ground, point them – in parallel or
+divergently – and measure the sky they collectively see.</p>
+<p>This guide walks through that from the start. For the signatures and every
+argument, see the <a class="reference internal" href="docstring.html"><span class="doc">API documentation</span></a>; for a version you can
+play with in the browser, see <a class="reference internal" href="examples.html"><span class="doc">Examples</span></a>.</p>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h2>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip install divtel</span>
+</pre></div>
+</div>
+<p>The examples below also use <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code>, which comes with divtel.</p>
+</section>
+<section id="the-coordinate-frame">
+<h2>The coordinate frame<a class="headerlink" href="#the-coordinate-frame" title="Link to this heading">¶</a></h2>
+<p>divtel uses the same ground frame as <code class="docutils literal notranslate"><span class="pre">simtel_array</span></code>:</p>
+<ul class="simple">
+<li><p><strong>x</strong> points North, <strong>y</strong> points West, <strong>z</strong> points up. Positions are
+lengths, normally metres.</p></li>
+<li><p><strong>azimuth</strong> is measured clockwise from x towards y, in <code class="docutils literal notranslate"><span class="pre">[-180,</span> <span class="pre">180]</span></code>
+degrees.</p></li>
+<li><p><strong>altitude</strong> is measured from the ground towards z, in <code class="docutils literal notranslate"><span class="pre">[-90,</span> <span class="pre">90]</span></code>
+degrees. Altitude 90 is the zenith.</p></li>
+</ul>
+<p>Every quantity that carries a physical dimension is an
+<a class="reference external" href="https://docs.astropy.org/en/stable/units/">astropy.units.Quantity</a>. This is
+not decoration: divtel mixes metres and angles freely, and the units are what
+keeps that honest. Pass <code class="docutils literal notranslate"><span class="pre">100</span> <span class="pre">*</span> <span class="pre">u.m</span></code>, not <code class="docutils literal notranslate"><span class="pre">100</span></code>.</p>
+</section>
+<section id="building-an-array">
+<h2>Building an array<a class="headerlink" href="#building-an-array" title="Link to this heading">¶</a></h2>
+<p>A <a class="reference internal" href="docstring.html#divtel.telescope.Telescope" title="divtel.telescope.Telescope"><code class="xref py py-class docutils literal notranslate"><span class="pre">Telescope</span></code></a> is a ground position plus the two
+numbers that set how much sky it sees: the focal length and the camera radius.
+An <a class="reference internal" href="docstring.html#divtel.telescope.Array" title="divtel.telescope.Array"><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></a> is a list of them.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">astropy.units</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">u</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">divtel.telescope</span><span class="w"> </span><span class="kn">import</span> <span class="n">Telescope</span><span class="p">,</span> <span class="n">Array</span>
+
+<span class="c1"># Four telescopes on a 100 m square -- roughly the H.E.S.S.-I layout.</span>
+<span class="n">array</span> <span class="o">=</span> <span class="n">Array</span><span class="p">([</span>
+    <span class="n">Telescope</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="n">y</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span>
+              <span class="n">focal</span><span class="o">=</span><span class="mi">20</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="n">camera_radius</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="p">[(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">100</span><span class="p">)]</span>
+<span class="p">])</span>
+</pre></div>
+</div>
+<p>The two camera numbers only ever enter as their ratio, which fixes the angular
+radius of the disc a telescope sees on the sky:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">array</span><span class="o">.</span><span class="n">telescopes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">fov_radius</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">)</span>
+<span class="go">&lt;Quantity 2.86240523 deg&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">array</span><span class="o">.</span><span class="n">telescopes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">fov</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+<span class="go">&lt;Quantity 25.78310078 deg2&gt;</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">fov_radius</span></code> is the half-angle subtended by the camera; <code class="docutils literal notranslate"><span class="pre">fov</span></code> is the solid
+angle of the whole disc. A 20 m focal length with a 1 m camera radius gives a
+camera a little under 6 degrees across.</p>
+<p>An array knows a few things about itself as a whole:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">array</span><span class="o">.</span><span class="n">barycenter</span>                 <span class="c1"># mean telescope position</span>
+<span class="go">&lt;Quantity [0., 0., 0.] m&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">array</span><span class="o">.</span><span class="n">positions_array</span><span class="o">.</span><span class="n">shape</span>      <span class="c1"># one [x, y, z] row per telescope</span>
+<span class="go">(4, 3)</span>
+</pre></div>
+</div>
+<p>A small example layout ships with the package, if you want something to load
+rather than type:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">importlib.resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">files</span>
+
+<span class="n">rows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="n">files</span><span class="p">(</span><span class="s2">"divtel"</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"data"</span> <span class="o">/</span> <span class="s2">"dummy_array.txt"</span><span class="p">,</span>
+                     <span class="n">delimiter</span><span class="o">=</span><span class="s2">","</span><span class="p">)</span>
+<span class="n">array</span> <span class="o">=</span> <span class="n">Array</span><span class="p">([</span>
+    <span class="n">Telescope</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="n">y</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="n">z</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="n">focal</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="n">radius</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">focal</span><span class="p">,</span> <span class="n">radius</span> <span class="ow">in</span> <span class="n">rows</span>
+<span class="p">])</span>
+</pre></div>
+</div>
+</section>
+<section id="pointing-the-array">
+<h2>Pointing the array<a class="headerlink" href="#pointing-the-array" title="Link to this heading">¶</a></h2>
+<section id="parallel-pointing">
+<h3>Parallel pointing<a class="headerlink" href="#parallel-pointing" title="Link to this heading">¶</a></h3>
+<p>Every telescope aimed the same way. In divtel this is just divergent pointing
+with the divergence turned off:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">array</span><span class="o">.</span><span class="n">divergent_pointing</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">70</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span> <span class="mi">180</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>All four cameras now cover the same disc of sky: the array sees 25.7 deg²,
+and every part of it is seen by all four telescopes.</p>
+</section>
+<section id="divergent-pointing">
+<h3>Divergent pointing<a class="headerlink" href="#divergent-pointing" title="Link to this heading">¶</a></h3>
+<p>Turn the knob up and the telescopes fan out:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">array</span><span class="o">.</span><span class="n">divergent_pointing</span><span class="p">(</span><span class="mf">0.02</span><span class="p">,</span> <span class="mi">70</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span> <span class="mi">180</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">array</span><span class="o">.</span><span class="n">pointing_altaz</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">)</span>
+<span class="go">&lt;Quantity [[  71.08431390,  180.        ],</span>
+<span class="go">           [  69.96853681, -176.65271002],</span>
+<span class="go">           [  68.93041909,  180.        ],</span>
+<span class="go">           [  69.96853681,  176.65271002]] deg&gt;</span>
+</pre></div>
+</div>
+<p>The mean pointing is still (70°, 180°), but the four telescopes are now spread
+about two degrees apart on the sky.</p>
+</section>
+<section id="what-div-actually-means">
+<span id="the-div-parameter"></span><h3>What <code class="docutils literal notranslate"><span class="pre">div</span></code> actually means<a class="headerlink" href="#what-div-actually-means" title="Link to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">div</span></code> runs from 0 (parallel) to 1, and it works through a point <strong>G</strong> placed
+<em>behind</em> the array. Every telescope is aimed directly away from G, so the
+further away G sits, the more nearly parallel the array is:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">divtel</span><span class="w"> </span><span class="kn">import</span> <span class="n">pointing</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">pointing</span><span class="o">.</span><span class="n">pointG_position</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">barycenter</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span>
+<span class="o">...</span>                          <span class="mi">70</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span> <span class="mi">180</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">km</span><span class="p">)</span>
+<span class="o">&lt;</span><span class="n">Quantity</span> <span class="p">[</span> <span class="mf">1.70975866e+00</span><span class="p">,</span>  <span class="mf">2.09385047e-16</span><span class="p">,</span> <span class="o">-</span><span class="mf">4.69752332e+00</span><span class="p">]</span> <span class="n">km</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>At <code class="docutils literal notranslate"><span class="pre">div</span> <span class="pre">=</span> <span class="pre">0</span></code> G recedes to infinity and the telescopes point in parallel; at
+<code class="docutils literal notranslate"><span class="pre">div</span> <span class="pre">=</span> <span class="pre">1</span></code> it sits in the middle of the array and they point straight outward.</p>
+<p>The one thing to keep in mind is that <code class="docutils literal notranslate"><span class="pre">div</span></code> is an engineering knob, not an
+angle. It is defined through a fixed 100 m reference distance: <code class="docutils literal notranslate"><span class="pre">div</span></code> is the
+sine of the divergence angle picked up by a telescope 100 m from the
+barycenter, <em>measured perpendicular to the pointing direction</em>. So the same
+<code class="docutils literal notranslate"><span class="pre">div</span></code> produces a different real divergence on an array of a different size or
+layout – and even on the same array pointed a different way. If you need the
+angle the array actually achieved, read it off <code class="docutils literal notranslate"><span class="pre">pointing_altaz</span></code> rather than
+inferring it from <code class="docutils literal notranslate"><span class="pre">div</span></code>.</p>
+<p>Values outside <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1]</span></code> raise a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>; the geometry stops meaning
+anything there.</p>
+<p>The array remembers what it was last asked for, which saves carrying the
+numbers around yourself:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">array</span><span class="o">.</span><span class="n">div</span>
+<span class="go">0.02</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">array</span><span class="o">.</span><span class="n">mean_pointing</span>
+<span class="go">(&lt;Quantity 70. deg&gt;, &lt;Quantity 180. deg&gt;)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">mean_pointing</span></code> raises a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> on an array that has never been
+pointed; <code class="docutils literal notranslate"><span class="pre">div</span></code> reports 0, which is what a fresh array’s telescopes are
+in fact doing – they all sit at alt = az = 0 until you point them.</p>
+</section>
+<section id="pointing-at-a-target">
+<h3>Pointing at a target<a class="headerlink" href="#pointing-at-a-target" title="Link to this heading">¶</a></h3>
+<p>A single telescope can also be aimed at a position in the ground frame, which
+is useful for pointing at something at a finite distance:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">array</span><span class="o">.</span><span class="n">telescopes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">point_to_object</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10000</span><span class="p">]</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Or directly in alt/az:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">array</span><span class="o">.</span><span class="n">telescopes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">point_to_altaz</span><span class="p">(</span><span class="mi">70</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span> <span class="mi">180</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="the-hyper-field-of-view">
+<h2>The hyper field of view<a class="headerlink" href="#the-hyper-field-of-view" title="Link to this heading">¶</a></h2>
+<p>This is the point of the whole exercise. Each telescope sees a disc on the
+sky. Pointing divergently spreads those discs out, which buys <strong>width</strong> at the
+cost of <strong>depth</strong>: a shower needs to be seen by at least two telescopes to be
+reconstructed stereoscopically, and divergence trades away exactly that
+overlap.</p>
+<p><a class="reference internal" href="docstring.html#divtel.telescope.Array.hyper_fov" title="divtel.telescope.Array.hyper_fov"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hyper_fov()</span></code></a> measures both sides of the bargain.
+It cuts the union of the discs into patches and labels each with its
+<strong>multiplicity</strong> – how many telescopes see it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">array</span><span class="o">.</span><span class="n">divergent_pointing</span><span class="p">(</span><span class="mf">0.02</span><span class="p">,</span> <span class="mi">70</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span> <span class="mi">180</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">total</span><span class="p">,</span> <span class="n">patches</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">hyper_fov</span><span class="p">()</span>          <span class="c1"># everything covered</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stereo</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">hyper_fov</span><span class="p">(</span><span class="n">m_cut</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>        <span class="c1"># seen by 2 or more</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">total</span><span class="p">,</span> <span class="n">stereo</span>
+<span class="go">(&lt;Quantity 45.95557740 deg2&gt;, &lt;Quantity 30.27381956 deg2&gt;)</span>
+</pre></div>
+</div>
+<p>Compare that with the parallel case, where all four discs coincide: 25.7 deg²
+covered, all of it at multiplicity 4. A very modest <code class="docutils literal notranslate"><span class="pre">div</span></code> of 0.02 has bought
+79% more sky, and 18% more of it is still stereoscopic – but a shower now
+lands on two telescopes where it used to land on four.</p>
+<p>The second return value is the list of <code class="docutils literal notranslate"><span class="pre">(polygon,</span> <span class="pre">multiplicity)</span></code> patches, if
+you want to do your own accounting:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">polygon</span><span class="p">,</span> <span class="n">multiplicity</span> <span class="ow">in</span> <span class="n">patches</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">multiplicity</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">polygon</span><span class="o">.</span><span class="n">area</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Coordinates are degrees of offset from the array’s mean pointing, in a Lambert
+azimuthal equal-area projection centred on it. That projection is chosen so
+patch areas are true solid angles whatever the array is pointing at, and so
+that nothing breaks near the zenith – where telescopes a fraction of a degree
+apart on the sky are hundreds of degrees apart in azimuth.</p>
+<p>Because the cameras here are about 5.7 degrees across while divergence swings
+the pointings by tens of degrees, the discs come apart within the first few
+hundredths of the slider. Push <code class="docutils literal notranslate"><span class="pre">div</span></code> past roughly 0.08 on this array and it
+covers four separate patches of sky with no stereoscopic overlap at all.</p>
+</section>
+<section id="plotting">
+<h2>Plotting<a class="headerlink" href="#plotting" title="Link to this heading">¶</a></h2>
+<p>Two views, which together tell the story:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">divtel.visualization</span><span class="w"> </span><span class="kn">import</span> <span class="n">display_hyper_fov</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="p">(</span><span class="n">ground</span><span class="p">,</span> <span class="n">sky</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">array</span><span class="o">.</span><span class="n">display_2d</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="s2">"xy"</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ground</span><span class="p">)</span>
+<span class="n">display_hyper_fov</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">sky</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="docstring.html#divtel.telescope.Array.display_2d" title="divtel.telescope.Array.display_2d"><code class="xref py py-meth docutils literal notranslate"><span class="pre">display_2d()</span></code></a> draws the telescopes on the ground
+with an arrow each for where it points; pass <code class="docutils literal notranslate"><span class="pre">projection='xz'</span></code> or <code class="docutils literal notranslate"><span class="pre">'yz'</span></code>
+for a side view. <a class="reference internal" href="docstring.html#divtel.visualization.display_hyper_fov" title="divtel.visualization.display_hyper_fov"><code class="xref py py-func docutils literal notranslate"><span class="pre">display_hyper_fov()</span></code></a> draws the sky,
+shaded by multiplicity, with the covered area in the title. Pass <code class="docutils literal notranslate"><span class="pre">m_cut=2</span></code>
+to have that title report the stereoscopic area instead – the patches below
+the cut are still drawn, faded, so the shape of the whole coverage stays
+visible.</p>
+<p>Both take an existing <code class="docutils literal notranslate"><span class="pre">ax</span></code> and return it, so they compose with whatever else
+you are plotting.</p>
+</section>
+<section id="exporting-to-sim-telarray">
+<h2>Exporting to sim_telarray<a class="headerlink" href="#exporting-to-sim-telarray" title="Link to this heading">¶</a></h2>
+<p>Once a pointing looks right, <a class="reference internal" href="docstring.html#divtel.telescope.Array.export_cfg" title="divtel.telescope.Array.export_cfg"><code class="xref py py-meth docutils literal notranslate"><span class="pre">export_cfg()</span></code></a> writes
+it out as a <code class="docutils literal notranslate"><span class="pre">sim_telarray</span></code> configuration file, so the layout can be handed to
+a real shower simulation:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">array</span><span class="o">.</span><span class="n">export_cfg</span><span class="p">(</span><span class="n">outdir</span><span class="o">=</span><span class="s2">"configs/"</span><span class="p">,</span> <span class="n">tel_configs</span><span class="o">=</span><span class="p">[</span><span class="s2">"lst.cfg"</span><span class="p">]</span> <span class="o">*</span> <span class="mi">4</span><span class="p">)</span>
+<span class="go">PosixPath('configs/CTA-ULTRA6-LaPalma-div0_02-az180_0-alt70_0.cfg')</span>
+</pre></div>
+</div>
+<p>The default filename records the divergence and mean pointing, so a scan over
+<code class="docutils literal notranslate"><span class="pre">div</span></code> lands in distinct files without naming them. <code class="docutils literal notranslate"><span class="pre">tel_configs</span></code> gives the
+per-telescope config each block <code class="docutils literal notranslate"><span class="pre">#include</span></code>s, in array order; left out, it
+defaults to the La Palma layout the writer was built for – four LSTs followed
+by MSTs with NectarCam – which is only right if your array is that one.</p>
+<p>Note that the angle conventions differ from divtel’s: <code class="docutils literal notranslate"><span class="pre">sim_telarray</span></code> takes a
+zenith angle rather than an altitude, and its azimuth runs the other way round.
+The conversion is done for you on the way out.</p>
+</section>
+<section id="where-to-go-next">
+<h2>Where to go next<a class="headerlink" href="#where-to-go-next" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="examples.html"><span class="doc">Examples</span></a> – the same model with sliders, running in your browser.</p></li>
+<li><p><a class="reference internal" href="docstring.html"><span class="doc">API documentation</span></a> – the full API.</p></li>
+<li><p><a class="reference external" href="https://github.com/cta-observatory/divtel">Source and issue tracker</a>.</p></li>
+</ul>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="examples.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Examples</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="index.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Home</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2022, Thomas Vuillaume
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">User guide</a><ul>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#the-coordinate-frame">The coordinate frame</a></li>
+<li><a class="reference internal" href="#building-an-array">Building an array</a></li>
+<li><a class="reference internal" href="#pointing-the-array">Pointing the array</a><ul>
+<li><a class="reference internal" href="#parallel-pointing">Parallel pointing</a></li>
+<li><a class="reference internal" href="#divergent-pointing">Divergent pointing</a></li>
+<li><a class="reference internal" href="#what-div-actually-means">What <code class="docutils literal notranslate"><span class="pre">div</span></code> actually means</a></li>
+<li><a class="reference internal" href="#pointing-at-a-target">Pointing at a target</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#the-hyper-field-of-view">The hyper field of view</a></li>
+<li><a class="reference internal" href="#plotting">Plotting</a></li>
+<li><a class="reference internal" href="#exporting-to-sim-telarray">Exporting to sim_telarray</a></li>
+<li><a class="reference internal" href="#where-to-go-next">Where to go next</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="_static/documentation_options.js?v=8d2e8164"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/scripts/furo.js?v=46bd48cc"></script>
+    </body>
+</html>

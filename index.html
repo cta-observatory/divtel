@@ -3,10 +3,10 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="divtel: Divergent pointing mode for Imaging Atmospheric Cherenkov Telescopes arrays" href="README.html">
+<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="User guide" href="guide.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>divtel 0.2.dev46+g50bf79721 documentation</title>
+        <title>divtel 0.2.dev49+g15a9f19e1 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="#"><div class="brand">divtel 0.2.dev46+g50bf79721 documentation</div></a>
+      <a href="#"><div class="brand">divtel 0.2.dev49+g15a9f19e1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -173,7 +173,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
       </label>
     </div>
@@ -190,13 +190,15 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul>
-<li class="toctree-l1"><a class="reference internal" href="README.html">divtel: Divergent pointing mode for Imaging Atmospheric Cherenkov Telescopes arrays</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="docstring.html">divtel API Documentation</a><input aria-label="Toggle navigation of divtel API Documentation" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="docstring_source/divtel.html">divtel package</a></li>
-</ul>
-</li>
+  <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="guide.html">User guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docstring.html">API documentation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="README.html">divtel: Divergent pointing mode for Imaging Atmospheric Cherenkov Telescopes arrays</a></li>
 </ul>
 
 </div>
@@ -230,36 +232,47 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="welcome-to-divtel-s-documentation">
-<h1>Welcome to divtel’s documentation!<a class="headerlink" href="#welcome-to-divtel-s-documentation" title="Link to this heading">¶</a></h1>
+          <section id="divtel">
+<h1>divtel<a class="headerlink" href="#divtel" title="Link to this heading">¶</a></h1>
+<p>divtel makes toy simulations of the <strong>divergent pointing</strong> mode for arrays of
+Imaging Atmospheric Cherenkov Telescopes.</p>
+<p>Point an array’s telescopes slightly away from one another and it sees a wider
+patch of sky, but fewer telescopes see any given part of it – and a shower
+needs two of them to be reconstructed stereoscopically. divtel lets you set up
+that trade and measure both sides of it.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">astropy.units</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">u</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">divtel.telescope</span><span class="w"> </span><span class="kn">import</span> <span class="n">Telescope</span><span class="p">,</span> <span class="n">Array</span>
+
+<span class="n">array</span> <span class="o">=</span> <span class="n">Array</span><span class="p">([</span>
+    <span class="n">Telescope</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="n">y</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="mi">20</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="mi">1</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="p">[(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">100</span><span class="p">)]</span>
+<span class="p">])</span>
+
+<span class="n">array</span><span class="o">.</span><span class="n">divergent_pointing</span><span class="p">(</span><span class="mf">0.02</span><span class="p">,</span> <span class="mi">70</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span> <span class="mi">180</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">)</span>
+
+<span class="n">covered</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">hyper_fov</span><span class="p">()</span>           <span class="c1"># 45.96 deg2 seen at all</span>
+<span class="n">stereo</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">hyper_fov</span><span class="p">(</span><span class="n">m_cut</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>     <span class="c1"># 30.27 deg2 seen by 2 or more</span>
+</pre></div>
+</div>
+<p>Start with the <a class="reference internal" href="guide.html"><span class="doc">User guide</span></a>, or go straight to the
+<a class="reference internal" href="examples.html"><span class="doc">interactive demo</span></a> and move the sliders.</p>
 <div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="README.html">divtel: Divergent pointing mode for Imaging Atmospheric Cherenkov Telescopes arrays</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="README.html#install">👨‍💻 Install</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="README.html#users">Users</a></li>
-<li class="toctree-l3"><a class="reference internal" href="README.html#developers">Developers</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="README.html#documentation">📚 Documentation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="README.html#the-interactive-demo">The interactive demo</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="README.html#license">🛡 License</a></li>
-<li class="toctree-l2"><a class="reference internal" href="README.html#citation">📃 Citation</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="docstring.html">divtel API Documentation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="docstring_source/divtel.html">divtel package</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="docstring_source/divtel.html#module-divtel.pointing">divtel.pointing module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="docstring_source/divtel.html#module-divtel.telescope">divtel.telescope module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="docstring_source/divtel.html#module-divtel.visualization">divtel.visualization module</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="guide.html">User guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.html#the-coordinate-frame">The coordinate frame</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.html#building-an-array">Building an array</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.html#pointing-the-array">Pointing the array</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.html#the-hyper-field-of-view">The hyper field of view</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.html#plotting">Plotting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.html#exporting-to-sim-telarray">Exporting to sim_telarray</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.html#where-to-go-next">Where to go next</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a><ul>
@@ -267,16 +280,28 @@
 <li class="toctree-l2"><a class="reference internal" href="examples.html#what-the-panels-show">What the panels show</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="docstring.html">API documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="docstring.html#divtel-telescope"><code class="docutils literal notranslate"><span class="pre">divtel.telescope</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="docstring.html#divtel-pointing"><code class="docutils literal notranslate"><span class="pre">divtel.pointing</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="docstring.html#divtel-visualization"><code class="docutils literal notranslate"><span class="pre">divtel.visualization</span></code></a></li>
+</ul>
+</li>
 </ul>
 </div>
-</section>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="README.html">divtel: Divergent pointing mode for Imaging Atmospheric Cherenkov Telescopes arrays</a></li>
+</ul>
+</div>
 <section id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading">¶</a></h1>
+<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
 <li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
 <li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
+</section>
 </section>
 
         </article>
@@ -284,12 +309,12 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="README.html">
+          <a class="next-page" href="guide.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">divtel: Divergent pointing mode for Imaging Atmospheric Cherenkov Telescopes arrays</div>
+                <div class="title">User guide</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -312,13 +337,32 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">divtel</a><ul>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=1cff54b4"></script>
+</div><script src="_static/documentation_options.js?v=8d2e8164"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>
