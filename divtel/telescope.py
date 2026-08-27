@@ -359,6 +359,15 @@ class Array:
         ------
         ValueError
             if div is outside [0, 1]
+
+        Notes
+        -----
+        Divergence spreads telescopes on both sides of the mean pointing, so
+        one asked for near the horizon pushes some of them underground -- a
+        real mount cannot follow that, it rails at its lowest elevation and
+        stops. A telescope whose computed altitude comes out negative is
+        pointed at the horizon instead (altitude 0), at whatever azimuth the
+        geometry gave it; nothing else about the array's pointing changes.
         """
         # Outside [0, 1] the geometry stops meaning anything: div > 1 makes
         # arcsin return nan (a RuntimeWarning at most), and div < 0 puts G in
@@ -372,13 +381,14 @@ class Array:
         self._az_mean = az_mean.to(u.deg)
 
         if div == 0:
+            alt_tel = np.maximum(alt_mean, 0 * u.deg)
             for tel in self.telescopes:
-                tel.point_to_altaz(alt_mean, az_mean)
+                tel.point_to_altaz(alt_tel, az_mean)
         else:
             g_point = pointing.pointG_position(self.barycenter, div, alt_mean, az_mean)
             for tel in self.telescopes:
                 alt_tel, az_tel = pointing.tel_div_pointing(tel.position, g_point)
-                tel.point_to_altaz(alt_tel, az_tel)
+                tel.point_to_altaz(np.maximum(alt_tel, 0 * u.rad), az_tel)
 
     def hyper_fov(self, m_cut=1, rim_points=128):
         """
