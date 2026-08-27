@@ -8,26 +8,20 @@ app = marimo.App(width="full")
 async def _():
     import sys
 
-    # In the WASM build there is no site-packages: Python is Pyodide, and
-    # divtel has to be fetched as a wheel published next to this page. The
-    # released sdist on PyPI cannot be used -- Pyodide installs wheels only.
+    # WASM has no site-packages, so divtel has to come from a wheel.
     if sys.platform == "emscripten":
         import json
 
         import micropip
         from pyodide.http import pyfetch
 
-        # Pyodide runs in a worker loaded from <export root>/assets/, so
-        # relative URLs resolve against assets/ rather than the page. marimo
-        # always emits index.html alongside assets/, so stepping up one level
-        # reaches the export root whatever subpath the site is deployed under.
+        # Pyodide runs from a worker under assets/, so step up one level
+        # to reach the site root where the wheel is published.
         base = "../pypi/"
-        # setuptools_scm bakes the version into the wheel filename, so the
-        # docs build writes a manifest rather than us hardcoding it here.
+        # The wheel's filename carries a version, so read it from a
+        # manifest instead of hardcoding it.
         response = await pyfetch(base + "manifest.json")
         if response.status != 200:
-            # Without this the JSON decode fails on a 404 page and the reader
-            # is told only "see console for details".
             raise RuntimeError(
                 f"could not fetch {base}manifest.json (HTTP {response.status}). "
                 "The divtel wheel is missing from the published site."
@@ -51,11 +45,9 @@ def _():
     from divtel.observation import Observation, pointing_coord
     from divtel.visualization import display_hyper_fov
 
-    # Pyodide has no network, and astropy's default is to fetch the current
-    # Earth-orientation table before any alt/az conversion. Switched off, it
-    # falls back to the table bundled with astropy, which is accurate to well
-    # under an arcsecond for dates near the release -- far finer than anything
-    # that matters for pointing a telescope array.
+    # Pyodide has no network, so skip astropy's default fetch of the current
+    # Earth-orientation table. The bundled table is accurate to well under
+    # an arcsecond near the release date, plenty for pointing an array.
     iers.conf.auto_download = False
 
     plt.rcParams["savefig.format"] = "svg"
@@ -81,13 +73,14 @@ def _(mo):
         r"""
         # Observing a real source
 
-        Everything in the geometry works in a frame fixed to the ground: an
-        array pointed at 70 degrees altitude stays pointed there whatever the
-        hour. A source does not. It rises, crosses the sky and sets, and the
-        direction you have to point in changes all night.
+        The geometry so far lives in a frame fixed to the ground: an array
+        pointed at 70 degrees altitude stays there whatever the hour. A
+        source doesn't. It rises, crosses the sky, and sets, so the direction
+        you point in changes all night.
 
-        `Observation` is the bridge. It is a place and a time, and it turns a
-        sky position into the altitude and azimuth `divergent_pointing` takes.
+        `Observation` bridges the two: give it a place and a time, and it
+        turns a sky position into the altitude and azimuth
+        `divergent_pointing` wants.
 
         Pick a target and a night:
         """
@@ -97,9 +90,8 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    # Coordinates are written in rather than resolved by name: name resolution
-    # queries a name server, and this notebook runs in a browser sandbox with
-    # no network. All ICRS, in degrees.
+    # Hardcoded rather than resolved by name, since this runs in a browser
+    # sandbox with no network. All ICRS, in degrees.
     SOURCES = {
         "Crab Nebula": (83.633, 22.015),
         "Markarian 421": (166.114, 38.209),
@@ -132,14 +124,13 @@ def _(AltAz, Observation, SOURCES, SkyCoord, get_body, night, np, site, source, 
 
     def _solar_midnight():
         """
-        The middle of the night, which is not midnight UTC.
+        The middle of the night, not midnight UTC.
 
-        La Palma sits 1.2 hours of longitude west of Greenwich and Paranal 4.7,
-        and the equation of time moves the sun about by a further quarter hour
-        over the year. Centring the plot on 00:00 UTC therefore pushes the
-        night off to one side, which reads as a bug even though it is not.
-        Finding where the sun is actually lowest costs one coarse ephemeris
-        pass and puts the dark band in the middle where it belongs.
+        La Palma sits 1.2 hours west of Greenwich, Paranal 4.7, and the
+        sun's lowest point drifts by up to a further quarter hour over the
+        year. Centring the plot on 00:00 UTC would push the dark band off to
+        one side, so one coarse ephemeris pass finds where the sun is
+        actually lowest instead.
         """
         start = Observation(site=site.value, time=f"{night.value}T00:00:00")
         coarse = start.time + np.linspace(-12, 12, 49) * u.hour
@@ -204,21 +195,21 @@ def _(DARK, HOURS, MOON, SUN, TRACK, np, plt, source, u):
 def _(mo):
     mo.md(
         r"""
-        The plot is centred on the middle of the night -- the moment the sun
-        is lowest, which is not midnight UTC at either site. The dark band
-        is astronomical night, the sun more than 18 degrees down.
-        The light band is twilight. The source track is coloured by azimuth, so
-        you can see it swing through the sky as well as rise and fall.
+        The plot centres on the middle of the night, not midnight UTC at
+        either site. The dark band is astronomical night, sun more than 18
+        degrees down; the light band is twilight. The source track is
+        coloured by azimuth, so you can see it swing across the sky as well
+        as rise and fall.
 
-        A source is worth observing when it is high *and* the sun is down, and
-        those two conditions do not always overlap: try the Galactic centre
-        from CTAO-North, which barely clears the horizon, against the same
+        A source is worth observing when it's high *and* the sun is down,
+        and those two don't always overlap: try the Galactic centre from
+        CTAO-North, which barely clears the horizon, against the same
         source from CTAO-South.
 
         ## What the array sees while it tracks
 
-        Now point the array at it. The divergence is held fixed; the only thing
-        changing is where in the sky the source has got to.
+        Now point the array at it, with `div` held fixed. The only thing
+        changing is where the source has got to.
         """
     )
     return
@@ -324,22 +315,20 @@ def _(ARRAY, MIDNIGHT, TARGET, div, np, plt, source, u):
 def _(mo):
     mo.md(
         r"""
-        The covered area is not constant while the array tracks, even though
-        `div` never changes. Two effects are at work, and they point opposite
-        ways.
+        The covered area isn't constant while the array tracks, even though
+        `div` never changes.
 
-        The array is a **flat** thing on a hillside pointing at a **tilted**
-        direction. As the source drops towards the horizon, the array's extent
-        along the pointing axis grows relative to its extent across it, so the
-        telescopes' offsets from the barycenter are increasingly *along* the
-        line of sight rather than across it. Divergence is driven by the
-        across-axis part, so the fan closes up, the discs pile back onto each
-        other, the covered area shrinks and the multiplicity climbs.
+        The array is **flat**, on a hillside, pointing in a **tilted**
+        direction. As the source drops toward the horizon, the array's
+        extent along the pointing axis grows relative to its extent across
+        it, so telescope offsets from the barycenter increasingly lie
+        *along* the line of sight rather than across it. Divergence is
+        driven by the across-axis part, so the fan closes up, the discs pile
+        back onto each other, the area shrinks, and multiplicity climbs.
 
-        That is worth stating plainly, because it is easy to assume a fixed
-        `div` buys a fixed field of view. It does not. If you need a particular
-        hyper FoV held through an observation, `div` has to be adjusted as the
-        source moves -- which is the question the next notebook takes up.
+        It's easy to assume a fixed `div` buys a fixed field of view. It
+        doesn't. Holding a hyper FoV through an observation means adjusting
+        `div` as the source moves, the question the next notebook takes up.
         """
     )
     return

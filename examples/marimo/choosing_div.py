@@ -8,26 +8,20 @@ app = marimo.App(width="full")
 async def _():
     import sys
 
-    # In the WASM build there is no site-packages: Python is Pyodide, and
-    # divtel has to be fetched as a wheel published next to this page. The
-    # released sdist on PyPI cannot be used -- Pyodide installs wheels only.
+    # WASM has no site-packages, so divtel has to come from a wheel.
     if sys.platform == "emscripten":
         import json
 
         import micropip
         from pyodide.http import pyfetch
 
-        # Pyodide runs in a worker loaded from <export root>/assets/, so
-        # relative URLs resolve against assets/ rather than the page. marimo
-        # always emits index.html alongside assets/, so stepping up one level
-        # reaches the export root whatever subpath the site is deployed under.
+        # Pyodide runs from a worker under assets/, so step up one level
+        # to reach the site root where the wheel is published.
         base = "../pypi/"
-        # setuptools_scm bakes the version into the wheel filename, so the
-        # docs build writes a manifest rather than us hardcoding it here.
+        # The wheel's filename carries a version, so read it from a
+        # manifest instead of hardcoding it.
         response = await pyfetch(base + "manifest.json")
         if response.status != 200:
-            # Without this the JSON decode fails on a 404 page and the reader
-            # is told only "see console for details".
             raise RuntimeError(
                 f"could not fetch {base}manifest.json (HTTP {response.status}). "
                 "The divtel wheel is missing from the published site."
@@ -73,24 +67,21 @@ def _(mo):
         r"""
         # Choosing div
 
-        The guide is blunt about what `div` is: an engineering knob, not a
-        physical angle. It sets where a virtual point **G** sits behind the
-        array, and every telescope points radially away from it. Nothing about
-        the number tells you which value to run an observation at.
+        `div` is an engineering knob, not a physical angle. It sets where a
+        virtual point **G** sits behind the array, and every telescope points
+        radially away from it. The number alone doesn't tell you what to run.
 
-        This notebook works out an answer, by turning the question round. Do
-        not ask what `div` to use. Ask **what you want from the array**, and
-        let that pick `div`.
+        So flip the question: don't ask what `div` to use, ask **what you
+        want from the array**, and let that pick `div` for you.
 
-        Two quantities are in tension, and divergence trades one against the
-        other:
+        Divergence trades two things against each other:
 
         - the **hyper FoV**, the sky the array covers
-        - the **multiplicity**, how many telescopes see any given part of it
+        - the **multiplicity**, how many telescopes see any given patch of it
 
-        Only patches seen by two or more telescopes can be reconstructed
-        stereoscopically, so the area worth quoting is the one above that cut,
-        and the multiplicity must not be allowed to collapse to one.
+        Only patches seen by two or more telescopes count for stereo
+        reconstruction, so the area worth quoting sits above that cut, and
+        multiplicity can't be allowed to fall to one.
         """
     )
     return
@@ -99,8 +90,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(files, load_array):
     ARRAY = load_array(files("divtel") / "data" / "la_palma_4LST_15MST.ecsv")
-    # Sampled finely enough to interpolate a threshold crossing, coarsely
-    # enough that the whole grid is a couple of seconds of geometry.
+    # Fine enough to interpolate a threshold, coarse enough to stay fast.
     DIVS = [0.0, 0.005, 0.01, 0.015, 0.02, 0.03, 0.04, 0.06]
     ALTITUDES = [80, 70, 60, 50, 40, 30, 20]
     AZIMUTH = 180
@@ -163,17 +153,16 @@ def _(ALTITUDES, DIVS, GAIN, MULTIPLICITY, plt):
 def _(mo):
     mo.md(
         r"""
-        Both panels are ordered by altitude, and the ordering is the point.
+        Both panels are ordered by altitude, and the order is the point.
 
-        **The same `div` buys less at low altitude.** At `div = 0.02` the array
-        covers about 2.9 times its parallel field when pointing near the
-        zenith, but only about 2.3 times when pointing at 20 degrees. The array
-        is flat and the sky is not: as the pointing tips over, more of each
-        telescope's offset from the barycenter lies *along* the line of sight
-        rather than across it, and only the across-axis part drives divergence.
-        The fan closes up.
+        **The same `div` buys less at low altitude.** At `div = 0.02` the
+        array covers about 2.9x its parallel field near the zenith, but only
+        2.3x at 20 degrees. The array is flat and the sky isn't: as the
+        pointing tips over, more of each telescope's offset from the
+        barycenter points along the line of sight instead of across it, and
+        only the across-axis part drives divergence. The fan closes up.
 
-        So a fixed `div` does not hold a fixed field of view while you track a
+        A fixed `div` doesn't hold a fixed field of view while you track a
         source. It quietly gives you less as the source sets.
 
         ## Turning it round
@@ -211,8 +200,8 @@ def _(ALTITUDES, DIVS, GAIN, MULTIPLICITY, np):
             meets = [j for j in allowed if GAIN[i, j] >= target]
             if meets:
                 j = min(meets)
-                # Linear interpolation between the sampled points, so the answer
-                # is not quantised to the grid.
+                # Interpolate between sampled points so the answer isn't
+                # quantised to the grid.
                 if j > 0:
                     g0, g1 = GAIN[i, j - 1], GAIN[i, j]
                     frac = (target - g0) / (g1 - g0) if g1 > g0 else 0.0
@@ -221,8 +210,8 @@ def _(ALTITUDES, DIVS, GAIN, MULTIPLICITY, np):
                     chosen.append(DIVS[j])
                 achieved.append(target)
             else:
-                # Cannot reach the target without breaking the multiplicity
-                # floor: report the best that stays legal.
+                # Can't reach the target without breaking the multiplicity
+                # floor, so report the best legal option.
                 if allowed:
                     j = max(allowed)
                     chosen.append(DIVS[j])
@@ -273,27 +262,26 @@ def _(ALTITUDES, required_div, floor, np, plt, target):
 def _(mo):
     mo.md(
         r"""
-        The left panel is the practical answer: **the `div` you need climbs as
-        the source drops.** Holding a constant field of view through a night is
-        not a matter of setting `div` once.
+        Left: **the `div` you need climbs as the source drops.** A constant
+        field of view through the night isn't something you get by setting
+        `div` once.
 
-        The right panel is the honest caveat. Push the wanted gain up, or the
-        multiplicity floor up, and the two constraints eventually collide:
-        crosses mark altitudes where no divergence reaches the target without
-        thinning the array past the floor. That collision is not a limitation
-        of the software. It is the trade itself — there is only so much sky
-        nineteen telescopes can cover and still see any of it twice.
+        Right: the honest caveat. Push the wanted gain up, or the
+        multiplicity floor up, and the two constraints collide. Crosses mark
+        altitudes where no divergence reaches the target without thinning
+        the array past the floor. That's not a software limitation, it's the
+        trade itself: there's only so much sky nineteen telescopes can cover
+        and still see twice.
 
         ## Across the sky
 
-        Altitude is most of the story, but not all of it: the array is not
-        azimuthally symmetric, so the answer wobbles by a few percent with
-        azimuth — up to about 12% at low altitude. The map below computes each
-        sky position properly rather than reading it off the altitude curve.
+        Altitude is most of the story but not all of it. The array isn't
+        azimuthally symmetric, so the answer wobbles a few percent with
+        azimuth, up to about 12% at low altitude. The map below computes each
+        sky position directly rather than reading it off the altitude curve.
 
-        This is by far the most expensive cell in the notebook -- a few
-        seconds of geometry natively, and rather longer through a Python
-        compiled to WebAssembly -- so it waits to be asked.
+        It's also the most expensive cell here, a few seconds of geometry
+        natively and longer in WebAssembly, so it waits for a button press.
         """
     )
     return
@@ -304,8 +292,8 @@ def _(mo):
     run = mo.ui.run_button(
         label="compute the sky map (up to a minute in the browser)"
     )
-    # A cell's trailing expression is what marimo renders, so this is the
-    # button appearing on the page rather than a statement with no effect.
+    # marimo renders a cell's trailing expression, so this puts the button
+    # on the page.
     run  # noqa: B018
     return (run,)
 
@@ -330,8 +318,7 @@ def _(ARRAY, Observation, SkyCoord, floor, np, run, target, u):
                 alt, az = obs.altaz_of(SkyCoord(ra=ra * u.deg, dec=dec * u.deg))
                 altitude[row, col] = alt.to_value(u.deg)
                 if alt < 20 * u.deg:
-                    # Below about 20 degrees the atmosphere makes the pointing
-                    # academic, so there is nothing to choose.
+                    # Below 20 degrees the atmosphere makes pointing academic.
                     continue
 
                 ARRAY.divergent_pointing(0.0, alt, az)
@@ -339,10 +326,8 @@ def _(ARRAY, Observation, SkyCoord, floor, np, run, target, u):
                 parallel = parallel_area.to_value(u.deg**2)
 
                 # Walk up the divergences until the target is met, then
-                # interpolate between the bracketing pair rather than reporting
-                # whichever grid value happened to clear it -- the same trick
-                # the altitude curve above uses, and without it the map is
-                # quantised to the handful of divs actually sampled.
+                # interpolate between the bracketing pair, same trick as
+                # above, so the map isn't quantised to the sampled divs.
                 last_div = 0.0
                 last_gain = 1.0
                 last_mean = ARRAY.multiplicity_moments(patches=parallel_patches)[0]
@@ -398,7 +383,7 @@ def _(SKY, mo, plt, target):
         axes[0].set_title("where the sky is, at 23:00 UTC")
         axes[1].set_title(f"div for a {target.value:.1f}x field")
         axes[2].set_title("multiplicity you end up with")
-        fig.suptitle("CTAO-North, 2026-03-01 23:00 UTC — blank where the source is below 20°")
+        fig.suptitle("CTAO-North, 2026-03-01 23:00 UTC, blank where the source is below 20°")
         fig.tight_layout()
         return fig
 
@@ -410,45 +395,39 @@ def _(SKY, mo, plt, target):
 def _(mo):
     mo.md(
         r"""
-The first two panels line up: wherever the sky is low, the map asks
-        for more divergence, exactly as the altitude curve said it would.
+The first two panels line up: wherever the sky sits low, the map asks
+        for more divergence, matching the altitude curve.
 
-        The third panel is the payoff, and it is the reason to bother adapting
-        `div` at all. Across the whole visible sky the multiplicity you end up
-        with barely moves. Holding the field of view fixed by raising `div` as
-        the source drops turns out to hold the *multiplicity* fixed too: over
-        altitudes from 80 down to 20 degrees, `div` has to climb about 40%,
-        from 0.016 to 0.022, while the mean multiplicity drifts only from 5.3
-        to 5.6.
+        The third panel is the payoff. Across the whole visible sky the
+        multiplicity barely moves: from 80 down to 20 degrees altitude, `div`
+        climbs about 40%, from 0.016 to 0.022, while mean multiplicity drifts
+        only from 5.3 to 5.6.
 
-        That is worth stating as the practical result. **An adaptive `div` gives
-        you a stable array all night — same coverage, same depth — where a
-        fixed one gives you neither.**
+        **An adaptive `div` gives you a stable array all night, same
+        coverage, same depth, where a fixed one gives you neither.**
 
-        The blank band is sky that has not risen. At a fixed moment more than
-        half of this map is simply unavailable, which is the other half of
+        The blank band is sky that hasn't risen yet. At any given moment,
+        more than half this map is unavailable, which is the other half of
         scheduling an observation.
 
         ## What to take away
 
-        1. **`div` is not a setting, it is the answer to a question.** Decide
-           what field of view you want and what multiplicity you can live with,
-           and those two fix it.
-        2. **The answer moves while you observe.** A source at 70 degrees and
-           the same source at 25 degrees need different divergence for the same
-           coverage. Holding `div` fixed through a night silently gives away
-           field of view as the source sets.
-        3. **Adapting it costs nothing in depth.** Raising `div` to hold the
-           field of view as a source sets keeps the multiplicity almost
-           constant too. You are not trading depth for stability; you are
-           getting both, which a fixed `div` does not give you.
-        4. **The two constraints can still be incompatible.** When the crosses
-           appear, no divergence satisfies both; the array is not big enough to
-           cover that much sky stereoscopically, and something has to give.
+        1. **`div` isn't a setting, it's the answer to a question.** Decide
+           what field of view you want and what multiplicity you can live
+           with, and those two numbers fix it.
+        2. **The answer moves as you observe.** A source at 70 degrees needs
+           a different `div` than the same source at 25 degrees, for the
+           same coverage.
+        3. **Adapting it is free.** Raising `div` to hold the field of view
+           as a source sets also holds the multiplicity steady, no depth
+           traded away.
+        4. **The two constraints can still clash.** Where the crosses
+           appear, no divergence satisfies both: the array isn't big enough
+           to cover that much sky stereoscopically.
 
-        The numbers here are specific to the 4 LST + 15 MST La Palma layout and
-        to a stereo cut of two. Change the layout, the cut or the floor and the
-        curves move — but the shape of the argument does not.
+        These numbers are specific to the 4 LST + 15 MST La Palma layout and
+        a stereo cut of two. Change the layout, the cut, or the floor and
+        the curves move, but the argument's shape doesn't.
         """
     )
     return
