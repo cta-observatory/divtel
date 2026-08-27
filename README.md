@@ -3,11 +3,11 @@
 
 <div align="left">
 
-[![Build status](https://github.com/cta-observatory/divtel/workflows/build/badge.svg?branch=master&event=push)](https://github.com/cta-observatory/divtel/actions?query=workflow%3Abuild)
-[![Python Version](https://img.shields.io/pypi/pyversions/divtel.svg)](https://pypi.org/project/divtel/)
+[![Build status](https://github.com/cta-observatory/divtel/actions/workflows/build.yml/badge.svg)](https://github.com/cta-observatory/divtel/actions/workflows/build.yml)
+[![Python Version](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://pypi.org/project/divtel/)
 [![Semantic Versions](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--versions-e10079.svg)](https://github.com/cta-observatory/divtel/releases)
 [![License](https://img.shields.io/github/license/cta-observatory/divtel?style=flat)](https://github.com/cta-observatory/divtel/blob/master/LICENSE)
-[![Documentation](https://img.shields.io/github/workflow/status/cta-observatory/divtel/Sphinx%20docs%20to%20gh-pages/master?label=Documentation)](https://cta-observatory.github.io/divtel/)
+[![Documentation](https://img.shields.io/github/actions/workflow/status/cta-observatory/divtel/doc.yml?branch=master&label=Documentation)](https://cta-observatory.github.io/divtel/)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6415137.svg)](https://doi.org/10.5281/zenodo.6415137)
 </div>
 
