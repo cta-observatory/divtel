@@ -379,6 +379,76 @@ Both take an existing ``ax`` and return it, so they compose with whatever else
 you are plotting.
 
 
+Pointing at a source, at a time
+===============================
+
+Everything so far works in the ground frame: an array pointed at alt 70, az 180
+stays pointed there whatever the hour. Real sources rise and set, so the
+direction to point at depends on where you are and when.
+
+:class:`~divtel.observation.Observation` supplies that. It is a place and a
+time, and it converts a sky position into the alt/az pair
+:meth:`~divtel.telescope.Array.divergent_pointing` already takes:
+
+.. code-block:: python
+
+    >>> from astropy.coordinates import SkyCoord
+    >>> from divtel.observation import Observation
+    >>> obs = Observation(site="north", time="2026-03-01T23:00:00")
+    >>> crab = SkyCoord(ra=83.633 * u.deg, dec=22.015 * u.deg)
+    >>> alt, az = obs.altaz_of(crab)
+    >>> f"{alt:.2f}, {az:.2f}"
+    '50.93 deg, 270.16 deg'
+    >>> array.divergent_pointing(0.02, alt, az)
+
+``site`` takes ``"north"`` or ``"south"`` for the two CTAO sites, whose
+coordinates are built in so this needs no network. Any other name is looked up
+in astropy's site registry, which does; an
+:class:`~astropy.coordinates.EarthLocation` is taken as it is, which is what to
+use when the exact position of a particular telescope matters.
+
+An observation never changes. :meth:`~divtel.observation.Observation.at` and
+:meth:`~divtel.observation.Observation.after` hand back a new one, so an array
+pointed from one cannot quietly fall out of step with it. That makes watching a
+source across a night a plain loop:
+
+.. code-block:: python
+
+    for hours in range(0, 7, 2):
+        moment = obs.after(hours * u.hour)
+        alt, az = moment.altaz_of(crab)
+        array.divergent_pointing(0.02, alt, az)
+        print(hours, array.hyper_fov()[0], array.multiplicity_moments()[0])
+
+:attr:`~divtel.observation.Observation.sun` and
+:attr:`~divtel.observation.Observation.moon` give those bodies in the same
+frame, which is how you check a time is actually observable:
+
+.. code-block:: python
+
+    >>> f"{obs.sun.alt:.1f}"
+    '-49.9 deg'
+
+Going the other way, :func:`~divtel.observation.pointing_coord` says where each
+telescope is looking on the sky. Under divergent pointing they all look
+somewhere different, so this is one coordinate per telescope:
+
+.. code-block:: python
+
+    >>> from divtel.observation import pointing_coord
+    >>> pointing_coord(array, obs).separation(crab).to(u.deg).max()
+    <Angle 4.3121837 deg>
+
+.. note::
+
+   divtel's azimuth is astropy's -- measured from north through east -- so
+   nothing is converted anywhere in between. Point an array at a source and
+   read the telescopes back with
+   :func:`~divtel.observation.pointing_coord` and you recover the position you
+   started from to well under an arcsecond, which is what the test suite
+   checks.
+
+
 Exporting to sim_telarray
 =========================
 
