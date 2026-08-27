@@ -19,6 +19,18 @@ how to write that out.
    :undoc-members:
    :show-inheritance:
 
+``divtel.layout``
+=================
+
+Reading an array layout from file. Layouts are ECSV tables that carry their own
+units, so a camera radius may be given as a length or as an angle on the sky
+without ambiguity.
+
+.. automodule:: divtel.layout
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 ``divtel.pointing``
 ===================
 

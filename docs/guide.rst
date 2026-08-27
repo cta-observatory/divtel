@@ -80,20 +80,69 @@ An array knows a few things about itself as a whole:
     >>> array.positions_array.shape      # one [x, y, z] row per telescope
     (4, 3)
 
-A small example layout ships with the package, if you want something to load
-rather than type:
+
+Loading an array from file
+==========================
+
+Typing telescopes out gets old quickly. :func:`~divtel.layout.load_array` reads
+a layout from an ECSV file -- plain text with a small header naming each column
+and its unit:
 
 .. code-block:: python
 
-    import numpy as np
     from importlib.resources import files
+    from divtel.layout import load_array
 
-    rows = np.genfromtxt(files("divtel") / "data" / "dummy_array.txt",
-                         delimiter=",")
-    array = Array([
-        Telescope(x * u.m, y * u.m, z * u.m, focal * u.m, radius * u.m)
-        for x, y, z, focal, radius in rows
-    ])
+    array = load_array(files("divtel") / "data" / "la_palma_4LST_15MST.ecsv")
+
+Two layouts ship with the package: ``dummy_array.ecsv``, five telescopes to try
+things on, and ``la_palma_4LST_15MST.ecsv``, a CTA La Palma layout of 4 LSTs and
+15 MSTs. A layout file needs the columns ``x``, ``y``, ``z``, ``focal`` and
+``camera_radius``, and may carry an ``id`` column:
+
+.. code-block:: text
+
+    # %ECSV 1.0
+    # ---
+    # datatype:
+    # - {name: id, datatype: int64}
+    # - {name: x, datatype: float64, unit: m}
+    # - {name: y, datatype: float64, unit: m}
+    # - {name: z, datatype: float64, unit: m}
+    # - {name: focal, datatype: float64, unit: m}
+    # - {name: camera_radius, datatype: float64, unit: m}
+    id x y z focal camera_radius
+    1 -70.04 -7.23 54 28 1.05
+
+Because the units live in the file, ``camera_radius`` may be given either as a
+length or as the half-angle the camera subtends on the sky -- whichever the
+instrument is quoted in. An angle is converted with ``radius = focal * tan(angle)``
+on the way in, so the two spellings describe the same telescope:
+
+.. code-block:: python
+
+    >>> from divtel.layout import camera_radius_in_metres
+    >>> camera_radius_in_metres(2.1476 * u.deg, 28 * u.m)
+    <Quantity 1.05000713 m>
+
+The ``id`` column sets :attr:`~divtel.telescope.Telescope.id`. CTAO numbers
+telescopes by type -- LSTs 1 to 4, MSTs 5 to 14, telescopes added to try out a
+configuration from 15 on -- so ids carry meaning, and
+:meth:`~divtel.telescope.Array.group_by` selects on them. Without the column,
+telescopes are numbered 1 to N in file order. Telescopes built by hand instead
+take ids from a counter shared across the session, which makes them unique but
+not meaningful; pass ``tel_id`` to :class:`~divtel.telescope.Telescope` to set
+them yourself.
+
+To look a layout over, or edit it, before building anything, read it as a table
+first -- :func:`~divtel.layout.load_array` takes one:
+
+.. code-block:: python
+
+    from divtel.layout import load_table
+
+    table = load_table(files("divtel") / "data" / "la_palma_4LST_15MST.ecsv")
+    lsts = load_array(table[:4])
 
 
 Pointing the array

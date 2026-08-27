@@ -14,19 +14,11 @@ def test_fov_convertible_to_steradian():
 
 
 def test_dummy_array_data_loads():
-    """The packaged `data/dummy_array.txt` loads into a working Array."""
-    import numpy as np
-    import astropy.units as u
+    """The packaged `data/dummy_array.ecsv` loads into a working Array."""
     from importlib.resources import files
-    from divtel.telescope import Array, Telescope
+    from divtel.layout import load_array
 
-    path = files("divtel") / "data" / "dummy_array.txt"
-    rows = np.genfromtxt(path, delimiter=",")
-
-    array = Array([
-        Telescope(x * u.m, y * u.m, z * u.m, focal * u.m, camera_radius * u.m)
-        for x, y, z, focal, camera_radius in rows
-    ])
+    array = load_array(files("divtel") / "data" / "dummy_array.ecsv")
 
     assert len(array.telescopes) == 5
 
