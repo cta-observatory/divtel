@@ -153,6 +153,92 @@ def multiplicity_plot(array, m_cut=1, ax=None, cmap="viridis"):
     return ax
 
 
+def display_groups(groups, projection="xy", ax=None, cmap="tab10", annotate=True):
+    """
+    Display sub-arrays, each in its own colour with its own barycenter.
+
+    `Array.display_2d` draws the whole array in one colour around one
+    barycenter. On a layout of several telescope types that hides the thing
+    worth seeing: where each type sits, and how far each type's mean pointing
+    has swung away from the others under divergence.
+
+    Parameters
+    ----------
+    groups: dict of str to `Array`
+        as returned by `Array.group_by`
+    projection: str
+        'xy', 'xz' or 'yz'
+    ax: `matplotlib.pyplot.axes`, optional
+    cmap: str
+        colormap the group colours are taken from
+    annotate: bool
+        label each barycenter with its group name
+
+    Returns
+    -------
+    ax: `matplotlib.pyplot.axes`
+
+    Examples
+    --------
+    >>> groups = array.group_by({"LST": range(1, 5), "MST": range(5, 20)})
+    >>> display_groups(groups)
+    """
+    axes = {"xy": (1, 0), "xz": (0, 2), "yz": (1, 2)}
+    if projection not in axes:
+        raise ValueError(
+            f"projection should be either 'xy', 'yz' or 'xz' but is {projection}"
+        )
+    if not groups:
+        raise ValueError("no groups to display")
+
+    horizontal, vertical = axes[projection]
+    labels = "xyz"
+
+    ax = plt.gca() if ax is None else ax
+    colors = plt.get_cmap(cmap)
+
+    # One scale for every group, so arrow lengths stay comparable between them.
+    # `scale_units="xy"` puts arrow length in data units, which is the only way
+    # to size them against the array: a unit pointing vector is drawn a tenth of
+    # the array across. Note that an arrow shows the pointing *projected into
+    # this plane*, so it shortens as the array points out of it.
+    everything = np.concatenate(
+        [array.positions_array.to_value(u.m) for array in groups.values()]
+    )
+    extent = max(np.ptp(everything[:, horizontal]), np.ptp(everything[:, vertical]))
+    scale = 10.0 / extent if extent > 0 else 1.0
+    quiver_style = {"angles": "xy", "scale_units": "xy", "scale": scale}
+
+    for i, (name, array) in enumerate(groups.items()):
+        color = colors(i % colors.N)
+        positions = array.positions_array.to_value(u.m)
+        barycenter = array.barycenter.to_value(u.m)
+        pointings = array.pointing_vectors
+
+        xx, yy = positions[:, horizontal], positions[:, vertical]
+        ax.scatter(xx, yy, color=color, label=name)
+        ax.quiver(xx, yy, pointings[:, horizontal], pointings[:, vertical],
+                  color=color, alpha=0.4, **quiver_style)
+
+        xb, yb = barycenter[horizontal], barycenter[vertical]
+        ax.scatter(xb, yb, marker="+", s=200, linewidths=2, color=color)
+        ax.quiver(xb, yb,
+                  pointings[:, horizontal].mean(), pointings[:, vertical].mean(),
+                  color=color, **quiver_style)
+
+        if annotate:
+            ax.annotate(name, (xb, yb), textcoords="offset points",
+                        xytext=(8, 8), color=color, fontweight="bold")
+
+    ax.set_xlabel(f"{labels[horizontal]} [m]")
+    ax.set_ylabel(f"{labels[vertical]} [m]")
+    ax.grid("on")
+    ax.legend(frameon=False)
+    ax.margins(0.25)
+    ax.axis("equal")
+    return ax
+
+
 def sky_fov(telescope, ax=None):
     """
     Display the telescope FoV in the sky
