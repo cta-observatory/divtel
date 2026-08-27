@@ -117,6 +117,13 @@ class Array:
 
     def __init__(self, telescope_list):
         self.telescopes = telescope_list
+        # The divergence and the direction diverged from are not recoverable
+        # from the telescopes afterwards -- G lies behind the array, so the
+        # mean of the telescope pointings is not the requested mean pointing.
+        # `export_cfg` needs both, so record them when they are handed to us.
+        self._div = 0
+        self._alt_mean = None
+        self._az_mean = None
 
     @property
     def positions_array(self):
@@ -166,6 +173,36 @@ class Array:
         """
         return np.array([np.array([tel.alt.to_value(u.rad), tel.az.to_value(u.rad)]) for tel in self.telescopes])*u.rad
 
+    @property
+    def div(self):
+        """
+        Divergence parameter last passed to `divergent_pointing`
+
+        Returns
+        -------
+        float
+        """
+        return self._div
+
+    @property
+    def mean_pointing(self):
+        """
+        Direction the array was last asked to diverge from
+
+        Returns
+        -------
+        (alt, az): tuple of `astropy.Quantity`, in degrees
+
+        Raises
+        ------
+        ValueError
+            if the array has never been pointed
+        """
+        if self._alt_mean is None:
+            raise ValueError("the array has no pointing yet; "
+                             "call divergent_pointing first")
+        return self._alt_mean, self._az_mean
+
     def divergent_pointing(self, div, alt_mean, az_mean):
         """
         Divergent pointing given a parameter div.
@@ -190,6 +227,10 @@ class Array:
         # pointing below the horizon while the caller asked for alt_mean.
         if not 0 <= div <= 1:
             raise ValueError(f"div must be between 0 and 1, got {div}")
+
+        self._div = div
+        self._alt_mean = alt_mean.to(u.deg)
+        self._az_mean = az_mean.to(u.deg)
 
         if div == 0:
             for tel in self.telescopes:
@@ -307,6 +348,102 @@ class Array:
 
         area = sum(p.area for p, m in labelled if m >= m_cut)
         return u.Quantity(area, u.deg ** 2), labelled
+
+    def export_cfg(self, filename=None, outdir="./", tel_configs=None,
+                   verbose=False):
+        """
+        Write the array pointing as a sim_telarray configuration file.
+
+        sim_telarray selects a telescope by defining `TELESCOPE`, so the file
+        is one `#if`/`#elif` chain: block 0 holds the array-wide defaults and
+        blocks 1..N hold one telescope each.
+
+        Angles are converted to sim_telarray's convention, which is not
+        divtel's: it takes a zenith angle rather than an altitude, and its
+        azimuth runs the opposite way round, so
+
+            TELESCOPE_THETA = 90 - alt
+            TELESCOPE_PHI   = (360 - az) mod 360
+
+        Parameters
+        ----------
+        filename: str, optional
+            defaults to 'CTA-ULTRA6-LaPalma-divX-azX-altX.cfg', built from the
+            divergence and mean pointing of the array
+        outdir: str or `pathlib.Path`, optional
+            directory to write into; must exist
+        tel_configs: [str], optional
+            config file each telescope `#include`s, in array order. Defaults
+            to the La Palma layout the writer was built for: the first four
+            telescopes are LSTs, the rest MSTs with NectarCam.
+        verbose: bool, optional
+            echo the file to stdout once written
+
+        Returns
+        -------
+        `pathlib.Path`
+            the file that was written
+
+        Raises
+        ------
+        ValueError
+            if the array has never been pointed, or `tel_configs` does not
+            have one entry per telescope
+        """
+        from pathlib import Path
+
+        alt_mean, az_mean = self.mean_pointing
+
+        if tel_configs is None:
+            tel_configs = ["CTA-ULTRA6-LST.cfg" if n <= 4
+                           else "CTA-ULTRA6-MST-NectarCam.cfg"
+                           for n in range(1, len(self.telescopes) + 1)]
+        elif len(tel_configs) != len(self.telescopes):
+            raise ValueError(
+                f"tel_configs has {len(tel_configs)} entries but the array has "
+                f"{len(self.telescopes)} telescopes"
+            )
+
+        alt_deg = alt_mean.to_value(u.deg)
+        az_deg = az_mean.to_value(u.deg)
+
+        if filename is None:
+            filename = 'CTA-ULTRA6-LaPalma-div{}-az{}-alt{}.cfg'.format(
+                str(self.div).replace(".", "_"),
+                str(az_deg).replace(".", "_"),
+                str(alt_deg).replace(".", "_"))
+
+        path = Path(outdir) / filename
+
+        with open(path, 'w') as f:
+            f.write('#ifndef TELESCOPE\n')
+            f.write('#  define TELESCOPE 0\n')
+            f.write('#endif\n')
+            f.write('#if TELESCOPE == 0\n')
+            f.write('   TELESCOPE_THETA={:.2f} \n'.format(90 - alt_deg))
+            f.write('   TELESCOPE_PHI={:.2f} \n'.format((360 - az_deg) % 360))
+            f.write('\n% Global and default configuration for things missing in telescope-specific config.\n')
+            f.write('#  include <{}>\n'.format(tel_configs[0]))
+            for n, (tel, cfg) in enumerate(zip(self.telescopes, tel_configs), 1):
+                f.write('\n#elif TELESCOPE == {:d}\n'.format(n))
+                f.write('#  include <{}>\n'.format(cfg))
+                f.write('   TELESCOPE_THETA={:.2f}\n'.format(
+                    90 - tel.alt.to_value(u.deg)))
+                # Az is unwrapped in divtel (arctan2 gives -180..180), so the
+                # flip to sim_telarray's sense has to be brought back into
+                # 0..360 rather than left negative.
+                f.write('   TELESCOPE_PHI={:.2f}\n'.format(
+                    (360 - tel.az.to_value(u.deg)) % 360))
+            f.write('#else\n')
+            f.write('   Error Invalid telescope for CTA-ULTRA6 La Palma configuration.\n')
+            f.write('#endif\n')
+            f.write('trigger_telescopes = 2 % In contrast to Prod-3 South we apply loose stereo trigger immediately\n')
+            f.write('array_trigger = array_trigger_ultra6_diver-test.dat\n')
+
+        if verbose:
+            print(path.read_text())
+
+        return path
 
     def display_2d(self, projection='xy', ax=None, **kwargs):
         """
