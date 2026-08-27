@@ -1,3 +1,4 @@
+import astropy.units as u
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -87,6 +88,68 @@ def display_hyper_fov(array, ax=None, m_cut=1, cmap="viridis", show_area=True):
         label = "covered" if m_cut <= 1 else f"seen by $\\geq${m_cut}"
         ax.set_title(f"hyper FoV: {area.value:.1f} deg$^2$ {label}")
 
+    return ax
+
+
+def multiplicity_plot(array, m_cut=1, ax=None, cmap="viridis"):
+    """
+    Bar chart of how much sky is seen by how many telescopes.
+
+    `display_hyper_fov` shades the sky map by multiplicity, which shows where
+    the well-covered parts are; this counts them up, which shows how much there
+    is of each. Bars are coloured to match that map, so the two read together.
+
+    Parameters
+    ----------
+    array: `Array`
+    m_cut: int
+        multiplicity counted towards the area reported in the title; bars below
+        it are still drawn, faded
+    ax: `matplotlib.pyplot.axes`, optional
+    cmap: str
+        colormap used to shade multiplicity, as in `display_hyper_fov`
+
+    Returns
+    -------
+    ax: `matplotlib.pyplot.axes`
+
+    Examples
+    --------
+    >>> array.divergent_pointing(0.05, 70 * u.deg, 180 * u.deg)
+    >>> multiplicity_plot(array)
+    """
+    from matplotlib.colors import BoundaryNorm
+
+    area, patches = array.hyper_fov(m_cut=m_cut)
+    if not patches:
+        raise ValueError("the array covers no sky; are the telescopes pointed?")
+
+    multiplicity, per_multiplicity = array.multiplicity_profile(patches=patches)
+    mean, variance = array.multiplicity_moments(patches=patches)
+
+    ax = plt.gca() if ax is None else ax
+
+    # Same discrete colour scale as the sky map, so a bar and the patches it
+    # counts come out the same colour. That means normalising over the
+    # multiplicities actually present, exactly as `display_hyper_fov` does --
+    # normalising over the telescope count instead would leave every bar of a
+    # strongly divergent array at the dark end of the map.
+    colors = plt.get_cmap(cmap)
+    norm = BoundaryNorm(np.arange(0.5, multiplicity.max() + 1.5), colors.N)
+    bars = ax.bar(multiplicity, per_multiplicity.to_value(u.deg ** 2),
+                  color=[colors(norm(m)) for m in multiplicity],
+                  edgecolor="black", linewidth=0.5)
+
+    for bar, m in zip(bars, multiplicity, strict=True):
+        if m < m_cut:
+            bar.set_alpha(0.25)
+
+    label = "covered" if m_cut <= 1 else rf"seen by $\geq${m_cut}"
+    ax.set_title(f"hyper FoV: {area.value:.1f} deg$^2$ {label}\n"
+                 rf"multiplicity {mean:.1f} $\pm$ {np.sqrt(variance):.1f}")
+    ax.set_xlabel("multiplicity")
+    ax.set_ylabel("hyper FoV [deg$^2$]")
+    ax.set_xticks(multiplicity)
     return ax
 
 
