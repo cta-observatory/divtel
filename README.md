@@ -4,6 +4,7 @@
 <div align="left">
 
 [![Build status](https://github.com/cta-observatory/divtel/actions/workflows/build.yml/badge.svg)](https://github.com/cta-observatory/divtel/actions/workflows/build.yml)
+[![PyPI](https://img.shields.io/pypi/v/divtel.svg)](https://pypi.org/project/divtel/)
 [![Python Version](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://pypi.org/project/divtel/)
 [![Semantic Versions](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--versions-e10079.svg)](https://github.com/cta-observatory/divtel/releases)
 [![License](https://img.shields.io/github/license/cta-observatory/divtel?style=flat)](https://github.com/cta-observatory/divtel/blob/master/LICENSE)
@@ -149,16 +150,22 @@ This project is licensed under the terms of the `MIT` license. See [LICENSE](htt
 ## 📃 Citation
 
 ```bibtex
-@software{thomas_vuillaume_2022_6415138,
-  author       = {Thomas Vuillaume and
-                  Alice Donini and
-                  Thomas Gasparetto},
-  title        = {cta-observatory/divtel: v0.1},
-  month        = apr,
-  year         = 2022,
+@software{vuillaume_2026_22134772,
+  author       = {Vuillaume, Thomas and
+                  Donini, Alice and
+                  Tak, Donggeun},
+  title        = {cta-observatory/divtel: v1.0.0},
+  month        = aug,
+  year         = 2026,
   publisher    = {Zenodo},
-  version      = {v0.1},
-  doi          = {10.5281/zenodo.6415138},
-  url          = {https://doi.org/10.5281/zenodo.6415138}
+  version      = {v1.0.0},
+  doi          = {10.5281/zenodo.22134772},
+  url          = {https://doi.org/10.5281/zenodo.22134772},
+  swhid        = {swh:1:dir:5d33fdb6f72092680b3d56a5b5464ad8bc15105a
+                   ;origin=https://doi.org/10.5281/zenodo.6415137;vis
+                   it=swh:1:snp:8c5be5e7e6d934ee5128efb62dbc5e4ffae72
+                   248;anchor=swh:1:rel:bf23ef411c70658334678e4345c3a
+                   cb4cbf8ecc6;path=cta-observatory-divtel-c0283b3
+                  },
 }
 ```
