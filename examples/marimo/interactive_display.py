@@ -44,6 +44,7 @@ def _():
     import astropy.units as u
     import matplotlib.pyplot as plt
 
+    from divtel import pointing
     from divtel.telescope import Telescope, Array
     from divtel.visualization import display_hyper_fov
 
@@ -51,7 +52,7 @@ def _():
     # on the image -- figsize x 100 -- which overflows a frame narrower than
     # the figure. SVG carries no such width, so it scales to its container.
     plt.rcParams["savefig.format"] = "svg"
-    return Array, Telescope, display_hyper_fov, mo, np, plt, u
+    return Array, Telescope, display_hyper_fov, mo, np, plt, pointing, u
 
 
 @app.cell(hide_code=True)
@@ -102,24 +103,73 @@ def _(Array, Telescope, u):
 
 
 @app.cell(hide_code=True)
-def _(alt, array, az, div, u):
+def _(alt, array, az, div, pointing, u):
     # Marimo is reactive: touching a slider re-runs only the cells that read
     # it. This one repoints the array and hands it on under a new name, which
     # is what puts the two plot cells below downstream of the sliders.
     array.divergent_pointing(div.value, alt.value * u.deg, az.value * u.deg)
     pointed = array
-    return (pointed,)
+    # G is the point behind the array that the telescopes' pointing
+    # directions all trace back to. At div=0 the telescopes point in
+    # parallel and G recedes to infinity, so there is nothing to plot.
+    g_point = (
+        pointing.pointG_position(
+            pointed.barycenter, div.value, alt.value * u.deg, az.value * u.deg
+        )
+        if div.value > 0
+        else None
+    )
+    return g_point, pointed
 
 
 @app.cell(hide_code=True)
-def _(plt, pointed):
-    def _plot(array):
+def _(g_point, mo, np, pointed, u):
+    # G is shown as a marker in the panels below, but at low divergence it
+    # sits far outside the array's plotted extent (see the note in the cell
+    # above) and would otherwise just seem to have vanished. Print its
+    # position and distance unconditionally so it stays visible even then.
+    if g_point is None:
+        _text = "**G**: undefined at zero divergence -- pointing is parallel and never converges."
+    else:
+        _gx, _gy, _gz = g_point.to_value(u.m)
+        _dist = np.linalg.norm((g_point - pointed.barycenter).to_value(u.m))
+        _text = (
+            f"**G** = ({_gx:.0f}, {_gy:.0f}, {_gz:.0f}) m, "
+            f"{_dist:.0f} m from the array's barycenter. "
+            "Marked with a red x below when it falls within the plotted range."
+        )
+    mo.md(_text)
+    return
+
+
+@app.cell(hide_code=True)
+def _(g_point, plt, pointed, u):
+    # Index pairs matching the (x, y) columns Array.display_2d picks for
+    # each projection, so G lands on the same axes as the telescopes.
+    _axes_for = {"xz": (0, 2), "xy": (1, 0), "yz": (1, 2)}
+
+    def _plot(array, g):
         fig, axes = plt.subplots(1, 3, figsize=(11, 3.2), layout="constrained")
         for ax, projection in zip(axes, ("xz", "xy", "yz")):
             array.display_2d(projection=projection, ax=ax)
+            if g is not None:
+                # At low divergence G sits far outside the array's view (it
+                # recedes to infinity as div -> 0). Pin the limits display_2d
+                # already chose so adding G can't blow up the scale and
+                # shrink the array to a dot; G simply drops out of frame
+                # instead.
+                xlim, ylim = ax.get_xlim(), ax.get_ylim()
+                i, j = _axes_for[projection]
+                gx, gy = g.to_value(u.m)[i], g.to_value(u.m)[j]
+                ax.scatter(gx, gy, marker="x", color="red", label="G")
+                ax.set_xlim(xlim)
+                ax.set_ylim(ylim)
+        # Marker styles are identical across the three panels, so one legend
+        # (on the first) is enough to identify them all.
+        axes[0].legend(fontsize="small")
         return fig
 
-    _plot(pointed)
+    _plot(pointed, g_point)
     return
 
 
