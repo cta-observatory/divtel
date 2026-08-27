@@ -290,6 +290,68 @@ hundredths of the slider. Push ``div`` past roughly 0.08 on this array and it
 covers four separate patches of sky with no stereoscopic overlap at all.
 
 
+How well the sky is covered
+===========================
+
+The hyper FoV says how much sky the array covers.
+:meth:`~divtel.telescope.Array.multiplicity_profile` says how well it covers
+it -- how much of that sky is seen by exactly one telescope, by exactly two,
+and so on:
+
+.. code-block:: python
+
+    >>> array = load_array(files("divtel") / "data" / "la_palma_4LST_15MST.ecsv")
+    >>> array.divergent_pointing(0.05, 70 * u.deg, 180 * u.deg)
+    >>> multiplicity, area = array.multiplicity_profile()
+    >>> multiplicity
+    array([1, 2, 3, 4, 5])
+    >>> np.round(area, 1)
+    <Quantity [242. , 131.3,  70.8,   8. ,   0.6] deg2>
+
+:meth:`~divtel.telescope.Array.multiplicity_moments` boils that down to two
+numbers -- the mean multiplicity and its variance, both weighted by solid angle
+so a patch counts for as much sky as it covers:
+
+.. code-block:: python
+
+    >>> mean, variance = array.multiplicity_moments()
+    >>> f"{mean:.2f} +- {np.sqrt(variance):.2f}"
+    '1.66 +- 0.81'
+
+The mean is the summary of how divergent a configuration is, and it moves
+opposite the area. On this array, pointed at 70 degrees:
+
+=========  =================  ===================
+``div``    hyper FoV [deg²]   mean multiplicity
+=========  =================  ===================
+0          46.3               16.3
+0.01       100.0              7.5
+0.02       169.8              4.4
+0.05       452.7              1.7
+=========  =================  ===================
+
+Ten times the sky for a tenth of the telescopes on any part of it. Which end of
+that trade you want is the question divergent pointing exists to ask.
+
+:func:`~divtel.visualization.multiplicity_plot` draws the profile as a bar
+chart, coloured to match the sky map so the two read together:
+
+.. code-block:: python
+
+    from divtel.visualization import display_hyper_fov, multiplicity_plot
+
+    fig, (sky, bars) = plt.subplots(1, 2, figsize=(12, 5))
+    display_hyper_fov(array, ax=sky)
+    multiplicity_plot(array, ax=bars)
+
+Both take ``m_cut``, which sets the multiplicity counted towards the area in
+the title; patches and bars below it are still drawn, faded.
+
+If you already have the patches from a
+:meth:`~divtel.telescope.Array.hyper_fov` call, pass them in as ``patches=`` to
+save computing the geometry twice.
+
+
 Plotting
 ========
 

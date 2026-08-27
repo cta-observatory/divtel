@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="divtel: Divergent pointing mode for Imaging Atmospheric Cherenkov Telescopes arrays" href="README.html"><link rel="prev" title="Examples" href="examples.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>API documentation - divtel 0.2.dev51+g3335e3869 documentation</title>
+        <title>API documentation - divtel 0.2.dev53+g900b8401a documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">divtel 0.2.dev51+g3335e3869 documentation</div></a>
+      <a href="index.html"><div class="brand">divtel 0.2.dev53+g900b8401a documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -430,6 +430,68 @@ equal-area projection, so polygon areas are in deg**2.</p></li>
 <dd class="field-odd"><p><strong>ValueError</strong> – if the array has never been pointed</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="divtel.telescope.Array.multiplicity_moments">
+<span class="sig-name descname"><span class="pre">multiplicity_moments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patches</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.telescope.Array.multiplicity_moments" title="Link to this definition">¶</a></dt>
+<dd><p>Mean and variance of the multiplicity, weighted by area.</p>
+<p>One number for how divergent a configuration is, and one for how evenly.
+A parallel array has every patch seen by every telescope, so the mean is
+the number of telescopes and the variance is zero; as divergence grows
+the mean falls towards one.</p>
+<p>Weighting is by solid angle, so a patch counts for as much sky as it
+covers – an unweighted mean over patches would let a sliver of overlap
+count for as much as the whole field.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>patches</strong> (list of (<cite>shapely.Polygon</cite>, int), optional) – the patches from a previous <cite>hyper_fov</cite> call, to save computing them
+again; recomputed if not given</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>(mean, variance)</strong></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple of float</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">array</span><span class="o">.</span><span class="n">divergent_pointing</span><span class="p">(</span><span class="mf">0.05</span><span class="p">,</span> <span class="mi">70</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span> <span class="mi">180</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mean</span><span class="p">,</span> <span class="n">variance</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">multiplicity_moments</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mean</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> +- </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">variance</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span>
+<span class="go">'1.66 +- 0.81'</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="divtel.telescope.Array.multiplicity_profile">
+<span class="sig-name descname"><span class="pre">multiplicity_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patches</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.telescope.Array.multiplicity_profile" title="Link to this definition">¶</a></dt>
+<dd><p>How much sky is seen by exactly one telescope, by exactly two, and so on.</p>
+<p><cite>hyper_fov</cite> reports how much sky the array covers; this reports how well
+it covers it. Both matter, and divergence trades one for the other.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>patches</strong> (list of (<cite>shapely.Polygon</cite>, int), optional) – the patches from a previous <cite>hyper_fov</cite> call, to save computing them
+again; recomputed if not given</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>multiplicity</strong> (<cite>numpy.ndarray</cite> of int) – the multiplicities present, in increasing order</p></li>
+<li><p><strong>area</strong> (<cite>astropy.Quantity</cite>) – sky seen by exactly that many telescopes, in deg**2</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">array</span><span class="o">.</span><span class="n">divergent_pointing</span><span class="p">(</span><span class="mf">0.05</span><span class="p">,</span> <span class="mi">70</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span> <span class="mi">180</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">multiplicity</span><span class="p">,</span> <span class="n">area</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">multiplicity_profile</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">multiplicity</span>
+<span class="go">array([1, 2, 3, 4, 5])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">area</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="go">&lt;Quantity [242. , 131.3,  70.8,   8. ,   0.6] deg2&gt;</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py property">
@@ -787,6 +849,37 @@ solid angles – see <cite>Array.hyper_fov</cite>.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="divtel.visualization.multiplicity_plot">
+<span class="sig-prename descclassname"><span class="pre">divtel.visualization.</span></span><span class="sig-name descname"><span class="pre">multiplicity_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_cut</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'viridis'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.visualization.multiplicity_plot" title="Link to this definition">¶</a></dt>
+<dd><p>Bar chart of how much sky is seen by how many telescopes.</p>
+<p><cite>display_hyper_fov</cite> shades the sky map by multiplicity, which shows where
+the well-covered parts are; this counts them up, which shows how much there
+is of each. Bars are coloured to match that map, so the two read together.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<cite>Array</cite>)</p></li>
+<li><p><strong>m_cut</strong> (<em>int</em>) – multiplicity counted towards the area reported in the title; bars below
+it are still drawn, faded</p></li>
+<li><p><strong>ax</strong> (<cite>matplotlib.pyplot.axes</cite>, optional)</p></li>
+<li><p><strong>cmap</strong> (<em>str</em>) – colormap used to shade multiplicity, as in <cite>display_hyper_fov</cite></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ax</strong></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>matplotlib.pyplot.axes</cite></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">array</span><span class="o">.</span><span class="n">divergent_pointing</span><span class="p">(</span><span class="mf">0.05</span><span class="p">,</span> <span class="mi">70</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span> <span class="mi">180</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">multiplicity_plot</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="divtel.visualization.sky_fov">
 <span class="sig-prename descclassname"><span class="pre">divtel.visualization.</span></span><span class="sig-name descname"><span class="pre">sky_fov</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">telescope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.visualization.sky_fov" title="Link to this definition">¶</a></dt>
 <dd><p>Display the telescope FoV in the sky</p>
@@ -875,6 +968,8 @@ solid angles – see <cite>Array.hyper_fov</cite>.</p>
 <li><a class="reference internal" href="#divtel.telescope.Array.export_cfg"><code class="docutils literal notranslate"><span class="pre">Array.export_cfg()</span></code></a></li>
 <li><a class="reference internal" href="#divtel.telescope.Array.hyper_fov"><code class="docutils literal notranslate"><span class="pre">Array.hyper_fov()</span></code></a></li>
 <li><a class="reference internal" href="#divtel.telescope.Array.mean_pointing"><code class="docutils literal notranslate"><span class="pre">Array.mean_pointing</span></code></a></li>
+<li><a class="reference internal" href="#divtel.telescope.Array.multiplicity_moments"><code class="docutils literal notranslate"><span class="pre">Array.multiplicity_moments()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.telescope.Array.multiplicity_profile"><code class="docutils literal notranslate"><span class="pre">Array.multiplicity_profile()</span></code></a></li>
 <li><a class="reference internal" href="#divtel.telescope.Array.pointing_altaz"><code class="docutils literal notranslate"><span class="pre">Array.pointing_altaz</span></code></a></li>
 <li><a class="reference internal" href="#divtel.telescope.Array.pointing_vectors"><code class="docutils literal notranslate"><span class="pre">Array.pointing_vectors</span></code></a></li>
 <li><a class="reference internal" href="#divtel.telescope.Array.positions_array"><code class="docutils literal notranslate"><span class="pre">Array.positions_array</span></code></a></li>
@@ -906,6 +1001,7 @@ solid angles – see <cite>Array.hyper_fov</cite>.</p>
 </li>
 <li><a class="reference internal" href="#divtel-visualization"><code class="docutils literal notranslate"><span class="pre">divtel.visualization</span></code></a><ul>
 <li><a class="reference internal" href="#divtel.visualization.display_hyper_fov"><code class="docutils literal notranslate"><span class="pre">display_hyper_fov()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.visualization.multiplicity_plot"><code class="docutils literal notranslate"><span class="pre">multiplicity_plot()</span></code></a></li>
 <li><a class="reference internal" href="#divtel.visualization.sky_fov"><code class="docutils literal notranslate"><span class="pre">sky_fov()</span></code></a></li>
 </ul>
 </li>
@@ -920,7 +1016,7 @@ solid angles – see <cite>Array.hyper_fov</cite>.</p>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=9f1af40e"></script>
+</div><script src="_static/documentation_options.js?v=cd0e37fa"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>
