@@ -64,10 +64,11 @@ def _(mo):
         r"""
         # One site, two instruments
 
-        The CTA La Palma layout is really two arrays sharing a field: four
-        Large-Sized Telescopes sitting inside fifteen Medium-Sized ones, with
-        different optics and different fields of view. An LST camera
-        subtends about 2.15 degrees on the sky, an MST camera about 3.84.
+        The CTAO North layout at La Palma is really two arrays sharing a
+        field: four Large-Sized Telescopes sitting inside nine Medium-Sized
+        ones, with different optics and different fields of view. An LST
+        camera subtends about 2.15 degrees on the sky, an MST camera about
+        3.84.
 
         Divergence is a *geometric* construction: every telescope points
         away from a virtual point behind the array, so how far it swings
@@ -82,11 +83,13 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(files, load_array):
-    ARRAY = load_array(files("divtel") / "data" / "la_palma_4LST_15MST.ecsv")
+    ARRAY = load_array(
+        files("divtel") / "data" / "cta-north-lapalma-alpha-prod6.ecsv"
+    )
     # Ids follow the CTAO convention, so type maps directly to id range.
     # `ARRAY.group_by("camera_radius")` finds the same split unprompted,
     # since each type shares a camera.
-    TYPES = {"LST": range(1, 5), "MST": range(5, 20)}
+    TYPES = {"LST": range(1, 5), "MST": range(5, 14)}
     return ARRAY, TYPES
 
 
@@ -167,17 +170,18 @@ def _(mo):
 
         $$\alpha_i = \arctan\frac{|r_{\perp,i}|}{\text{norm} + r_{\parallel,i}}$$
 
-        The LSTs cluster near the centre; the MSTs run out to nearly 400 m.
-        At `div = 0.02` the LSTs swing between 0.4 and 1.8 degrees off the
-        mean pointing, the MSTs between 0.8 and 4.8, roughly three times the
-        angle on the same knob.
+        The LSTs cluster near the centre; the MSTs run out past 300 m. At
+        `div = 0.02` the LSTs swing between 0.5 and 1.4 degrees off the mean
+        pointing, the MSTs between 0.5 and 3.7, roughly two and a half times
+        the angle on the same knob.
 
         The consequence is easy to guess wrong. It does *not* follow that
         the MSTs lose stereo overlap first: their camera is also the wider
         one, 3.84 degrees of radius against 2.15. The bigger swing and the
-        bigger camera cancel out, so both types thin to multiplicity one at
-        a similar `div`, around 0.05 to 0.1 here, even though the angular
-        spread stays a factor of three apart the whole way.
+        bigger camera partly cancel out, so both types thin to multiplicity
+        one at a similar `div`, around 0.08 to 0.1 here, even though the
+        angular spread stays roughly two and a half times apart the whole
+        way.
         """
     )
     return
@@ -217,7 +221,7 @@ def _(mo):
         The two curves never meet. As `div` goes to zero, each type collapses
         onto a single camera, so the gap bottoms out at the ratio of the two
         camera areas, about 3.2. The MST curve then pulls away, reaching
-        roughly twelve times the LST area by `div = 0.1`, and both flatten
+        roughly seven times the LST area by `div = 0.3`, and both flatten
         once every telescope sees its own patch of sky, no more area to win.
 
         To make the two types diverge by comparable *angles* instead of a

@@ -116,9 +116,9 @@ def load_array(path):
     --------
     >>> from importlib.resources import files
     >>> from divtel.layout import load_array
-    >>> array = load_array(files("divtel") / "data" / "la_palma_4LST_15MST.ecsv")
+    >>> array = load_array(files("divtel") / "data" / "cta-north-lapalma-alpha-prod6.ecsv")
     >>> len(array.telescopes)
-    19
+    13
     """
     table = path if isinstance(path, QTable) else load_table(path)
 

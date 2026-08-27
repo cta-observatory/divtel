@@ -69,6 +69,7 @@ MARIMO_DIR = REPO_ROOT / 'examples' / 'marimo'
 # Exported in this order; each becomes marimo/<name>/index.html on the site.
 MARIMO_NOTEBOOKS = [
     'interactive_display',
+    'two_sites',
     'sub_arrays',
     'observing_a_source',
     'choosing_div',

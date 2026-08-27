@@ -91,11 +91,14 @@ plain text with a small header naming each column and its unit:
     from importlib.resources import files
     from divtel.layout import load_array
 
-    array = load_array(files("divtel") / "data" / "la_palma_4LST_15MST.ecsv")
+    array = load_array(files("divtel") / "data" / "cta-north-lapalma-alpha-prod6.ecsv")
 
 Two layouts ship with the package: ``dummy_array.ecsv``, five telescopes to try
-things on, and ``la_palma_4LST_15MST.ecsv``, a CTA La Palma layout of 4 LSTs and
-15 MSTs. A layout file needs the columns ``x``, ``y``, ``z``, ``focal`` and
+things on, and ``cta-north-lapalma-alpha-prod6.ecsv``, the official CTAO
+North layout at La Palma, 4 LSTs and 9 MSTs (Prod6, Alpha configuration).
+There's a South counterpart too, ``cta-south-paranal-alpha-prod6.ecsv``, 14
+MSTs and 37 SSTs at Paranal, no LSTs; see :doc:`examples` for a tutorial that
+loads both. A layout file needs the columns ``x``, ``y``, ``z``, ``focal`` and
 ``camera_radius``, and may carry an ``id`` column:
 
 .. code-block:: text
@@ -110,7 +113,7 @@ things on, and ``la_palma_4LST_15MST.ecsv``, a CTA La Palma layout of 4 LSTs and
     # - {name: focal, datatype: float64, unit: m}
     # - {name: camera_radius, datatype: float64, unit: m}
     id x y z focal camera_radius
-    1 -70.04 -7.23 54 28 1.05
+    1 -70.91 -52.35 45.00 28.00 1.05000
 
 ``camera_radius`` may be given as a length or as the half-angle the camera
 subtends on the sky, since the units live in the file.
@@ -138,7 +141,7 @@ To inspect or edit a layout before building anything, read it as a table:
 
     from divtel.layout import load_table
 
-    table = load_table(files("divtel") / "data" / "la_palma_4LST_15MST.ecsv")
+    table = load_table(files("divtel") / "data" / "cta-north-lapalma-alpha-prod6.ecsv")
     lsts = load_array(table[:4])
 
 
@@ -313,13 +316,13 @@ of it is seen by exactly one telescope, by exactly two, and so on:
 
 .. code-block:: python
 
-    >>> array = load_array(files("divtel") / "data" / "la_palma_4LST_15MST.ecsv")
+    >>> array = load_array(files("divtel") / "data" / "cta-north-lapalma-alpha-prod6.ecsv")
     >>> array.divergent_pointing(0.05, 70 * u.deg, 180 * u.deg)
     >>> multiplicity, area = array.multiplicity_profile()
     >>> multiplicity
     array([1, 2, 3, 4, 5])
     >>> np.round(area, 1)
-    <Quantity [242. , 131.3,  70.8,   8. ,   0.6] deg2>
+    <Quantity [171.1,  85. ,  31.7,   8.8,   0.6] deg2>
 
 :meth:`~divtel.telescope.Array.multiplicity_moments` boils that down to two
 numbers:
@@ -328,7 +331,7 @@ numbers:
 
     >>> mean, variance = array.multiplicity_moments()
     >>> f"{mean:.2f} +- {np.sqrt(variance):.2f}"
-    '1.66 +- 0.81'
+    '1.60 +- 0.81'
 
 
 How the mean is defined
@@ -354,10 +357,10 @@ Working the example above by hand:
 
 .. code-block:: text
 
-    m :  [1       2       3      4     5   ]
-    A :  [242.02  131.34  70.81  7.99  0.55]  deg²    sum = 452.70
+    m :  [1       2      3      4     5   ]
+    A :  [171.08  84.95  31.73  8.81  0.57]  deg²    sum = 297.14
 
-    (1*242.02 + 2*131.34 + 3*70.81 + 4*7.99 + 5*0.55) / 452.70  =  1.6607
+    (1*171.08 + 2*84.95 + 3*31.73 + 4*8.81 + 5*0.57) / 297.14  =  1.5961
 
 **The average is over covered sky only.** A ring of discs can enclose a hole
 no telescope sees; ``hyper_fov`` drops those patches, so they don't pull the
@@ -374,9 +377,9 @@ area it returns; the patch list always includes every patch with
     >>> for cut in (1, 2, 3):
     ...     _, patches = array.hyper_fov(m_cut=cut)
     ...     print(cut, len(patches), round(array.multiplicity_moments(patches=patches)[0], 4))
-    1 105 1.6607
-    2 105 1.6607
-    3 105 1.6607
+    1 75 1.5961
+    2 75 1.5961
+    3 75 1.5961
 
 This matters when reading a
 :func:`~divtel.visualization.multiplicity_plot` title, which quotes the
@@ -402,14 +405,14 @@ area. On this array, pointed at 70 degrees:
 =========  =================  ===================
 ``div``    hyper FoV [deg²]   mean multiplicity
 =========  =================  ===================
-0          46.3               16.3
-0.01       100.0              7.5
-0.02       169.8              4.4
-0.05       452.7              1.7
+0          46.3               10.3
+0.01       82.5               5.7
+0.02       126.9              3.7
+0.05       297.1              1.6
 =========  =================  ===================
 
-Ten times the sky, a tenth of the telescopes on any given part of it. Which
-end of that trade to pick depends on the science case.
+About 6.4 times the sky, a sixth of the telescopes on any given part of it.
+Which end of that trade to pick depends on the science case.
 
 :func:`~divtel.visualization.multiplicity_plot` draws the profile as a bar
 chart, coloured to match the sky map so the two read together:
@@ -460,22 +463,22 @@ you are plotting.
 Sub-arrays
 ==========
 
-A real array is usually several instruments sharing a site. The La Palma
-layout has four LSTs inside fifteen MSTs, each with its own camera, field of
+A real array is usually several instruments sharing a site. The CTAO North
+layout has four LSTs inside nine MSTs, each with its own camera, field of
 view, and barycenter. :meth:`~divtel.telescope.Array.group_by` splits them
 apart:
 
 .. code-block:: python
 
-    >>> array = load_array(files("divtel") / "data" / "la_palma_4LST_15MST.ecsv")
+    >>> array = load_array(files("divtel") / "data" / "cta-north-lapalma-alpha-prod6.ecsv")
     >>> array.divergent_pointing(0.02, 70 * u.deg, 180 * u.deg)
-    >>> groups = array.group_by({"LST": range(1, 5), "MST": range(5, 20)})
-    >>> groups["LST"].barycenter
-    <Quantity [ 0.895 , 44.8475, 44.925 ] m>
+    >>> groups = array.group_by({"LST": range(1, 5), "MST": range(5, 14)})
+    >>> np.round(groups["LST"].barycenter, 3)
+    <Quantity [ 0.   ,  0.   , 34.625] m>
     >>> groups["LST"].hyper_fov()[0]
-    <Quantity 26.83755561 deg2>
+    <Quantity 26.69187612 deg2>
     >>> groups["MST"].hyper_fov()[0]
-    <Quantity 169.76149694 deg2>
+    <Quantity 126.94036502 deg2>
 
 The MST figure is the whole array's coverage: the MSTs' cameras are wide enough
 that they already see everything the LSTs do, so adding the LSTs back adds
@@ -498,7 +501,7 @@ a type share one:
 .. code-block:: python
 
     >>> {name: len(group.telescopes) for name, group in array.group_by("camera_radius").items()}
-    {'1.074 m': 15, '1.05 m': 4}
+    {'1.074 m': 9, '1.05 m': 4}
 
 :func:`~divtel.visualization.display_groups` draws them, one colour per group,
 each with its own barycenter and mean pointing arrow:
@@ -571,7 +574,7 @@ somewhere different, so this is one coordinate per telescope:
 
     >>> from divtel.observation import pointing_coord
     >>> pointing_coord(array, obs).separation(crab).to(u.deg).max()
-    <Angle 4.3121837 deg>
+    <Angle 3.16795168 deg>
 
 .. note::
 

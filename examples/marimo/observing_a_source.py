@@ -217,7 +217,9 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(files, load_array):
-    ARRAY = load_array(files("divtel") / "data" / "la_palma_4LST_15MST.ecsv")
+    ARRAY = load_array(
+        files("divtel") / "data" / "cta-north-lapalma-alpha-prod6.ecsv"
+    )
     return (ARRAY,)
 
 
