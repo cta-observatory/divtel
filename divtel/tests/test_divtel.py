@@ -4,6 +4,33 @@ def test_version():
     divtel.__version__
 
 
+def test_fov_convertible_to_steradian():
+    """`fov` is a solid angle, so it must convert to `u.sr`."""
+    import astropy.units as u
+    from divtel.telescope import Telescope
+
+    telescope = Telescope(0 * u.m, 0 * u.m, 0 * u.m, 28 * u.m, 1 * u.m)
+    telescope.fov.to(u.sr)
+
+
+def test_dummy_array_data_loads():
+    """The packaged `data/dummy_array.txt` loads into a working Array."""
+    import numpy as np
+    import astropy.units as u
+    from importlib.resources import files
+    from divtel.telescope import Array, Telescope
+
+    path = files("divtel") / "data" / "dummy_array.txt"
+    rows = np.genfromtxt(path, delimiter=",")
+
+    array = Array([
+        Telescope(x * u.m, y * u.m, z * u.m, focal * u.m, camera_radius * u.m)
+        for x, y, z, focal, camera_radius in rows
+    ])
+
+    assert len(array.telescopes) == 5
+
+
 def test_point_to_object_round_trip():
     """`pointing_vector` must point at the object it was aimed at."""
     import numpy as np

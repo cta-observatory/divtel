@@ -1,7 +1,6 @@
 import numpy as np
 import astropy.units as u
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 from . import pointing
 
 
@@ -80,21 +79,21 @@ class Telescope:
                          self.y.to_value(u.m),
                          self.z.to_value(u.m)]) * u.m
 
-    def point_to_object(self, object):
+    def point_to_object(self, target):
         """
         Point to object.
 
         Parameters
         ----------
-        object: `astropy.Quantity` or numpy.array([x, y, z])
+        target: `astropy.Quantity` or numpy.array([x, y, z])
             position of the object; a plain array is read as metres
         """
-        object = u.Quantity(object, u.m)
-        GT = np.sqrt(((self.position - object) ** 2).sum())
-        alt_tel = np.arcsin((object[2] - self.z) / GT)
+        target = u.Quantity(target, u.m)
+        GT = np.sqrt(((self.position - target) ** 2).sum())
+        alt_tel = np.arcsin((target[2] - self.z) / GT)
         # Az runs clock-wise from X towards Y (see divtel.pointing), so the
         # Y offset enters negated: az = arctan2(-dy, dx).
-        az_tel = np.arctan2(self.y - object[1], object[0] - self.x)
+        az_tel = np.arctan2(self.y - target[1], target[0] - self.x)
         self.point_to_altaz(alt_tel.to(u.rad), az_tel.to(u.rad))
 
     @property
@@ -364,7 +363,7 @@ class Array:
         else:
             raise ValueError(f"projection should be either 'xy', ' yz' or 'xz' but is {projection}")
 
-        scale = np.max([xx, yy]) / 10.
+        scale = np.max(np.abs([xx, yy])) / 10.
 
         ax.scatter(xx, yy, **kwargs, label='telescopes')
         ax.scatter(xb, yb, marker='+', label='barycenter')
@@ -399,8 +398,8 @@ class Array:
         yb = scale * max_range * np.mgrid[-1:2:2, -1:2:2, -1:2:2][1].flatten() + scale * (y.max() + y.min())
         zb = scale * max_range * np.mgrid[-0.01:2:2, -0.01:2:2, -0.01:2:2][2].flatten() + scale * (z.max() + z.min())
         # Comment or uncomment following both lines to test the fake bounding box:
-        for xb, yb, zb in zip(xb, yb, zb):
-            ax.plot([xb], [yb], [zb], 'w')
+        for _xb, _yb, _zb in zip(xb, yb, zb):
+            ax.plot([_xb], [_yb], [_zb], 'w')
 
         ax.quiver(x, y, z,
                   self.pointing_vectors[:, 0],
