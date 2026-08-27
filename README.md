@@ -24,6 +24,8 @@ sliders, no install.
 
 ## 👨‍💻 Install
 
+divtel is on [PyPI](https://pypi.org/project/divtel/):
+
 ```
 pip install divtel
 ```
