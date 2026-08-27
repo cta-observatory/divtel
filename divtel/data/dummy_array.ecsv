@@ -1,0 +1,17 @@
+# %ECSV 1.0
+# ---
+# datatype:
+# - {name: id, datatype: int64}
+# - {name: x, datatype: float64, unit: m}
+# - {name: y, datatype: float64, unit: m}
+# - {name: z, datatype: float64, unit: m}
+# - {name: focal, datatype: float64, unit: m}
+# - {name: camera_radius, datatype: float64, unit: m}
+# meta:
+#   description: A tiny made-up array, for examples and tests.
+id x y z focal camera_radius
+1 0 0 0 28 1
+2 1 0 0 28 1
+3 0 1 0 28 1
+4 -1 -1 0 28 1
+5 1 1 0 28 1

@@ -18,11 +18,17 @@ class Telescope:
         z ground position
     focal: `astropy.quantity`
     camera_radius: `astropy.quantity`
+    tel_id: int, optional
+        telescope identifier. CTAO numbers telescopes by type -- LSTs 1 to 4,
+        MSTs 5 to 14, telescopes added to try out a configuration from 15 on --
+        so the id carries meaning and is worth setting explicitly; `Array.group_by`
+        selects on it. Left out, ids come from a counter shared by every
+        `Telescope` ever built, which makes them unique but not meaningful.
     """
 
     _id = 0
 
-    def __init__(self, x, y, z, focal, camera_radius):
+    def __init__(self, x, y, z, focal, camera_radius, tel_id=None):
 
         self.x = x.to(u.m)
         self.y = y.to(u.m)
@@ -31,8 +37,10 @@ class Telescope:
         self.camera_radius = camera_radius.to(u.m)
         self.alt = u.Quantity(0, u.rad)
         self.az = u.Quantity(0, u.rad)
-        Telescope._id += 1
-        self.id = Telescope._id
+        if tel_id is None:
+            Telescope._id += 1
+            tel_id = Telescope._id
+        self.id = tel_id
 
     def point_to_altaz(self, alt, az):
         """

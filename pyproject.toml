@@ -94,7 +94,7 @@ Issues = "https://github.com/cta-observatory/divtel/issues"
 include = ["divtel*"]
 
 [tool.setuptools.package-data]
-divtel = ["data/*.txt"]
+divtel = ["data/*.ecsv"]
 
 [tool.setuptools_scm]
 version_file = "divtel/_version.py"
