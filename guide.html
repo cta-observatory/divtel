@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="Examples" href="examples.html"><link rel="prev" title="divtel" href="index.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>User guide - divtel 0.2.dev49+g15a9f19e1 documentation</title>
+        <title>User guide - divtel 0.2.dev51+g3335e3869 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">divtel 0.2.dev49+g15a9f19e1 documentation</div></a>
+      <a href="index.html"><div class="brand">divtel 0.2.dev51+g3335e3869 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -302,17 +302,58 @@ camera a little under 6 degrees across.</p>
 <span class="go">(4, 3)</span>
 </pre></div>
 </div>
-<p>A small example layout ships with the package, if you want something to load
-rather than type:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">importlib.resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">files</span>
+</section>
+<section id="loading-an-array-from-file">
+<h2>Loading an array from file<a class="headerlink" href="#loading-an-array-from-file" title="Link to this heading">¶</a></h2>
+<p>Typing telescopes out gets old quickly. <a class="reference internal" href="docstring.html#divtel.layout.load_array" title="divtel.layout.load_array"><code class="xref py py-func docutils literal notranslate"><span class="pre">load_array()</span></code></a> reads
+a layout from an ECSV file – plain text with a small header naming each column
+and its unit:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">importlib.resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">files</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">divtel.layout</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_array</span>
 
-<span class="n">rows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="n">files</span><span class="p">(</span><span class="s2">"divtel"</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"data"</span> <span class="o">/</span> <span class="s2">"dummy_array.txt"</span><span class="p">,</span>
-                     <span class="n">delimiter</span><span class="o">=</span><span class="s2">","</span><span class="p">)</span>
-<span class="n">array</span> <span class="o">=</span> <span class="n">Array</span><span class="p">([</span>
-    <span class="n">Telescope</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="n">y</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="n">z</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="n">focal</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="n">radius</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">focal</span><span class="p">,</span> <span class="n">radius</span> <span class="ow">in</span> <span class="n">rows</span>
-<span class="p">])</span>
+<span class="n">array</span> <span class="o">=</span> <span class="n">load_array</span><span class="p">(</span><span class="n">files</span><span class="p">(</span><span class="s2">"divtel"</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"data"</span> <span class="o">/</span> <span class="s2">"la_palma_4LST_15MST.ecsv"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Two layouts ship with the package: <code class="docutils literal notranslate"><span class="pre">dummy_array.ecsv</span></code>, five telescopes to try
+things on, and <code class="docutils literal notranslate"><span class="pre">la_palma_4LST_15MST.ecsv</span></code>, a CTA La Palma layout of 4 LSTs and
+15 MSTs. A layout file needs the columns <code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code>, <code class="docutils literal notranslate"><span class="pre">z</span></code>, <code class="docutils literal notranslate"><span class="pre">focal</span></code> and
+<code class="docutils literal notranslate"><span class="pre">camera_radius</span></code>, and may carry an <code class="docutils literal notranslate"><span class="pre">id</span></code> column:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># %ECSV 1.0
+# ---
+# datatype:
+# - {name: id, datatype: int64}
+# - {name: x, datatype: float64, unit: m}
+# - {name: y, datatype: float64, unit: m}
+# - {name: z, datatype: float64, unit: m}
+# - {name: focal, datatype: float64, unit: m}
+# - {name: camera_radius, datatype: float64, unit: m}
+id x y z focal camera_radius
+1 -70.04 -7.23 54 28 1.05
+</pre></div>
+</div>
+<p>Because the units live in the file, <code class="docutils literal notranslate"><span class="pre">camera_radius</span></code> may be given either as a
+length or as the half-angle the camera subtends on the sky – whichever the
+instrument is quoted in. An angle is converted with <code class="docutils literal notranslate"><span class="pre">radius</span> <span class="pre">=</span> <span class="pre">focal</span> <span class="pre">*</span> <span class="pre">tan(angle)</span></code>
+on the way in, so the two spellings describe the same telescope:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">divtel.layout</span><span class="w"> </span><span class="kn">import</span> <span class="n">camera_radius_in_metres</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">camera_radius_in_metres</span><span class="p">(</span><span class="mf">2.1476</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span> <span class="mi">28</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">)</span>
+<span class="go">&lt;Quantity 1.05000713 m&gt;</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">id</span></code> column sets <code class="xref py py-attr docutils literal notranslate"><span class="pre">id</span></code>. CTAO numbers
+telescopes by type – LSTs 1 to 4, MSTs 5 to 14, telescopes added to try out a
+configuration from 15 on – so ids carry meaning, and
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">group_by()</span></code> selects on them. Without the column,
+telescopes are numbered 1 to N in file order. Telescopes built by hand instead
+take ids from a counter shared across the session, which makes them unique but
+not meaningful; pass <code class="docutils literal notranslate"><span class="pre">tel_id</span></code> to <a class="reference internal" href="docstring.html#divtel.telescope.Telescope" title="divtel.telescope.Telescope"><code class="xref py py-class docutils literal notranslate"><span class="pre">Telescope</span></code></a> to set
+them yourself.</p>
+<p>To look a layout over, or edit it, before building anything, read it as a table
+first – <a class="reference internal" href="docstring.html#divtel.layout.load_array" title="divtel.layout.load_array"><code class="xref py py-func docutils literal notranslate"><span class="pre">load_array()</span></code></a> takes one:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">divtel.layout</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_table</span>
+
+<span class="n">table</span> <span class="o">=</span> <span class="n">load_table</span><span class="p">(</span><span class="n">files</span><span class="p">(</span><span class="s2">"divtel"</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"data"</span> <span class="o">/</span> <span class="s2">"la_palma_4LST_15MST.ecsv"</span><span class="p">)</span>
+<span class="n">lsts</span> <span class="o">=</span> <span class="n">load_array</span><span class="p">(</span><span class="n">table</span><span class="p">[:</span><span class="mi">4</span><span class="p">])</span>
 </pre></div>
 </div>
 </section>
@@ -539,6 +580,7 @@ The conversion is done for you on the way out.</p>
 <li><a class="reference internal" href="#installation">Installation</a></li>
 <li><a class="reference internal" href="#the-coordinate-frame">The coordinate frame</a></li>
 <li><a class="reference internal" href="#building-an-array">Building an array</a></li>
+<li><a class="reference internal" href="#loading-an-array-from-file">Loading an array from file</a></li>
 <li><a class="reference internal" href="#pointing-the-array">Pointing the array</a><ul>
 <li><a class="reference internal" href="#parallel-pointing">Parallel pointing</a></li>
 <li><a class="reference internal" href="#divergent-pointing">Divergent pointing</a></li>
@@ -561,7 +603,7 @@ The conversion is done for you on the way out.</p>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=8d2e8164"></script>
+</div><script src="_static/documentation_options.js?v=9f1af40e"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>

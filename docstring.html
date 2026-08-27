@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="divtel: Divergent pointing mode for Imaging Atmospheric Cherenkov Telescopes arrays" href="README.html"><link rel="prev" title="Examples" href="examples.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>API documentation - divtel 0.2.dev49+g15a9f19e1 documentation</title>
+        <title>API documentation - divtel 0.2.dev51+g3335e3869 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">divtel 0.2.dev49+g15a9f19e1 documentation</div></a>
+      <a href="index.html"><div class="brand">divtel 0.2.dev51+g3335e3869 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -478,7 +478,7 @@ equal-area projection, so polygon areas are in deg**2.</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="divtel.telescope.Telescope">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">divtel.telescope.</span></span><span class="sig-name descname"><span class="pre">Telescope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">focal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">camera_radius</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.telescope.Telescope" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">divtel.telescope.</span></span><span class="sig-name descname"><span class="pre">Telescope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">focal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">camera_radius</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tel_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.telescope.Telescope" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Describe a generic telescope</p>
 <dl class="field-list simple">
@@ -489,6 +489,11 @@ equal-area projection, so polygon areas are in deg**2.</p></li>
 <li><p><strong>z</strong> (<cite>astropy.quantity</cite>) – z ground position</p></li>
 <li><p><strong>focal</strong> (<cite>astropy.quantity</cite>)</p></li>
 <li><p><strong>camera_radius</strong> (<cite>astropy.quantity</cite>)</p></li>
+<li><p><strong>tel_id</strong> (<em>int</em><em>, </em><em>optional</em>) – telescope identifier. CTAO numbers telescopes by type – LSTs 1 to 4,
+MSTs 5 to 14, telescopes added to try out a configuration from 15 on –
+so the id carries meaning and is worth setting explicitly; <cite>Array.group_by</cite>
+selects on it. Left out, ids come from a counter shared by every
+<cite>Telescope</cite> ever built, which makes them unique but not meaningful.</p></li>
 </ul>
 </dd>
 </dl>
@@ -579,6 +584,93 @@ equal-area projection, so polygon areas are in deg**2.</p></li>
 </dl>
 </dd></dl>
 
+</dd></dl>
+
+</section>
+<section id="divtel-layout">
+<h2><code class="docutils literal notranslate"><span class="pre">divtel.layout</span></code><a class="headerlink" href="#divtel-layout" title="Link to this heading">¶</a></h2>
+<p>Reading an array layout from file. Layouts are ECSV tables that carry their own
+units, so a camera radius may be given as a length or as an angle on the sky
+without ambiguity.</p>
+<p id="module-divtel.layout">Read an array layout from file.</p>
+<p>Layouts are ECSV tables – plain text with a small YAML header naming each
+column and its unit. Carrying the units in the file removes the ambiguity that
+plain columns of numbers leave behind: a camera radius may be quoted as a length
+or as an angle on the sky, and the two look identical once the unit is gone.
+Here the unit decides, so there is no flag to get wrong.</p>
+<p>A layout needs the columns <code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code>, <code class="docutils literal notranslate"><span class="pre">z</span></code>, <code class="docutils literal notranslate"><span class="pre">focal</span></code> and <code class="docutils literal notranslate"><span class="pre">camera_radius</span></code>,
+and may carry an <code class="docutils literal notranslate"><span class="pre">id</span></code> column of telescope identifiers.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="divtel.layout.camera_radius_in_metres">
+<span class="sig-prename descclassname"><span class="pre">divtel.layout.</span></span><span class="sig-name descname"><span class="pre">camera_radius_in_metres</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">camera_radius</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">focal</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.layout.camera_radius_in_metres" title="Link to this definition">¶</a></dt>
+<dd><p>Camera radius as a length, whether it was given as one or as an angle.</p>
+<p>A camera of radius <cite>r</cite> at the focus of a telescope of focal length <cite>f</cite>
+subtends a half-angle <cite>arctan(r/f)</cite> on the sky, so an angular radius
+converts back with <cite>r = f tan(angle)</cite>. Angles are what instrument papers
+quote; metres are what the geometry needs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>camera_radius</strong> (<cite>astropy.Quantity</cite>) – radius of the camera, as a length or as an angle</p></li>
+<li><p><strong>focal</strong> (<cite>astropy.Quantity</cite>) – focal length</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>radius as a length</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>astropy.Quantity</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="divtel.layout.load_array">
+<span class="sig-prename descclassname"><span class="pre">divtel.layout.</span></span><span class="sig-name descname"><span class="pre">load_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.layout.load_array" title="Link to this definition">¶</a></dt>
+<dd><p>Build an <cite>Array</cite> from a layout file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> (str, <cite>pathlib.Path</cite> or <cite>astropy.table.QTable</cite>) – an ECSV layout file, or a table already read from one</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><cite>Array</cite></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Telescope ids come from the file’s <code class="docutils literal notranslate"><span class="pre">id</span></code> column when it has one, so that a
+layout read twice gives the same ids both times and those ids mean what the
+layout says they mean. Without that column telescopes are numbered 1 to N in
+file order.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">importlib.resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">files</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">divtel.layout</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_array</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">array</span> <span class="o">=</span> <span class="n">load_array</span><span class="p">(</span><span class="n">files</span><span class="p">(</span><span class="s2">"divtel"</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"data"</span> <span class="o">/</span> <span class="s2">"la_palma_4LST_15MST.ecsv"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">telescopes</span><span class="p">)</span>
+<span class="go">19</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="divtel.layout.load_table">
+<span class="sig-prename descclassname"><span class="pre">divtel.layout.</span></span><span class="sig-name descname"><span class="pre">load_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.layout.load_table" title="Link to this definition">¶</a></dt>
+<dd><p>Read a layout file as a table, without building any telescope.</p>
+<p>Useful to look a layout over, or to edit it, before turning it into an
+<cite>Array</cite> – <cite>load_array</cite> accepts the table this returns.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> (str or <cite>pathlib.Path</cite>)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>with the columns of the file, as quantities</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>astropy.table.QTable</cite></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – if a required column is missing or the table is empty</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -800,6 +892,12 @@ solid angles – see <cite>Array.hyper_fov</cite>.</p>
 </li>
 </ul>
 </li>
+<li><a class="reference internal" href="#divtel-layout"><code class="docutils literal notranslate"><span class="pre">divtel.layout</span></code></a><ul>
+<li><a class="reference internal" href="#divtel.layout.camera_radius_in_metres"><code class="docutils literal notranslate"><span class="pre">camera_radius_in_metres()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.layout.load_array"><code class="docutils literal notranslate"><span class="pre">load_array()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.layout.load_table"><code class="docutils literal notranslate"><span class="pre">load_table()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#divtel-pointing"><code class="docutils literal notranslate"><span class="pre">divtel.pointing</span></code></a><ul>
 <li><a class="reference internal" href="#divtel.pointing.alt_az_to_vector"><code class="docutils literal notranslate"><span class="pre">alt_az_to_vector()</span></code></a></li>
 <li><a class="reference internal" href="#divtel.pointing.pointG_position"><code class="docutils literal notranslate"><span class="pre">pointG_position()</span></code></a></li>
@@ -822,7 +920,7 @@ solid angles – see <cite>Array.hyper_fov</cite>.</p>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=8d2e8164"></script>
+</div><script src="_static/documentation_options.js?v=9f1af40e"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>
