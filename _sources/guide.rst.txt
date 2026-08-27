@@ -12,6 +12,8 @@ play with in the browser, see :doc:`examples`.
 Installation
 ============
 
+divtel is on `PyPI <https://pypi.org/project/divtel/>`_:
+
 .. code-block:: console
 
     pip install divtel
