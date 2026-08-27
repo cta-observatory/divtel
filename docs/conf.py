@@ -17,8 +17,8 @@ import sys
 import shutil
 from pathlib import Path
 
-import divtel
 sys.path.insert(0, os.path.abspath('..'))
+import divtel
 
 HERE = Path(__file__).parent.resolve()
 REPO_ROOT = HERE.parent

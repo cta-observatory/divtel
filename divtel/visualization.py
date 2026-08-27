@@ -179,13 +179,6 @@ def polar_stuff(fig, telescope):
     x = np.rad2deg(telescope.az.value) * np.cos(telescope.alt.value)
     y = np.rad2deg(telescope.alt.value)
 
-    circle = plt.Circle((np.rad2deg(telescope.az.value - np.pi) * np.sin(telescope.alt.value),
-                         np.rad2deg(-telescope.alt.value * np.cos((telescope.az.value - np.pi)))),
-                        radius=7.7 / 2,
-                        color="red",
-                        alpha=0.2,
-                        )
-
     circle = plt.Circle((x, y),
                         radius=7.7 / 2,
                         color="red",
@@ -200,7 +193,7 @@ def polar_stuff(fig, telescope):
     ax1.set_aspect(1.)
     ax1.grid(True, zorder=0)
     ax1.set_xlabel("Azimuth in degrees", fontsize=20)
-    ax1.set_ylabel("Zenith in degrees", fontsize=20)
+    ax1.set_ylabel("Altitude in degrees", fontsize=20)
 
     plt.show()
     return fig
