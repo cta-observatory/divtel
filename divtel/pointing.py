@@ -4,8 +4,13 @@ We use the same reference frame as simtel_array:
 X is pointing North
 Y is pointing West
 Z is pointing upward
-Az is taken clock-wise from X (towards Y) and between -180 and 180 degrees
+Az is taken from X (North) towards East, and between -180 and 180 degrees
 Alt is taken from ground (towards Z) and between -90 and 90 degrees
+
+East is -Y, so a pointing vector is (cos(alt)cos(az), -cos(alt)sin(az),
+sin(alt)). This is astropy's azimuth convention too, which is what lets
+`divtel.observation` hand alt/az straight to `Array.divergent_pointing` with no
+conversion in between.
 """
 
 import numpy as np
