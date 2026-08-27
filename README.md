@@ -14,11 +14,11 @@
 divtel makes toy simulations for the divergent pointing mode of Imaging Atmospheric Cherenkov Telescopes arrays.
 
 Point an array's telescopes slightly away from one another and it sees a wider
-patch of sky, but fewer telescopes see any given part of it -- and a shower
+patch of sky, but fewer telescopes see any given part of it, and a shower
 needs at least two of them to be reconstructed stereoscopically. divtel lets
 you set up that trade-off and measure both sides of it.
 
-**[Try it in your browser](https://cta-observatory.github.io/divtel/examples.html)** --
+**[Try it in your browser](https://cta-observatory.github.io/divtel/examples.html)**,
 sliders, no install.
 
 ## 👨‍💻 Install
@@ -56,7 +56,7 @@ plt.show()
 
 Pointed in parallel (`div=0`) the same array sees 25.7 deg2, all of it at
 multiplicity 4. A `div` of 0.02 buys 79% more sky, of which 18% more is still
-stereoscopic -- but a shower now lands on two telescopes where it used to land
+stereoscopic. But a shower now lands on two telescopes where it used to land
 on four. That is the whole trade-off, and the
 [user guide](https://cta-observatory.github.io/divtel/guide.html) walks through
 it properly: the coordinate frame, what `div` really means, and how the hyper
