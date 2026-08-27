@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="divtel: Divergent pointing mode for Imaging Atmospheric Cherenkov Telescopes arrays" href="README.html"><link rel="prev" title="Examples" href="examples.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>API documentation - divtel 0.2.dev53+g900b8401a documentation</title>
+        <title>API documentation - divtel 0.2.dev55+g06e0e2285 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">divtel 0.2.dev53+g900b8401a documentation</div></a>
+      <a href="index.html"><div class="brand">divtel 0.2.dev55+g06e0e2285 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -747,8 +747,12 @@ We use the same reference frame as simtel_array:
 X is pointing North
 Y is pointing West
 Z is pointing upward
-Az is taken clock-wise from X (towards Y) and between -180 and 180 degrees
+Az is taken from X (North) towards East, and between -180 and 180 degrees
 Alt is taken from ground (towards Z) and between -90 and 90 degrees</p>
+<p>East is -Y, so a pointing vector is (cos(alt)cos(az), -cos(alt)sin(az),
+sin(alt)). This is astropy’s azimuth convention too, which is what lets
+<cite>divtel.observation</cite> hand alt/az straight to <cite>Array.divergent_pointing</cite> with no
+conversion in between.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="divtel.pointing.alt_az_to_vector">
 <span class="sig-prename descclassname"><span class="pre">divtel.pointing.</span></span><span class="sig-name descname"><span class="pre">alt_az_to_vector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">az</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.pointing.alt_az_to_vector" title="Link to this definition">¶</a></dt>
@@ -807,6 +811,220 @@ Update telescope pointing</p>
 <dd class="field-odd"><p>tuple of <cite>astropy.Quantity</cite></p>
 </dd>
 </dl>
+</dd></dl>
+
+</section>
+<section id="divtel-observation">
+<h2><code class="docutils literal notranslate"><span class="pre">divtel.observation</span></code><a class="headerlink" href="#divtel-observation" title="Link to this heading">¶</a></h2>
+<p>Where and when the array is observing from – the optional half that connects
+the ground-frame geometry to real sources at real times. Nothing in
+<a class="reference internal" href="#module-divtel.telescope" title="divtel.telescope"><code class="xref py py-mod docutils literal notranslate"><span class="pre">divtel.telescope</span></code></a> depends on it.</p>
+<p id="module-divtel.observation">When and where the array is observing from.</p>
+<p>The geometry in <cite>divtel.telescope</cite> knows nothing about the sky. It works in a
+frame fixed to the ground – x north, y west, z up – and an array pointed at
+alt 70, az 180 stays pointed there whatever the hour. That is the right model
+for the geometry, and it is not enough to plan an observation: a source rises
+and sets, so the direction to point at depends on where you are and what time
+it is.</p>
+<p>This module supplies that missing half, and stays optional. Nothing in
+<cite>divtel.telescope</cite> imports it, and an <cite>Observation</cite> never touches an <cite>Array</cite> –
+it converts a sky position into the alt/az pair <cite>Array.divergent_pointing</cite>
+already takes:</p>
+<blockquote>
+<div><p>obs = Observation(site=”north”, time=”2026-03-01T23:00:00”)
+alt, az = obs.altaz_of(SkyCoord(ra=83.633 * u.deg, dec=22.015 * u.deg))
+array.divergent_pointing(0.02, alt, az)</p>
+</div></blockquote>
+<p>divtel’s azimuth is astropy’s: measured from north through east. No conversion
+happens anywhere in here, and a test pins that down by pointing an array at a
+source and reading its right ascension and declination back off the telescopes.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="divtel.observation.Observation">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">divtel.observation.</span></span><span class="sig-name descname"><span class="pre">Observation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">site</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'north'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.observation.Observation" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A place and a time to observe from.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>site</strong> (str or <cite>astropy.coordinates.EarthLocation</cite>) – <code class="docutils literal notranslate"><span class="pre">&quot;north&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;south&quot;</span></code> for the CTAO sites; any other name is looked
+up in astropy’s site registry, which needs network access the first time
+it is used. An <cite>EarthLocation</cite> is taken as it is.</p></li>
+<li><p><strong>time</strong> (str, <cite>astropy.time.Time</cite>, optional) – when the observation happens, UTC. Defaults to now.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="divtel.observation.Observation.location">
+<span class="sig-name descname"><span class="pre">location</span></span><a class="headerlink" href="#divtel.observation.Observation.location" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>astropy.coordinates.EarthLocation</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="divtel.observation.Observation.time">
+<span class="sig-name descname"><span class="pre">time</span></span><a class="headerlink" href="#divtel.observation.Observation.time" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>astropy.time.Time</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">obs</span> <span class="o">=</span> <span class="n">Observation</span><span class="p">(</span><span class="n">site</span><span class="o">=</span><span class="s2">"north"</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="s2">"2026-03-01T23:00:00"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">crab</span> <span class="o">=</span> <span class="n">SkyCoord</span><span class="p">(</span><span class="n">ra</span><span class="o">=</span><span class="mf">83.633</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span> <span class="n">dec</span><span class="o">=</span><span class="mf">22.015</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">alt</span><span class="p">,</span> <span class="n">az</span> <span class="o">=</span> <span class="n">obs</span><span class="o">.</span><span class="n">altaz_of</span><span class="p">(</span><span class="n">crab</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">alt</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">az</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span>
+<span class="go">'50.93 deg, 270.16 deg'</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="divtel.observation.Observation.after">
+<span class="sig-name descname"><span class="pre">after</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delta</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.observation.Observation.after" title="Link to this definition">¶</a></dt>
+<dd><p>The same place, later (or, for a negative delta, earlier).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>delta</strong> (<cite>astropy.Quantity</cite>) – elapsed time, e.g. <code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">*</span> <span class="pre">u.hour</span></code></p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><cite>Observation</cite></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">obs</span><span class="o">.</span><span class="n">after</span><span class="p">(</span><span class="o">-</span><span class="mi">30</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">min</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">isot</span>
+<span class="go">'2026-03-01T22:30:00.000'</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="divtel.observation.Observation.altaz">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">altaz</span></span><a class="headerlink" href="#divtel.observation.Observation.altaz" title="Link to this definition">¶</a></dt>
+<dd><p>The horizontal frame at this place and time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>astropy.coordinates.AltAz</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="divtel.observation.Observation.altaz_of">
+<span class="sig-name descname"><span class="pre">altaz_of</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.observation.Observation.altaz_of" title="Link to this definition">¶</a></dt>
+<dd><p>Where to point to see a target, in the alt/az <cite>Array</cite> takes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>target</strong> (<cite>astropy.coordinates.SkyCoord</cite> or str) – a sky position, or a name to resolve – resolving a name queries a
+name server, so it needs network access.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>(alt, az)</strong></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple of <cite>astropy.Quantity</cite>, in degrees</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The azimuth is returned as astropy measures it, from north through east,
+which is already what <cite>Array.divergent_pointing</cite> expects.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">alt</span><span class="p">,</span> <span class="n">az</span> <span class="o">=</span> <span class="n">obs</span><span class="o">.</span><span class="n">altaz_of</span><span class="p">(</span><span class="n">SkyCoord</span><span class="p">(</span><span class="n">ra</span><span class="o">=</span><span class="mf">83.633</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span> <span class="n">dec</span><span class="o">=</span><span class="mf">22.015</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">array</span><span class="o">.</span><span class="n">divergent_pointing</span><span class="p">(</span><span class="mf">0.02</span><span class="p">,</span> <span class="n">alt</span><span class="p">,</span> <span class="n">az</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="divtel.observation.Observation.at">
+<span class="sig-name descname"><span class="pre">at</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.observation.Observation.at" title="Link to this definition">¶</a></dt>
+<dd><p>The same place at another time.</p>
+<p>Returns a new <cite>Observation</cite> rather than changing this one, so an array
+pointed from one cannot quietly fall out of step with it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>time</strong> (str or <cite>astropy.time.Time</cite>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><cite>Observation</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="divtel.observation.Observation.body">
+<span class="sig-name descname"><span class="pre">body</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.observation.Observation.body" title="Link to this definition">¶</a></dt>
+<dd><p>Where a solar system body is, in this frame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – as <cite>astropy.coordinates.get_body</cite> takes it, e.g. <code class="docutils literal notranslate"><span class="pre">&quot;moon&quot;</span></code></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>in the horizontal frame of this observation</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>astropy.coordinates.SkyCoord</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="divtel.observation.Observation.moon">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">moon</span></span><a class="headerlink" href="#divtel.observation.Observation.moon" title="Link to this definition">¶</a></dt>
+<dd><p>The Moon, in this frame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>astropy.coordinates.SkyCoord</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="divtel.observation.Observation.sun">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">sun</span></span><a class="headerlink" href="#divtel.observation.Observation.sun" title="Link to this definition">¶</a></dt>
+<dd><p>The Sun, in this frame – negative altitude means night.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>astropy.coordinates.SkyCoord</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="divtel.observation.pointing_coord">
+<span class="sig-prename descclassname"><span class="pre">divtel.observation.</span></span><span class="sig-name descname"><span class="pre">pointing_coord</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">observation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">icrs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.observation.pointing_coord" title="Link to this definition">¶</a></dt>
+<dd><p>Where each telescope of an array is pointing, on the sky.</p>
+<p>The inverse of the <cite>Observation.altaz_of</cite> trip: alt/az in, sky position out.
+With divergent pointing the telescopes look in different directions, so this
+is one coordinate per telescope, and it is what says which part of the sky
+each one is actually watching.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<cite>Array</cite>)</p></li>
+<li><p><strong>observation</strong> (<cite>Observation</cite>)</p></li>
+<li><p><strong>icrs</strong> (<em>bool</em>) – return right ascension and declination; otherwise leave the coordinates
+in the horizontal frame</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>one entry per telescope, in the order of <code class="docutils literal notranslate"><span class="pre">array.telescopes</span></code></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>astropy.coordinates.SkyCoord</cite></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">alt</span><span class="p">,</span> <span class="n">az</span> <span class="o">=</span> <span class="n">obs</span><span class="o">.</span><span class="n">altaz_of</span><span class="p">(</span><span class="n">crab</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">array</span><span class="o">.</span><span class="n">divergent_pointing</span><span class="p">(</span><span class="mf">0.02</span><span class="p">,</span> <span class="n">alt</span><span class="p">,</span> <span class="n">az</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pointing_coord</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">obs</span><span class="p">)</span><span class="o">.</span><span class="n">separation</span><span class="p">(</span><span class="n">crab</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+<span class="go">&lt;Angle 4.3121837 deg&gt;</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </section>
@@ -999,6 +1217,22 @@ it are still drawn, faded</p></li>
 <li><a class="reference internal" href="#divtel.pointing.tel_div_pointing"><code class="docutils literal notranslate"><span class="pre">tel_div_pointing()</span></code></a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#divtel-observation"><code class="docutils literal notranslate"><span class="pre">divtel.observation</span></code></a><ul>
+<li><a class="reference internal" href="#divtel.observation.Observation"><code class="docutils literal notranslate"><span class="pre">Observation</span></code></a><ul>
+<li><a class="reference internal" href="#divtel.observation.Observation.location"><code class="docutils literal notranslate"><span class="pre">Observation.location</span></code></a></li>
+<li><a class="reference internal" href="#divtel.observation.Observation.time"><code class="docutils literal notranslate"><span class="pre">Observation.time</span></code></a></li>
+<li><a class="reference internal" href="#divtel.observation.Observation.after"><code class="docutils literal notranslate"><span class="pre">Observation.after()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.observation.Observation.altaz"><code class="docutils literal notranslate"><span class="pre">Observation.altaz</span></code></a></li>
+<li><a class="reference internal" href="#divtel.observation.Observation.altaz_of"><code class="docutils literal notranslate"><span class="pre">Observation.altaz_of()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.observation.Observation.at"><code class="docutils literal notranslate"><span class="pre">Observation.at()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.observation.Observation.body"><code class="docutils literal notranslate"><span class="pre">Observation.body()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.observation.Observation.moon"><code class="docutils literal notranslate"><span class="pre">Observation.moon</span></code></a></li>
+<li><a class="reference internal" href="#divtel.observation.Observation.sun"><code class="docutils literal notranslate"><span class="pre">Observation.sun</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#divtel.observation.pointing_coord"><code class="docutils literal notranslate"><span class="pre">pointing_coord()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#divtel-visualization"><code class="docutils literal notranslate"><span class="pre">divtel.visualization</span></code></a><ul>
 <li><a class="reference internal" href="#divtel.visualization.display_hyper_fov"><code class="docutils literal notranslate"><span class="pre">display_hyper_fov()</span></code></a></li>
 <li><a class="reference internal" href="#divtel.visualization.multiplicity_plot"><code class="docutils literal notranslate"><span class="pre">multiplicity_plot()</span></code></a></li>
@@ -1016,7 +1250,7 @@ it are still drawn, faded</p></li>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=cd0e37fa"></script>
+</div><script src="_static/documentation_options.js?v=174a28ab"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>

@@ -44,6 +44,18 @@ coordinate frame and the point **G** that divergence is built around -- see
    :undoc-members:
    :show-inheritance:
 
+``divtel.observation``
+======================
+
+Where and when the array is observing from -- the optional half that connects
+the ground-frame geometry to real sources at real times. Nothing in
+:mod:`divtel.telescope` depends on it.
+
+.. automodule:: divtel.observation
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 ``divtel.visualization``
 ========================
 

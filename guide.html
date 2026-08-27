@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="Examples" href="examples.html"><link rel="prev" title="divtel" href="index.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>User guide - divtel 0.2.dev53+g900b8401a documentation</title>
+        <title>User guide - divtel 0.2.dev55+g06e0e2285 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">divtel 0.2.dev53+g900b8401a documentation</div></a>
+      <a href="index.html"><div class="brand">divtel 0.2.dev55+g06e0e2285 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -563,6 +563,65 @@ visible.</p>
 <p>Both take an existing <code class="docutils literal notranslate"><span class="pre">ax</span></code> and return it, so they compose with whatever else
 you are plotting.</p>
 </section>
+<section id="pointing-at-a-source-at-a-time">
+<h2>Pointing at a source, at a time<a class="headerlink" href="#pointing-at-a-source-at-a-time" title="Link to this heading">¶</a></h2>
+<p>Everything so far works in the ground frame: an array pointed at alt 70, az 180
+stays pointed there whatever the hour. Real sources rise and set, so the
+direction to point at depends on where you are and when.</p>
+<p><a class="reference internal" href="docstring.html#divtel.observation.Observation" title="divtel.observation.Observation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Observation</span></code></a> supplies that. It is a place and a
+time, and it converts a sky position into the alt/az pair
+<a class="reference internal" href="docstring.html#divtel.telescope.Array.divergent_pointing" title="divtel.telescope.Array.divergent_pointing"><code class="xref py py-meth docutils literal notranslate"><span class="pre">divergent_pointing()</span></code></a> already takes:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">astropy.coordinates</span><span class="w"> </span><span class="kn">import</span> <span class="n">SkyCoord</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">divtel.observation</span><span class="w"> </span><span class="kn">import</span> <span class="n">Observation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obs</span> <span class="o">=</span> <span class="n">Observation</span><span class="p">(</span><span class="n">site</span><span class="o">=</span><span class="s2">"north"</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="s2">"2026-03-01T23:00:00"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">crab</span> <span class="o">=</span> <span class="n">SkyCoord</span><span class="p">(</span><span class="n">ra</span><span class="o">=</span><span class="mf">83.633</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span> <span class="n">dec</span><span class="o">=</span><span class="mf">22.015</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">alt</span><span class="p">,</span> <span class="n">az</span> <span class="o">=</span> <span class="n">obs</span><span class="o">.</span><span class="n">altaz_of</span><span class="p">(</span><span class="n">crab</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">alt</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">az</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span>
+<span class="go">'50.93 deg, 270.16 deg'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">array</span><span class="o">.</span><span class="n">divergent_pointing</span><span class="p">(</span><span class="mf">0.02</span><span class="p">,</span> <span class="n">alt</span><span class="p">,</span> <span class="n">az</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">site</span></code> takes <code class="docutils literal notranslate"><span class="pre">&quot;north&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;south&quot;</span></code> for the two CTAO sites, whose
+coordinates are built in so this needs no network. Any other name is looked up
+in astropy’s site registry, which does; an
+<code class="xref py py-class docutils literal notranslate"><span class="pre">EarthLocation</span></code> is taken as it is, which is what to
+use when the exact position of a particular telescope matters.</p>
+<p>An observation never changes. <a class="reference internal" href="docstring.html#divtel.observation.Observation.at" title="divtel.observation.Observation.at"><code class="xref py py-meth docutils literal notranslate"><span class="pre">at()</span></code></a> and
+<a class="reference internal" href="docstring.html#divtel.observation.Observation.after" title="divtel.observation.Observation.after"><code class="xref py py-meth docutils literal notranslate"><span class="pre">after()</span></code></a> hand back a new one, so an array
+pointed from one cannot quietly fall out of step with it. That makes watching a
+source across a night a plain loop:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">hours</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+    <span class="n">moment</span> <span class="o">=</span> <span class="n">obs</span><span class="o">.</span><span class="n">after</span><span class="p">(</span><span class="n">hours</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">hour</span><span class="p">)</span>
+    <span class="n">alt</span><span class="p">,</span> <span class="n">az</span> <span class="o">=</span> <span class="n">moment</span><span class="o">.</span><span class="n">altaz_of</span><span class="p">(</span><span class="n">crab</span><span class="p">)</span>
+    <span class="n">array</span><span class="o">.</span><span class="n">divergent_pointing</span><span class="p">(</span><span class="mf">0.02</span><span class="p">,</span> <span class="n">alt</span><span class="p">,</span> <span class="n">az</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">hours</span><span class="p">,</span> <span class="n">array</span><span class="o">.</span><span class="n">hyper_fov</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span> <span class="n">array</span><span class="o">.</span><span class="n">multiplicity_moments</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="docstring.html#divtel.observation.Observation.sun" title="divtel.observation.Observation.sun"><code class="xref py py-attr docutils literal notranslate"><span class="pre">sun</span></code></a> and
+<a class="reference internal" href="docstring.html#divtel.observation.Observation.moon" title="divtel.observation.Observation.moon"><code class="xref py py-attr docutils literal notranslate"><span class="pre">moon</span></code></a> give those bodies in the same
+frame, which is how you check a time is actually observable:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">obs</span><span class="o">.</span><span class="n">sun</span><span class="o">.</span><span class="n">alt</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">"</span>
+<span class="go">'-49.9 deg'</span>
+</pre></div>
+</div>
+<p>Going the other way, <a class="reference internal" href="docstring.html#divtel.observation.pointing_coord" title="divtel.observation.pointing_coord"><code class="xref py py-func docutils literal notranslate"><span class="pre">pointing_coord()</span></code></a> says where each
+telescope is looking on the sky. Under divergent pointing they all look
+somewhere different, so this is one coordinate per telescope:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">divtel.observation</span><span class="w"> </span><span class="kn">import</span> <span class="n">pointing_coord</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pointing_coord</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">obs</span><span class="p">)</span><span class="o">.</span><span class="n">separation</span><span class="p">(</span><span class="n">crab</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+<span class="go">&lt;Angle 4.3121837 deg&gt;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>divtel’s azimuth is astropy’s – measured from north through east – so
+nothing is converted anywhere in between. Point an array at a source and
+read the telescopes back with
+<a class="reference internal" href="docstring.html#divtel.observation.pointing_coord" title="divtel.observation.pointing_coord"><code class="xref py py-func docutils literal notranslate"><span class="pre">pointing_coord()</span></code></a> and you recover the position you
+started from to well under an arcsecond, which is what the test suite
+checks.</p>
+</div>
+</section>
 <section id="exporting-to-sim-telarray">
 <h2>Exporting to sim_telarray<a class="headerlink" href="#exporting-to-sim-telarray" title="Link to this heading">¶</a></h2>
 <p>Once a pointing looks right, <a class="reference internal" href="docstring.html#divtel.telescope.Array.export_cfg" title="divtel.telescope.Array.export_cfg"><code class="xref py py-meth docutils literal notranslate"><span class="pre">export_cfg()</span></code></a> writes
@@ -661,6 +720,7 @@ The conversion is done for you on the way out.</p>
 <li><a class="reference internal" href="#the-hyper-field-of-view">The hyper field of view</a></li>
 <li><a class="reference internal" href="#how-well-the-sky-is-covered">How well the sky is covered</a></li>
 <li><a class="reference internal" href="#plotting">Plotting</a></li>
+<li><a class="reference internal" href="#pointing-at-a-source-at-a-time">Pointing at a source, at a time</a></li>
 <li><a class="reference internal" href="#exporting-to-sim-telarray">Exporting to sim_telarray</a></li>
 <li><a class="reference internal" href="#where-to-go-next">Where to go next</a></li>
 </ul>
@@ -674,7 +734,7 @@ The conversion is done for you on the way out.</p>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=cd0e37fa"></script>
+</div><script src="_static/documentation_options.js?v=174a28ab"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>
