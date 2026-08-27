@@ -35,11 +35,29 @@ class Telescope:
         self.id = Telescope._id
 
     def point_to_altaz(self, alt, az):
+        """
+        Point the telescope in a given direction
+
+        Parameters
+        ----------
+        alt: `astropy.Quantity`
+            altitude, from the ground towards z
+        az: `astropy.Quantity`
+            azimuth, clock-wise from x towards y
+        """
         self.alt = alt.to(u.rad)
         self.az = az.to(u.rad)
 
     @property
     def zenith(self):
+        """
+        Zenith angle of the current pointing
+
+        Returns
+        -------
+        `astropy.Quantity`
+            angle from the vertical, in radians; the complement of `alt`
+        """
         return np.pi/2.*u.rad - self.alt
 
     @property
@@ -98,6 +116,14 @@ class Telescope:
 
     @property
     def pointing_vector(self):
+        """
+        Current pointing direction as a unit vector
+
+        Returns
+        -------
+        `numpy.array`
+            [x, y, z], unit length, in the ground frame
+        """
         # return pointing.alt_az_to_vector(self.alt, self.az)
         return np.array([np.cos(self.alt.to(u.rad))*np.cos(self.az.to(u.rad)),
                          -np.cos(self.alt.to(u.rad))*np.sin(self.az.to(u.rad)),
@@ -372,7 +398,7 @@ class Array:
         outdir: str or `pathlib.Path`, optional
             directory to write into; must exist
         tel_configs: [str], optional
-            config file each telescope `#include`s, in array order. Defaults
+            config file each telescope includes, in array order. Defaults
             to the La Palma layout the writer was built for: the first four
             telescopes are LSTs, the rest MSTs with NectarCam.
         verbose: bool, optional
@@ -521,6 +547,13 @@ class Array:
         return ax
 
     def display_3d(self):
+        """
+        Display the array in 3d, with an arrow per telescope pointing
+
+        Returns
+        -------
+        ax: `matplotlib.pyplot.axes`
+        """
         # TODO: fix pointing quiver length issue
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
