@@ -9,6 +9,8 @@ import pytest
 
 matplotlib.use("Agg")
 
+import matplotlib.pyplot as plt  # noqa: E402
+
 from divtel.layout import load_array  # noqa: E402
 from divtel.telescope import Array, Telescope  # noqa: E402
 from divtel.visualization import display_groups  # noqa: E402
@@ -16,6 +18,18 @@ from divtel.visualization import display_groups  # noqa: E402
 LA_PALMA = files("divtel") / "data" / "la_palma_4LST_15MST.ecsv"
 
 CTAO_TYPES = {"LST": range(1, 5), "MST": range(5, 20)}
+
+
+@pytest.fixture(autouse=True)
+def a_figure_of_its_own():
+    """
+    `display_groups` defaults to `plt.gca()`, which every test would otherwise
+    share -- the drawing piles up on one axes and the assertions stop meaning
+    what they say.
+    """
+    plt.close("all")
+    yield
+    plt.close("all")
 
 
 @pytest.fixture
