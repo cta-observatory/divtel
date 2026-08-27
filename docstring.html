@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="divtel: Divergent pointing mode for Imaging Atmospheric Cherenkov Telescopes arrays" href="README.html"><link rel="prev" title="Examples" href="examples.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>API documentation - divtel 0.2.dev58+gc7b02b613 documentation</title>
+        <title>API documentation - divtel 0.2.dev60+gb2b70836d documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">divtel 0.2.dev58+gc7b02b613 documentation</div></a>
+      <a href="index.html"><div class="brand">divtel 0.2.dev60+gb2b70836d documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -480,12 +480,24 @@ equal-area projection, so polygon areas are in deg**2.</p></li>
 <span class="sig-name descname"><span class="pre">multiplicity_moments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patches</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.telescope.Array.multiplicity_moments" title="Link to this definition">¶</a></dt>
 <dd><p>Mean and variance of the multiplicity, weighted by area.</p>
 <p>One number for how divergent a configuration is, and one for how evenly.
-A parallel array has every patch seen by every telescope, so the mean is
-the number of telescopes and the variance is zero; as divergence grows
-the mean falls towards one.</p>
+Over the patches <cite>hyper_fov</cite> cuts the sky into, with multiplicity m_i
+and area A_i,</p>
+<blockquote>
+<div><p>&lt;m&gt;      = sum(m_i A_i) / sum(A_i)
+Var(m)   = sum((m_i - &lt;m&gt;)**2 A_i) / sum(A_i)</p>
+</div></blockquote>
 <p>Weighting is by solid angle, so a patch counts for as much sky as it
 covers – an unweighted mean over patches would let a sliver of overlap
 count for as much as the whole field.</p>
+<p>A parallel array has every patch seen by every telescope, so the mean is
+the number of telescopes and the variance is zero; as divergence grows
+the mean falls towards one. Equivalently, since each disc contributes
+its area to every patch it covers, the mean is the array’s total camera
+solid angle divided by the sky it covers.</p>
+<p>The average runs over the sky the array sees, not the whole sky – see
+<cite>multiplicity_profile</cite>. It also ignores <cite>m_cut</cite>: <cite>hyper_fov</cite> applies
+that only to the area it returns, never to the patch list, so patches
+from a cut run give the same answer as patches from an uncut one.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>patches</strong> (list of (<cite>shapely.Polygon</cite>, int), optional) – the patches from a previous <cite>hyper_fov</cite> call, to save computing them
@@ -513,6 +525,10 @@ again; recomputed if not given</p>
 <dd><p>How much sky is seen by exactly one telescope, by exactly two, and so on.</p>
 <p><cite>hyper_fov</cite> reports how much sky the array covers; this reports how well
 it covers it. Both matter, and divergence trades one for the other.</p>
+<p>Only sky the array sees at all appears here. A ring of discs encloses a
+hole no telescope sees, and <cite>hyper_fov</cite> drops those patches, so there is
+no zero-multiplicity entry and the areas sum to the covered area rather
+than to the whole sky.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>patches</strong> (list of (<cite>shapely.Polygon</cite>, int), optional) – the patches from a previous <cite>hyper_fov</cite> call, to save computing them
@@ -1327,7 +1343,7 @@ it are still drawn, faded</p></li>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=74d9a06e"></script>
+</div><script src="_static/documentation_options.js?v=710047b1"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>

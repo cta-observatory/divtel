@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="Examples" href="examples.html"><link rel="prev" title="divtel" href="index.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>User guide - divtel 0.2.dev58+gc7b02b613 documentation</title>
+        <title>User guide - divtel 0.2.dev60+gb2b70836d documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">divtel 0.2.dev58+gc7b02b613 documentation</div></a>
+      <a href="index.html"><div class="brand">divtel 0.2.dev60+gb2b70836d documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -487,13 +487,72 @@ and so on:</p>
 </pre></div>
 </div>
 <p><a class="reference internal" href="docstring.html#divtel.telescope.Array.multiplicity_moments" title="divtel.telescope.Array.multiplicity_moments"><code class="xref py py-meth docutils literal notranslate"><span class="pre">multiplicity_moments()</span></code></a> boils that down to two
-numbers – the mean multiplicity and its variance, both weighted by solid angle
-so a patch counts for as much sky as it covers:</p>
+numbers:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mean</span><span class="p">,</span> <span class="n">variance</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">multiplicity_moments</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mean</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> +- </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">variance</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span>
 <span class="go">'1.66 +- 0.81'</span>
 </pre></div>
 </div>
+<section id="how-the-mean-is-defined">
+<h3>How the mean is defined<a class="headerlink" href="#how-the-mean-is-defined" title="Link to this heading">¶</a></h3>
+<p><a class="reference internal" href="docstring.html#divtel.telescope.Array.hyper_fov" title="divtel.telescope.Array.hyper_fov"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hyper_fov()</span></code></a> cuts the sky into disjoint patches,
+each lying wholly inside or wholly outside every telescope’s camera disc, so
+each has a well-defined multiplicity <span class="math notranslate nohighlight">\(m_i\)</span> and an area <span class="math notranslate nohighlight">\(A_i\)</span>. The
+mean and variance are those, <strong>weighted by solid angle</strong>:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\langle m \rangle = \frac{\sum_i m_i A_i}{\sum_i A_i}
+\qquad
+\mathrm{Var}(m) = \frac{\sum_i \left(m_i - \langle m \rangle\right)^2 A_i}{\sum_i A_i}\]</div>
+</div>
+<p>Weighting by area rather than counting patches matters: the patches are the
+regions cut out by overlapping discs, so a two-telescope array makes as many
+slivers as it does large regions, and an unweighted mean would let a sliver
+count for as much sky as the whole field. The areas are true solid angles –
+<code class="docutils literal notranslate"><span class="pre">hyper_fov</span></code> works in an equal-area projection – and the patches partition
+the covered area exactly, so nothing is counted twice.</p>
+<p>Working the example above by hand:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>m :  [1       2       3      4     5   ]
+A :  [242.02  131.34  70.81  7.99  0.55]  deg²    sum = 452.70
+
+(1*242.02 + 2*131.34 + 3*70.81 + 4*7.99 + 5*0.55) / 452.70  =  1.6607
+</pre></div>
+</div>
+<p>Two things follow from the definition that are easy to trip over.</p>
+<p><strong>The average is over the covered sky, not the whole sky.</strong> A ring of discs
+encloses a hole that no telescope sees; <code class="docutils literal notranslate"><span class="pre">hyper_fov</span></code> drops those patches, so
+they never reach this average. Read it as <em>given a point the array sees at all,
+how many telescopes see it</em>. Sky the array misses does not drag the mean down,
+which is exactly why the mean and the hyper FoV are two independent numbers
+rather than one restating the other.</p>
+<p><strong>The mean ignores</strong> <code class="docutils literal notranslate"><span class="pre">m_cut</span></code>. <code class="docutils literal notranslate"><span class="pre">hyper_fov</span></code> applies <code class="docutils literal notranslate"><span class="pre">m_cut</span></code> only to the
+area it returns; the patch list is always every patch with <span class="math notranslate nohighlight">\(m \geq 1\)</span>.
+So passing patches from a cut run changes nothing:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">cut</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">_</span><span class="p">,</span> <span class="n">patches</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">hyper_fov</span><span class="p">(</span><span class="n">m_cut</span><span class="o">=</span><span class="n">cut</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">cut</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">patches</span><span class="p">),</span> <span class="nb">round</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">multiplicity_moments</span><span class="p">(</span><span class="n">patches</span><span class="o">=</span><span class="n">patches</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">4</span><span class="p">))</span>
+<span class="go">1 105 1.6607</span>
+<span class="go">2 105 1.6607</span>
+<span class="go">3 105 1.6607</span>
+</pre></div>
+</div>
+<p>This matters when reading a
+<a class="reference internal" href="docstring.html#divtel.visualization.multiplicity_plot" title="divtel.visualization.multiplicity_plot"><code class="xref py py-func docutils literal notranslate"><span class="pre">multiplicity_plot()</span></code></a> title, which quotes the
+<code class="docutils literal notranslate"><span class="pre">m_cut</span></code> area and the mean side by side: the area respects the cut and the
+mean does not.</p>
+<p>There is a shortcut worth knowing. Each telescope’s disc contributes its own
+area to every patch it covers, so <span class="math notranslate nohighlight">\(\sum_i m_i A_i\)</span> is just the total
+camera solid angle of the array, and</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\langle m \rangle = \frac{\sum_\mathrm{telescopes} \Omega_\mathrm{camera}}
+                           {\Omega_\mathrm{covered}}\]</div>
+</div>
+<p>the total camera solid angle divided by the sky actually covered. That makes
+the two limits obvious: pointed in parallel every camera lands on the same
+disc, so the sum is <span class="math notranslate nohighlight">\(n\)</span> times the union and the mean is the number of
+telescopes with zero variance; fully diverged the discs are disjoint, the union
+<em>equals</em> the sum, and the mean is one.</p>
 <p>The mean is the summary of how divergent a configuration is, and it moves
 opposite the area. On this array, pointed at 70 degrees:</p>
 <div class="table-wrapper docutils container">
@@ -540,6 +599,7 @@ the title; patches and bars below it are still drawn, faded.</p>
 <p>If you already have the patches from a
 <a class="reference internal" href="docstring.html#divtel.telescope.Array.hyper_fov" title="divtel.telescope.Array.hyper_fov"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hyper_fov()</span></code></a> call, pass them in as <code class="docutils literal notranslate"><span class="pre">patches=</span></code> to
 save computing the geometry twice.</p>
+</section>
 </section>
 <section id="plotting">
 <h2>Plotting<a class="headerlink" href="#plotting" title="Link to this heading">¶</a></h2>
@@ -766,7 +826,10 @@ The conversion is done for you on the way out.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#the-hyper-field-of-view">The hyper field of view</a></li>
-<li><a class="reference internal" href="#how-well-the-sky-is-covered">How well the sky is covered</a></li>
+<li><a class="reference internal" href="#how-well-the-sky-is-covered">How well the sky is covered</a><ul>
+<li><a class="reference internal" href="#how-the-mean-is-defined">How the mean is defined</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#plotting">Plotting</a></li>
 <li><a class="reference internal" href="#sub-arrays">Sub-arrays</a></li>
 <li><a class="reference internal" href="#pointing-at-a-source-at-a-time">Pointing at a source, at a time</a></li>
@@ -783,9 +846,10 @@ The conversion is done for you on the way out.</p>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=74d9a06e"></script>
+</div><script src="_static/documentation_options.js?v=710047b1"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     </body>
 </html>
