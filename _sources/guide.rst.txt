@@ -307,10 +307,14 @@ you want to do your own accounting:
     ...     print(multiplicity, round(polygon.area, 2))
 
 Coordinates are degrees of offset from the array's mean pointing, in a Lambert
-azimuthal equal-area projection centred on it. That projection is chosen so
-patch areas are true solid angles whatever the array is pointing at, and so
-that nothing breaks near the zenith -- where telescopes a fraction of a degree
-apart on the sky are hundreds of degrees apart in azimuth.
+azimuthal equal-area projection centred on it: x is offset in azimuth, y is
+offset in altitude, at every pointing -- not just near the centre, where any
+sensible projection agrees, but out to the edge of the map too, so the sky map
+looks the way the telescopes actually swing as ``div`` changes. That
+projection is chosen so patch areas are true solid angles whatever the array
+is pointing at, and so that nothing breaks near the zenith -- where telescopes
+a fraction of a degree apart on the sky are hundreds of degrees apart in
+azimuth.
 
 Because the cameras here are about 5.7 degrees across while divergence swings
 the pointings by tens of degrees, the discs come apart within the first few

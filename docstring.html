@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="divtel: Divergent pointing mode for Imaging Atmospheric Cherenkov Telescopes arrays" href="README.html"><link rel="prev" title="Examples" href="examples.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>API documentation - divtel 0.2.dev62+gabc095d86 documentation</title>
+        <title>API documentation - divtel 0.2.dev64+g311547a1a documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">divtel 0.2.dev62+gabc095d86 documentation</div></a>
+      <a href="index.html"><div class="brand">divtel 0.2.dev64+g311547a1a documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -443,6 +443,11 @@ preserves area exactly, so the patch areas are true solid angles, and
 it has no pole – working directly in the (azimuth, altitude) plane
 instead breaks down near the zenith, where telescopes a fraction of a
 degree apart on the sky are hundreds of degrees apart in azimuth.</p>
+<p>The projection’s own x and y axes are azimuth and altitude: x is
+offset in azimuth (increasing to the right, as azimuth increases
+north-to-east), y is offset in altitude (increasing upward). That
+holds everywhere the array can point, not just near the centre –
+the sky map looks the way the telescopes actually move.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -456,9 +461,10 @@ accurate to about 0.01% of a disc’s area.</p></li>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
 <li><p><strong>area</strong> (<cite>astropy.Quantity</cite>) – covered area in deg**2, counting only patches above <cite>m_cut</cite></p></li>
-<li><p><strong>patches</strong> (list of (<cite>shapely.Polygon</cite>, int)) – each patch and the number of telescopes seeing it. Coordinates are
-degrees of offset from the array’s mean pointing, in the
-equal-area projection, so polygon areas are in deg**2.</p></li>
+<li><p><strong>patches</strong> (list of (<cite>shapely.Polygon</cite>, int)) – each patch and the number of telescopes seeing it. x is degrees of
+offset in azimuth from the array’s mean pointing, y degrees of
+offset in altitude, both in the equal-area projection, so polygon
+areas are in deg**2.</p></li>
 </ul>
 </p>
 </dd>
@@ -840,6 +846,36 @@ conversion in between.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="divtel.pointing.local_frame">
+<span class="sig-prename descclassname"><span class="pre">divtel.pointing.</span></span><span class="sig-name descname"><span class="pre">local_frame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">az</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.pointing.local_frame" title="Link to this definition">¶</a></dt>
+<dd><p>Unit tangent vectors at an alt/az pointing, towards increasing az and alt.</p>
+<p>These are the directions an observer standing at that pointing and
+looking up would call “sideways” (towards increasing azimuth) and “up”
+(towards increasing altitude). They are exact, not approximations valid
+only near the pointing: alt/az is an orthogonal coordinate system on the
+sphere, so the two are always unit length and always perpendicular to
+each other and to <cite>alt_az_to_vector(alt, az)</cite>, at every pointing.</p>
+<p>Used to orient a small flat map – a camera’s field of view, or the sky
+map <cite>Array.hyper_fov</cite> builds – around a pointing, so that moving along
+one returned vector reads as “more altitude” and the other as “more
+azimuth”, whatever the pointing itself is.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alt</strong> (<cite>astropy.Quantity</cite>)</p></li>
+<li><p><strong>az</strong> (<cite>astropy.Quantity</cite>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>(increasing_az, increasing_alt)</strong> – unit vectors [x, y, z]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple of <cite>numpy.array</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="divtel.pointing.pointG_position">
 <span class="sig-prename descclassname"><span class="pre">divtel.pointing.</span></span><span class="sig-name descname"><span class="pre">pointG_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">barycenter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">div</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alt_mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">az_mean</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.pointing.pointG_position" title="Link to this definition">¶</a></dt>
 <dd><p>Compute the position of g_point for the pointing</p>
@@ -1159,8 +1195,8 @@ below it are still drawn, faded.</p></li>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>Drawn in an equal-area projection centred on the array’s mean pointing, so
-the axes are degrees of offset from that direction and the areas are true
+<p>Drawn in an equal-area projection centred on the array’s mean pointing:
+x is offset in azimuth, y is offset in altitude, and the areas are true
 solid angles – see <cite>Array.hyper_fov</cite>.</p>
 </dd></dl>
 
@@ -1312,6 +1348,7 @@ it are still drawn, faded</p></li>
 </li>
 <li><a class="reference internal" href="#divtel-pointing"><code class="docutils literal notranslate"><span class="pre">divtel.pointing</span></code></a><ul>
 <li><a class="reference internal" href="#divtel.pointing.alt_az_to_vector"><code class="docutils literal notranslate"><span class="pre">alt_az_to_vector()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.pointing.local_frame"><code class="docutils literal notranslate"><span class="pre">local_frame()</span></code></a></li>
 <li><a class="reference internal" href="#divtel.pointing.pointG_position"><code class="docutils literal notranslate"><span class="pre">pointG_position()</span></code></a></li>
 <li><a class="reference internal" href="#divtel.pointing.tel_div_pointing"><code class="docutils literal notranslate"><span class="pre">tel_div_pointing()</span></code></a></li>
 </ul>
@@ -1350,7 +1387,7 @@ it are still drawn, faded</p></li>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=2b327759"></script>
+</div><script src="_static/documentation_options.js?v=4ef0487d"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>

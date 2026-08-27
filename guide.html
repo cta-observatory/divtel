@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="Examples" href="examples.html"><link rel="prev" title="divtel" href="index.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>User guide - divtel 0.2.dev62+gabc095d86 documentation</title>
+        <title>User guide - divtel 0.2.dev64+g311547a1a documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">divtel 0.2.dev62+gabc095d86 documentation</div></a>
+      <a href="index.html"><div class="brand">divtel 0.2.dev64+g311547a1a documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -487,10 +487,14 @@ you want to do your own accounting:</p>
 </pre></div>
 </div>
 <p>Coordinates are degrees of offset from the array’s mean pointing, in a Lambert
-azimuthal equal-area projection centred on it. That projection is chosen so
-patch areas are true solid angles whatever the array is pointing at, and so
-that nothing breaks near the zenith – where telescopes a fraction of a degree
-apart on the sky are hundreds of degrees apart in azimuth.</p>
+azimuthal equal-area projection centred on it: x is offset in azimuth, y is
+offset in altitude, at every pointing – not just near the centre, where any
+sensible projection agrees, but out to the edge of the map too, so the sky map
+looks the way the telescopes actually swing as <code class="docutils literal notranslate"><span class="pre">div</span></code> changes. That
+projection is chosen so patch areas are true solid angles whatever the array
+is pointing at, and so that nothing breaks near the zenith – where telescopes
+a fraction of a degree apart on the sky are hundreds of degrees apart in
+azimuth.</p>
 <p>Because the cameras here are about 5.7 degrees across while divergence swings
 the pointings by tens of degrees, the discs come apart within the first few
 hundredths of the slider. Push <code class="docutils literal notranslate"><span class="pre">div</span></code> past roughly 0.08 on this array and it
@@ -871,7 +875,7 @@ The conversion is done for you on the way out.</p>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=2b327759"></script>
+</div><script src="_static/documentation_options.js?v=4ef0487d"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>
