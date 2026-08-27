@@ -409,6 +409,12 @@ class Array:
         instead breaks down near the zenith, where telescopes a fraction of a
         degree apart on the sky are hundreds of degrees apart in azimuth.
 
+        The projection's own x and y axes are azimuth and altitude: x is
+        offset in azimuth (increasing to the right, as azimuth increases
+        north-to-east), y is offset in altitude (increasing upward). That
+        holds everywhere the array can point, not just near the centre --
+        the sky map looks the way the telescopes actually move.
+
         Parameters
         ----------
         m_cut: int
@@ -424,9 +430,10 @@ class Array:
         area: `astropy.Quantity`
             covered area in deg**2, counting only patches above `m_cut`
         patches: list of (`shapely.Polygon`, int)
-            each patch and the number of telescopes seeing it. Coordinates are
-            degrees of offset from the array's mean pointing, in the
-            equal-area projection, so polygon areas are in deg**2.
+            each patch and the number of telescopes seeing it. x is degrees of
+            offset in azimuth from the array's mean pointing, y degrees of
+            offset in altitude, both in the equal-area projection, so polygon
+            areas are in deg**2.
         """
         from shapely.geometry import LineString, Polygon
         from shapely.ops import polygonize, unary_union
@@ -441,13 +448,15 @@ class Array:
         norm = np.linalg.norm(centre)
         centre = centre / norm if norm > 1e-9 else np.array([0.0, 0.0, 1.0])
 
-        # Any two vectors completing an orthonormal frame with `centre`.
-        seed = np.array([1.0, 0.0, 0.0])
-        if abs(centre @ seed) > 0.9:
-            seed = np.array([0.0, 1.0, 0.0])
-        east = np.cross(centre, seed)
-        east /= np.linalg.norm(east)
-        north = np.cross(centre, east)
+        # The tangent-plane basis at the centre, towards increasing azimuth
+        # and altitude. Built from the pointing's own alt/az rather than from
+        # a basis fixed to some external axis, so the frame turns continuously
+        # as the array points around the sky instead of jumping when the
+        # pointing crosses whatever axis a fixed basis happened to be seeded
+        # from -- and it means x and y can be read directly as az and alt.
+        alt_c = np.arcsin(np.clip(centre[2], -1.0, 1.0)) * u.rad
+        az_c = np.arctan2(-centre[1], centre[0]) * u.rad
+        east, north = pointing.local_frame(alt_c, az_c)
 
         def project(vectors):
             """Lambert azimuthal equal-area, in degrees from the centre."""

@@ -32,8 +32,8 @@ def display_hyper_fov(array, ax=None, m_cut=1, cmap="viridis", show_area=True):
 
     Notes
     -----
-    Drawn in an equal-area projection centred on the array's mean pointing, so
-    the axes are degrees of offset from that direction and the areas are true
+    Drawn in an equal-area projection centred on the array's mean pointing:
+    x is offset in azimuth, y is offset in altitude, and the areas are true
     solid angles -- see `Array.hyper_fov`.
     """
     from matplotlib.collections import PatchCollection
@@ -75,8 +75,8 @@ def display_hyper_fov(array, ax=None, m_cut=1, cmap="viridis", show_area=True):
 
     ax.autoscale_view()
     ax.set_aspect("equal", adjustable="datalim")
-    ax.set_xlabel("offset from array pointing [deg]")
-    ax.set_ylabel("offset from array pointing [deg]")
+    ax.set_xlabel("azimuth offset [deg]")
+    ax.set_ylabel("altitude offset [deg]")
     ax.margins(0.08)
 
     colourbar = ax.figure.colorbar(collection, ax=ax,

@@ -160,3 +160,34 @@ def test_no_patch_is_seen_by_nobody(hess_1):
         hess_1.divergent_pointing(div, 90 * u.deg, 0 * u.deg)
         _, patches = hess_1.hyper_fov(m_cut=1)
         assert all(m >= 1 for _, m in patches), f"multiplicity 0 patch at div={div}"
+
+
+def test_sky_map_orientation_is_continuous_across_the_pointing_range():
+    """
+    Regression test for a real bug: an earlier implementation built the sky
+    map's tangent-plane basis from a fixed external axis, switched between two
+    choices depending on which the pointing was closer to. Crossing that
+    switch flipped the whole projected map by 90 degrees for an
+    infinitesimal change in pointing -- an asymmetric array's projected
+    bounding box would swap its width and height in one step. Sweeping the
+    mean pointing's altitude through where that switch used to sit (~26 deg,
+    for an array pointed due north) should move the bounding box smoothly.
+    """
+    # Elongated on the ground, so the projected bounding box is asymmetric
+    # and a 90-degree flip is visible as width and height swapping.
+    array = Array([
+        Telescope(x * u.m, y * u.m, 0 * u.m, 20 * u.m, 1 * u.m)
+        for x, y in [(-300, -20), (-150, 20), (0, -20), (150, 20), (300, -20)]
+    ])
+
+    widths, heights = [], []
+    for alt in np.linspace(15, 40, 60):
+        array.divergent_pointing(0.03, alt * u.deg, 0 * u.deg)
+        _, patches = array.hyper_fov(rim_points=48)
+        xs = np.concatenate([np.array(p.exterior.coords)[:, 0] for p, m in patches])
+        ys = np.concatenate([np.array(p.exterior.coords)[:, 1] for p, m in patches])
+        widths.append(xs.max() - xs.min())
+        heights.append(ys.max() - ys.min())
+
+    assert np.abs(np.diff(widths)).max() < 0.5
+    assert np.abs(np.diff(heights)).max() < 0.5
