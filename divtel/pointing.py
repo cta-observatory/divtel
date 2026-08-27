@@ -42,7 +42,7 @@ def _norm_div(div, scale=100 * u.m):
     ----------
     div: float
     scale: `astropy.Quantity`
-        telescope distance from barycenter at which div = divergence_angle/90deg
+        telescope distance from barycenter at which div = sin(divergence_angle)
 
     Returns
     -------
@@ -50,6 +50,7 @@ def _norm_div(div, scale=100 * u.m):
         distance, in metres
     """
     return scale/np.tan(np.arcsin(div))
+
 
 def pointG_position(barycenter, div, alt_mean, az_mean):
     """
