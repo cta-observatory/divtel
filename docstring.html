@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="divtel: Divergent pointing mode for Imaging Atmospheric Cherenkov Telescopes arrays" href="README.html"><link rel="prev" title="Examples" href="examples.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>API documentation - divtel 0.2.dev60+gb2b70836d documentation</title>
+        <title>API documentation - divtel 0.2.dev62+gabc095d86 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">divtel 0.2.dev60+gb2b70836d documentation</div></a>
+      <a href="index.html"><div class="brand">divtel 0.2.dev62+gabc095d86 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -335,6 +335,13 @@ Update pointing of all telescopes of the array</p>
 <dd class="field-even"><p><strong>ValueError</strong> – if div is outside [0, 1]</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Divergence spreads telescopes on both sides of the mean pointing, so
+one asked for near the horizon pushes some of them underground – a
+real mount cannot follow that, it rails at its lowest elevation and
+stops. A telescope whose computed altitude comes out negative is
+pointed at the horizon instead (altitude 0), at whatever azimuth the
+geometry gave it; nothing else about the array’s pointing changes.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1343,7 +1350,7 @@ it are still drawn, faded</p></li>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=710047b1"></script>
+</div><script src="_static/documentation_options.js?v=2b327759"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>
