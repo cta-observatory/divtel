@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="Examples" href="examples.html"><link rel="prev" title="divtel" href="index.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>User guide - divtel 0.2.dev55+g06e0e2285 documentation</title>
+        <title>User guide - divtel 0.2.dev58+gc7b02b613 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">divtel 0.2.dev55+g06e0e2285 documentation</div></a>
+      <a href="index.html"><div class="brand">divtel 0.2.dev58+gc7b02b613 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -343,7 +343,7 @@ on the way in, so the two spellings describe the same telescope:</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">id</span></code> column sets <code class="xref py py-attr docutils literal notranslate"><span class="pre">id</span></code>. CTAO numbers
 telescopes by type – LSTs 1 to 4, MSTs 5 to 14, telescopes added to try out a
 configuration from 15 on – so ids carry meaning, and
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">group_by()</span></code> selects on them. Without the column,
+<a class="reference internal" href="docstring.html#divtel.telescope.Array.group_by" title="divtel.telescope.Array.group_by"><code class="xref py py-meth docutils literal notranslate"><span class="pre">group_by()</span></code></a> selects on them. Without the column,
 telescopes are numbered 1 to N in file order. Telescopes built by hand instead
 take ids from a counter shared across the session, which makes them unique but
 not meaningful; pass <code class="docutils literal notranslate"><span class="pre">tel_id</span></code> to <a class="reference internal" href="docstring.html#divtel.telescope.Telescope" title="divtel.telescope.Telescope"><code class="xref py py-class docutils literal notranslate"><span class="pre">Telescope</span></code></a> to set
@@ -563,6 +563,54 @@ visible.</p>
 <p>Both take an existing <code class="docutils literal notranslate"><span class="pre">ax</span></code> and return it, so they compose with whatever else
 you are plotting.</p>
 </section>
+<section id="sub-arrays">
+<h2>Sub-arrays<a class="headerlink" href="#sub-arrays" title="Link to this heading">¶</a></h2>
+<p>A real array is not one instrument but several sharing a site. On the La Palma
+layout four LSTs sit inside fifteen MSTs, with different cameras, different
+fields of view, and their own barycenters.
+<a class="reference internal" href="docstring.html#divtel.telescope.Array.group_by" title="divtel.telescope.Array.group_by"><code class="xref py py-meth docutils literal notranslate"><span class="pre">group_by()</span></code></a> splits the array up so each can be
+looked at on its own:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">array</span> <span class="o">=</span> <span class="n">load_array</span><span class="p">(</span><span class="n">files</span><span class="p">(</span><span class="s2">"divtel"</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"data"</span> <span class="o">/</span> <span class="s2">"la_palma_4LST_15MST.ecsv"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">array</span><span class="o">.</span><span class="n">divergent_pointing</span><span class="p">(</span><span class="mf">0.02</span><span class="p">,</span> <span class="mi">70</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span> <span class="mi">180</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">groups</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">group_by</span><span class="p">({</span><span class="s2">"LST"</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="s2">"MST"</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">20</span><span class="p">)})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">groups</span><span class="p">[</span><span class="s2">"LST"</span><span class="p">]</span><span class="o">.</span><span class="n">barycenter</span>
+<span class="go">&lt;Quantity [ 0.895 , 44.8475, 44.925 ] m&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">groups</span><span class="p">[</span><span class="s2">"LST"</span><span class="p">]</span><span class="o">.</span><span class="n">hyper_fov</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+<span class="go">&lt;Quantity 26.83755561 deg2&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">groups</span><span class="p">[</span><span class="s2">"MST"</span><span class="p">]</span><span class="o">.</span><span class="n">hyper_fov</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+<span class="go">&lt;Quantity 169.76149694 deg2&gt;</span>
+</pre></div>
+</div>
+<p>The MST figure is the whole array’s coverage: the MSTs’ cameras are wide enough
+that they already see everything the LSTs do, so adding the LSTs back adds
+multiplicity rather than area.</p>
+<p>Each group is a full <a class="reference internal" href="docstring.html#divtel.telescope.Array" title="divtel.telescope.Array"><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></a>, so everything an array
+can do a group can do too. The ids are
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">id</span></code> values, not positions – which is why
+layouts carry them.</p>
+<p>Groups hold the same <a class="reference internal" href="docstring.html#divtel.telescope.Telescope" title="divtel.telescope.Telescope"><code class="xref py py-class docutils literal notranslate"><span class="pre">Telescope</span></code></a> objects as the array
+they came from rather than copies, so re-pointing the array re-points every
+group with it. They also inherit the array’s current pointing, so
+<a class="reference internal" href="docstring.html#divtel.telescope.Array.hyper_fov" title="divtel.telescope.Array.hyper_fov"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hyper_fov()</span></code></a> works on a group straight away.
+Telescopes may be left out of every group; nothing requires the groups to cover
+the array.</p>
+<p>If you would rather not write the ids out, grouping by camera picks the types
+out on its own, since telescopes of a type share one:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">telescopes</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">array</span><span class="o">.</span><span class="n">group_by</span><span class="p">(</span><span class="s2">"camera_radius"</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+<span class="go">{'1.074 m': 15, '1.05 m': 4}</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="docstring.html#divtel.visualization.display_groups" title="divtel.visualization.display_groups"><code class="xref py py-func docutils literal notranslate"><span class="pre">display_groups()</span></code></a> draws them, one colour per group,
+each with its own barycenter and mean pointing arrow:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">divtel.visualization</span><span class="w"> </span><span class="kn">import</span> <span class="n">display_groups</span>
+
+<span class="n">display_groups</span><span class="p">(</span><span class="n">groups</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Turn the divergence up and the two barycenter arrows swing apart – the LSTs,
+sitting near the centre of the array, diverge far less than the MSTs around
+them.</p>
+</section>
 <section id="pointing-at-a-source-at-a-time">
 <h2>Pointing at a source, at a time<a class="headerlink" href="#pointing-at-a-source-at-a-time" title="Link to this heading">¶</a></h2>
 <p>Everything so far works in the ground frame: an array pointed at alt 70, az 180
@@ -720,6 +768,7 @@ The conversion is done for you on the way out.</p>
 <li><a class="reference internal" href="#the-hyper-field-of-view">The hyper field of view</a></li>
 <li><a class="reference internal" href="#how-well-the-sky-is-covered">How well the sky is covered</a></li>
 <li><a class="reference internal" href="#plotting">Plotting</a></li>
+<li><a class="reference internal" href="#sub-arrays">Sub-arrays</a></li>
 <li><a class="reference internal" href="#pointing-at-a-source-at-a-time">Pointing at a source, at a time</a></li>
 <li><a class="reference internal" href="#exporting-to-sim-telarray">Exporting to sim_telarray</a></li>
 <li><a class="reference internal" href="#where-to-go-next">Where to go next</a></li>
@@ -734,7 +783,7 @@ The conversion is done for you on the way out.</p>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=174a28ab"></script>
+</div><script src="_static/documentation_options.js?v=74d9a06e"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>

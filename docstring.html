@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="divtel: Divergent pointing mode for Imaging Atmospheric Cherenkov Telescopes arrays" href="README.html"><link rel="prev" title="Examples" href="examples.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>API documentation - divtel 0.2.dev55+g06e0e2285 documentation</title>
+        <title>API documentation - divtel 0.2.dev58+gc7b02b613 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">divtel 0.2.dev55+g06e0e2285 documentation</div></a>
+      <a href="index.html"><div class="brand">divtel 0.2.dev58+gc7b02b613 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -374,6 +374,49 @@ telescopes are LSTs, the rest MSTs with NectarCam.</p></li>
     have one entry per telescope</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="divtel.telescope.Array.group_by">
+<span class="sig-name descname"><span class="pre">group_by</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">groups</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.telescope.Array.group_by" title="Link to this definition">¶</a></dt>
+<dd><p>Split the array into sub-arrays.</p>
+<p>A real array is not one instrument but several sharing a site: on the
+CTA La Palma layout four LSTs sit inside fifteen MSTs, with different
+cameras, different fields of view, and their own barycenters. Grouping
+lets each be looked at on its own.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>groups</strong> (<em>dict</em><em> or </em><em>str</em>) – either a mapping of group name to the telescope ids in it, e.g.
+<code class="docutils literal notranslate"><span class="pre">{&quot;LST&quot;:</span> <span class="pre">[1,</span> <span class="pre">2,</span> <span class="pre">3,</span> <span class="pre">4],</span> <span class="pre">&quot;MST&quot;:</span> <span class="pre">range(5,</span> <span class="pre">20)}</span></code>, or the string
+<code class="docutils literal notranslate"><span class="pre">&quot;camera_radius&quot;</span></code> to group telescopes by the camera they carry.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>one sub-array per group, in the order the groups were given</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict of str to <cite>Array</cite></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – if an id is not in the array, or a telescope is put in two groups</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Ids are <cite>Telescope.id</cite>, not positions in the array. CTAO numbers
+telescopes by type – LSTs 1 to 4, MSTs 5 to 14, telescopes added to try
+out a configuration from 15 on – and <cite>divtel.layout.load_array</cite> takes
+those ids from the layout file, so they mean what the layout says.</p>
+<p>The sub-arrays hold the <em>same</em> <cite>Telescope</cite> objects as this array rather
+than copies, so pointing the whole array points every group with it.
+Each sub-array is handed the array’s current pointing, so <cite>hyper_fov</cite>
+and <cite>export_cfg</cite> work on it straight away.</p>
+<p>Telescopes may be left out of every group; nothing requires the groups
+to cover the array.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">groups</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">group_by</span><span class="p">({</span><span class="s2">"LST"</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="s2">"MST"</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">20</span><span class="p">)})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">groups</span><span class="p">[</span><span class="s2">"LST"</span><span class="p">]</span><span class="o">.</span><span class="n">barycenter</span>
+<span class="go">&lt;Quantity [ 0.895 , 44.8475, 44.925 ] m&gt;</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -1033,6 +1076,38 @@ in the horizontal frame</p></li>
 <p>Plotting helpers. Each takes an optional <code class="docutils literal notranslate"><span class="pre">ax</span></code> and returns it, so they compose
 with whatever else you are drawing.</p>
 <dl class="py function" id="module-divtel.visualization">
+<dt class="sig sig-object py" id="divtel.visualization.display_groups">
+<span class="sig-prename descclassname"><span class="pre">divtel.visualization.</span></span><span class="sig-name descname"><span class="pre">display_groups</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">groups</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'xy'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'tab10'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.visualization.display_groups" title="Link to this definition">¶</a></dt>
+<dd><p>Display sub-arrays, each in its own colour with its own barycenter.</p>
+<p><cite>Array.display_2d</cite> draws the whole array in one colour around one
+barycenter. On a layout of several telescope types that hides the thing
+worth seeing: where each type sits, and how far each type’s mean pointing
+has swung away from the others under divergence.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>groups</strong> (dict of str to <cite>Array</cite>) – as returned by <cite>Array.group_by</cite></p></li>
+<li><p><strong>projection</strong> (<em>str</em>) – ‘xy’, ‘xz’ or ‘yz’</p></li>
+<li><p><strong>ax</strong> (<cite>matplotlib.pyplot.axes</cite>, optional)</p></li>
+<li><p><strong>cmap</strong> (<em>str</em>) – colormap the group colours are taken from</p></li>
+<li><p><strong>annotate</strong> (<em>bool</em>) – label each barycenter with its group name</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ax</strong></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>matplotlib.pyplot.axes</cite></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">groups</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">group_by</span><span class="p">({</span><span class="s2">"LST"</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="s2">"MST"</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">20</span><span class="p">)})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">display_groups</span><span class="p">(</span><span class="n">groups</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="divtel.visualization.display_hyper_fov">
 <span class="sig-prename descclassname"><span class="pre">divtel.visualization.</span></span><span class="sig-name descname"><span class="pre">display_hyper_fov</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_cut</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'viridis'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.visualization.display_hyper_fov" title="Link to this definition">¶</a></dt>
 <dd><p>Display the array’s hyper field of view on the sky.</p>
@@ -1184,6 +1259,7 @@ it are still drawn, faded</p></li>
 <li><a class="reference internal" href="#divtel.telescope.Array.div"><code class="docutils literal notranslate"><span class="pre">Array.div</span></code></a></li>
 <li><a class="reference internal" href="#divtel.telescope.Array.divergent_pointing"><code class="docutils literal notranslate"><span class="pre">Array.divergent_pointing()</span></code></a></li>
 <li><a class="reference internal" href="#divtel.telescope.Array.export_cfg"><code class="docutils literal notranslate"><span class="pre">Array.export_cfg()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.telescope.Array.group_by"><code class="docutils literal notranslate"><span class="pre">Array.group_by()</span></code></a></li>
 <li><a class="reference internal" href="#divtel.telescope.Array.hyper_fov"><code class="docutils literal notranslate"><span class="pre">Array.hyper_fov()</span></code></a></li>
 <li><a class="reference internal" href="#divtel.telescope.Array.mean_pointing"><code class="docutils literal notranslate"><span class="pre">Array.mean_pointing</span></code></a></li>
 <li><a class="reference internal" href="#divtel.telescope.Array.multiplicity_moments"><code class="docutils literal notranslate"><span class="pre">Array.multiplicity_moments()</span></code></a></li>
@@ -1234,6 +1310,7 @@ it are still drawn, faded</p></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#divtel-visualization"><code class="docutils literal notranslate"><span class="pre">divtel.visualization</span></code></a><ul>
+<li><a class="reference internal" href="#divtel.visualization.display_groups"><code class="docutils literal notranslate"><span class="pre">display_groups()</span></code></a></li>
 <li><a class="reference internal" href="#divtel.visualization.display_hyper_fov"><code class="docutils literal notranslate"><span class="pre">display_hyper_fov()</span></code></a></li>
 <li><a class="reference internal" href="#divtel.visualization.multiplicity_plot"><code class="docutils literal notranslate"><span class="pre">multiplicity_plot()</span></code></a></li>
 <li><a class="reference internal" href="#divtel.visualization.sky_fov"><code class="docutils literal notranslate"><span class="pre">sky_fov()</span></code></a></li>
@@ -1250,7 +1327,7 @@ it are still drawn, faded</p></li>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=174a28ab"></script>
+</div><script src="_static/documentation_options.js?v=74d9a06e"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>
