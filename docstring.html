@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="divtel: Divergent pointing mode for Imaging Atmospheric Cherenkov Telescopes arrays" href="README.html"><link rel="prev" title="Examples" href="examples.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>API documentation - divtel 0.2.dev69+ga19f931a1 documentation</title>
+        <title>API documentation - divtel 0.2.dev70+g60f989f10 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">divtel 0.2.dev69+ga19f931a1 documentation</div></a>
+      <a href="index.html"><div class="brand">divtel 0.2.dev70+g60f989f10 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -243,11 +243,11 @@
 they fit together, start with the <a class="reference internal" href="guide.html"><span class="doc">User guide</span></a>.</p>
 <section id="divtel-telescope">
 <h2><code class="docutils literal notranslate"><span class="pre">divtel.telescope</span></code><a class="headerlink" href="#divtel-telescope" title="Link to this heading">¶</a></h2>
-<p>The two classes you build a simulation from:
-<a class="reference internal" href="#divtel.telescope.Telescope" title="divtel.telescope.Telescope"><code class="xref py py-class docutils literal notranslate"><span class="pre">Telescope</span></code></a> is one telescope on the ground,
-<a class="reference internal" href="#divtel.telescope.Array" title="divtel.telescope.Array"><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></a> is a list of them plus everything that is a
-property of the array as a whole – where it points, how much sky it sees, and
-how to write that out.</p>
+<p>The two classes you build a simulation from.
+<a class="reference internal" href="#divtel.telescope.Telescope" title="divtel.telescope.Telescope"><code class="xref py py-class docutils literal notranslate"><span class="pre">Telescope</span></code></a> is one telescope on the ground.
+<a class="reference internal" href="#divtel.telescope.Array" title="divtel.telescope.Array"><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></a> is a list of them, plus everything about the
+array as a whole: where it points, how much sky it sees, how to write that
+out.</p>
 <dl class="py class" id="module-divtel.telescope">
 <dt class="sig sig-object py" id="divtel.telescope.Array">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">divtel.telescope.</span></span><span class="sig-name descname"><span class="pre">Array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">telescope_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.telescope.Array" title="Link to this definition">¶</a></dt>
@@ -810,10 +810,10 @@ file order.</p>
 </section>
 <section id="divtel-pointing">
 <h2><code class="docutils literal notranslate"><span class="pre">divtel.pointing</span></code><a class="headerlink" href="#divtel-pointing" title="Link to this heading">¶</a></h2>
-<p>The pointing geometry underneath <a class="reference internal" href="#divtel.telescope.Array.divergent_pointing" title="divtel.telescope.Array.divergent_pointing"><code class="xref py py-meth docutils literal notranslate"><span class="pre">divergent_pointing()</span></code></a>.
-Most users will not need to call these directly, but they are what defines the
-coordinate frame and the point <strong>G</strong> that divergence is built around – see
-<a class="reference internal" href="guide.html#the-div-parameter"><span class="std std-ref">What div actually means</span></a>.</p>
+<p>The pointing geometry underneath
+<a class="reference internal" href="#divtel.telescope.Array.divergent_pointing" title="divtel.telescope.Array.divergent_pointing"><code class="xref py py-meth docutils literal notranslate"><span class="pre">divergent_pointing()</span></code></a>. Most users won’t need to
+call these directly. They define the coordinate frame and the point <strong>G</strong>
+that divergence is built around; see <a class="reference internal" href="guide.html#the-div-parameter"><span class="std std-ref">What div actually means</span></a>.</p>
 <p id="module-divtel.pointing">Functions to define telescopes pointings
 We use the same reference frame as simtel_array:
 X is pointing North
@@ -918,7 +918,7 @@ Update telescope pointing</p>
 </section>
 <section id="divtel-observation">
 <h2><code class="docutils literal notranslate"><span class="pre">divtel.observation</span></code><a class="headerlink" href="#divtel-observation" title="Link to this heading">¶</a></h2>
-<p>Where and when the array is observing from – the optional half that connects
+<p>Where and when the array is observing from: the optional half that connects
 the ground-frame geometry to real sources at real times. Nothing in
 <a class="reference internal" href="#module-divtel.telescope" title="divtel.telescope"><code class="xref py py-mod docutils literal notranslate"><span class="pre">divtel.telescope</span></code></a> depends on it.</p>
 <p id="module-divtel.observation">When and where the array is observing from.</p>
@@ -1387,7 +1387,7 @@ it are still drawn, faded</p></li>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=b1f4dcdb"></script>
+</div><script src="_static/documentation_options.js?v=0e4709a3"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>

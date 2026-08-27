@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="API documentation" href="docstring.html"><link rel="prev" title="User guide" href="guide.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>Examples - divtel 0.2.dev69+ga19f931a1 documentation</title>
+        <title>Examples - divtel 0.2.dev70+g60f989f10 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">divtel 0.2.dev69+ga19f931a1 documentation</div></a>
+      <a href="index.html"><div class="brand">divtel 0.2.dev70+g60f989f10 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -242,9 +242,9 @@
 <section id="divergent-pointing-live">
 <h2>Divergent pointing, live<a class="headerlink" href="#divergent-pointing-live" title="Link to this heading">¶</a></h2>
 <p>Drag the divergence, altitude and azimuth sliders and watch the array
-repoint. This runs on a Python interpreter compiled to WebAssembly, so it
-executes in your browser: nothing is installed and no code leaves your
-machine. The first load fetches the interpreter and takes a few seconds.</p>
+repoint. This runs on a Python interpreter compiled to WebAssembly: nothing
+is installed, no code leaves your machine. The first load fetches the
+interpreter and takes a few seconds.</p>
 <div class="divtel-demo">
   <iframe src="marimo/interactive_display/index.html"
           title="Divergent pointing, interactive demo"
@@ -259,32 +259,31 @@ machine. The first load fetches the interpreter and takes a few seconds.</p>
 <p>The <strong>ground</strong> view plots each telescope and the direction it points. The
 <strong>hyper field of view</strong> is the sky the array actually sees: every telescope
 covers a disc, and the shading counts how many telescopes see each patch.
-Two or more can reconstruct a shower stereoscopically, one cannot – so
-divergence buys width at the cost of depth, and the area quoted in the title
+Two or more can reconstruct a shower stereoscopically, one cannot, so
+divergence buys width at the cost of depth. The area quoted in the title
 counts only the part still seen by at least two.</p>
-<p>The cameras in this example are about 5.7 degrees across while divergence
-swings the pointings by tens of degrees, so the discs come apart within the
-first few hundredths of the slider. Push it past roughly 0.08 and the array
-covers four separate patches of sky with no stereoscopic overlap at all.</p>
+<p>The cameras here are about 5.7 degrees across, while divergence swings the
+pointings by tens of degrees, so the discs come apart within the first few
+hundredths of the slider. Push it past roughly 0.08 and the array covers
+four separate patches of sky with no stereoscopic overlap at all.</p>
 <p>The sky panel is drawn in an equal-area projection centred on the array’s
-mean pointing, so its axes are degrees of offset from that direction and the
-quoted area is a true solid angle, whatever the array is pointing at.</p>
+mean pointing: its axes are degrees of offset from that direction, and the
+quoted area is a true solid angle wherever the array points.</p>
 <p>The demo is built from <code class="docutils literal notranslate"><span class="pre">examples/marimo/interactive_display.py</span></code>. To run or
 edit it locally:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">marimo</span> <span class="n">edit</span> <span class="n">examples</span><span class="o">/</span><span class="n">marimo</span><span class="o">/</span><span class="n">interactive_display</span><span class="o">.</span><span class="n">py</span>
 </pre></div>
 </div>
-<p>A Jupyter version of the same example lives in
-<code class="docutils literal notranslate"><span class="pre">examples/notebooks/interactive_display.ipynb</span></code>. It is not part of this site:
-its <code class="docutils literal notranslate"><span class="pre">ipywidgets</span></code> sliders need a Python kernel, which a static page has not
-got, so it would render here as controls that cannot move. Run it in a local
-Jupyter session instead.</p>
+<p>A Jupyter version lives in
+<code class="docutils literal notranslate"><span class="pre">examples/notebooks/interactive_display.ipynb</span></code>, but isn’t part of this
+site: its <code class="docutils literal notranslate"><span class="pre">ipywidgets</span></code> sliders need a Python kernel, which a static page
+doesn’t have. Run it in a local Jupyter session instead.</p>
 </section>
 <section id="tutorials">
 <h2>Tutorials<a class="headerlink" href="#tutorials" title="Link to this heading">¶</a></h2>
-<p>Three worked notebooks, each running in your browser the same way. They pick up
-where the <a class="reference internal" href="guide.html"><span class="doc">User guide</span></a> leaves off: the guide says what the API does, these ask
-what to do with it.</p>
+<p>Three worked notebooks, running in your browser the same way. They pick up
+where the <a class="reference internal" href="guide.html"><span class="doc">User guide</span></a> leaves off: the guide says what the API does, these
+ask what to do with it.</p>
 <div class="table-wrapper colwidths-given docutils container">
 <table class="docutils align-default">
 <colgroup>
@@ -365,7 +364,7 @@ which turns out to move as the source does.</p></td>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=b1f4dcdb"></script>
+</div><script src="_static/documentation_options.js?v=0e4709a3"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>

@@ -2,12 +2,11 @@
 User guide
 ==========
 
-divtel is a small toy model of an Imaging Atmospheric Cherenkov Telescope
-(IACT) array. You place telescopes on the ground, point them -- in parallel or
-divergently -- and measure the sky they collectively see.
+divtel is a toy model of an Imaging Atmospheric Cherenkov Telescope (IACT)
+array. Place telescopes on the ground, point them in parallel or
+divergently, and measure the sky they see.
 
-This guide walks through that from the start. For the signatures and every
-argument, see the :doc:`API documentation <docstring>`; for a version you can
+For full signatures, see the :doc:`API docs <docstring>`. For something to
 play with in the browser, see :doc:`examples`.
 
 Installation
@@ -25,40 +24,37 @@ The coordinate frame
 
 divtel uses the same ground frame as ``simtel_array``:
 
-* **x** points North, **y** points West, **z** points up. Positions are
-  lengths, normally metres.
-* **azimuth** is measured clockwise from x towards y, in ``[-180, 180]``
-  degrees.
-* **altitude** is measured from the ground towards z, in ``[-90, 90]``
-  degrees. Altitude 90 is the zenith.
+* **x** points North, **y** points West, **z** points up, in metres.
+* **azimuth** is measured clockwise from x towards y, ``[-180, 180]`` degrees.
+* **altitude** is measured from the ground up, ``[-90, 90]`` degrees; 90 is
+  the zenith.
 
-Every quantity that carries a physical dimension is an
-`astropy.units.Quantity <https://docs.astropy.org/en/stable/units/>`_. This is
-not decoration: divtel mixes metres and angles freely, and the units are what
-keeps that honest. Pass ``100 * u.m``, not ``100``.
+Every physical quantity is an `astropy.units.Quantity
+<https://docs.astropy.org/en/stable/units/>`_. divtel mixes metres and angles
+freely, so pass ``100 * u.m``, not ``100``.
 
 
 Building an array
 =================
 
-A :class:`~divtel.telescope.Telescope` is a ground position plus the two
-numbers that set how much sky it sees: the focal length and the camera radius.
-An :class:`~divtel.telescope.Array` is a list of them.
+A :class:`~divtel.telescope.Telescope` is a ground position plus a focal
+length and camera radius, which set how much sky it sees. An
+:class:`~divtel.telescope.Array` is a list of them.
 
 .. code-block:: python
 
     import astropy.units as u
     from divtel.telescope import Telescope, Array
 
-    # Four telescopes on a 100 m square -- roughly the H.E.S.S.-I layout.
+    # Four telescopes on a 100 m square, roughly the H.E.S.S.-I layout.
     array = Array([
         Telescope(x * u.m, y * u.m, 0 * u.m,
                   focal=20 * u.m, camera_radius=1 * u.m)
         for x, y in [(100, 0), (0, 100), (-100, 0), (0, -100)]
     ])
 
-The two camera numbers only ever enter as their ratio, which fixes the angular
-radius of the disc a telescope sees on the sky:
+The two camera numbers only ever enter as their ratio, the angular radius of
+the disc a telescope sees on the sky:
 
 .. code-block:: python
 
@@ -71,7 +67,7 @@ radius of the disc a telescope sees on the sky:
 angle of the whole disc. A 20 m focal length with a 1 m camera radius gives a
 camera a little under 6 degrees across.
 
-An array knows a few things about itself as a whole:
+An array also knows its own geometry:
 
 .. code-block:: python
 
@@ -84,9 +80,9 @@ An array knows a few things about itself as a whole:
 Loading an array from file
 ==========================
 
-Typing telescopes out gets old quickly. :func:`~divtel.layout.load_array` reads
-a layout from an ECSV file -- plain text with a small header naming each column
-and its unit:
+Typing telescopes out by hand gets old fast.
+:func:`~divtel.layout.load_array` reads a layout from an ECSV file instead,
+plain text with a small header naming each column and its unit:
 
 .. code-block:: python
 
@@ -114,10 +110,10 @@ things on, and ``la_palma_4LST_15MST.ecsv``, a CTA La Palma layout of 4 LSTs and
     id x y z focal camera_radius
     1 -70.04 -7.23 54 28 1.05
 
-Because the units live in the file, ``camera_radius`` may be given either as a
-length or as the half-angle the camera subtends on the sky -- whichever the
-instrument is quoted in. An angle is converted with ``radius = focal * tan(angle)``
-on the way in, so the two spellings describe the same telescope:
+``camera_radius`` may be given as a length or as the half-angle the camera
+subtends on the sky, since the units live in the file.
+``radius = focal * tan(angle)`` converts the angle on the way in, so both
+spellings describe the same telescope:
 
 .. code-block:: python
 
@@ -125,17 +121,16 @@ on the way in, so the two spellings describe the same telescope:
     >>> camera_radius_in_metres(2.1476 * u.deg, 28 * u.m)
     <Quantity 1.05000713 m>
 
-The ``id`` column sets :attr:`~divtel.telescope.Telescope.id`. CTAO numbers
-telescopes by type -- LSTs 1 to 4, MSTs 5 to 14, telescopes added to try out a
-configuration from 15 on -- so ids carry meaning, and
-:meth:`~divtel.telescope.Array.group_by` selects on them. Without the column,
-telescopes are numbered 1 to N in file order. Telescopes built by hand instead
-take ids from a counter shared across the session, which makes them unique but
-not meaningful; pass ``tel_id`` to :class:`~divtel.telescope.Telescope` to set
-them yourself.
+The ``id`` column sets :attr:`~divtel.telescope.Telescope.id`. CTAO ids are
+semantic: LSTs are 1-4, MSTs 5-14, and anything added to try out a
+configuration is 15+. :meth:`~divtel.telescope.Array.group_by` selects on
+these ids, so keep them meaningful. Without an ``id`` column, telescopes are
+numbered 1 to N in file order; telescopes built by hand get ids from a
+session-wide counter, unique but not meaningful, unless you pass ``tel_id``
+yourself.
 
-To look a layout over, or edit it, before building anything, read it as a table
-first -- :func:`~divtel.layout.load_array` takes one:
+To inspect or edit a layout before building anything, read it as a table:
+:func:`~divtel.layout.load_array` also accepts one:
 
 .. code-block:: python
 
@@ -151,8 +146,7 @@ Pointing the array
 Parallel pointing
 -----------------
 
-Every telescope aimed the same way. In divtel this is just divergent pointing
-with the divergence turned off:
+Every telescope aimed the same way, divergence turned off:
 
 .. code-block:: python
 
@@ -186,9 +180,9 @@ about two degrees apart on the sky.
 What ``div`` actually means
 ---------------------------
 
-``div`` runs from 0 (parallel) to 1, and it works through a point **G** placed
-*behind* the array. Every telescope is aimed directly away from G, so the
-further away G sits, the more nearly parallel the array is:
+``div`` runs from 0 (parallel) to 1. Internally it works through a point
+**G** placed *behind* the array: every telescope aims directly away from G,
+so the farther G sits, the more parallel the array is.
 
 .. code-block:: python
 
@@ -201,23 +195,19 @@ further away G sits, the more nearly parallel the array is:
 At ``div = 0`` G recedes to infinity and the telescopes point in parallel; at
 ``div = 1`` it sits in the middle of the array and they point straight outward.
 
-The one thing to keep in mind is that ``div`` is an engineering knob, not an
-angle. It is defined through a fixed 100 m reference distance: ``div`` is the
-sine of the divergence angle picked up by a telescope 100 m from the
-barycenter, *measured perpendicular to the pointing direction*. So the same
-``div`` produces a different real divergence on an array of a different size or
-layout -- and even on the same array pointed a different way. If you need the
-angle the array actually achieved, read it off ``pointing_altaz`` rather than
-inferring it from ``div``.
+``div`` is an engineering knob, not an angle: it's the sine of the
+divergence picked up by a telescope 100 m from the barycenter, measured
+perpendicular to the pointing direction. The same ``div`` value gives a
+different real divergence on a different array, or even the same array
+pointed elsewhere. Read ``pointing_altaz`` for the angle actually achieved.
 
 Values outside ``[0, 1]`` raise a ``ValueError``; the geometry stops meaning
 anything there.
 
-Divergence spreads telescopes on both sides of the mean pointing, so one asked
-for near the horizon pushes some of them underground. A flat array pointed
-straight at the horizon does not show it -- there is no up or down slope to
-tip telescopes past it -- but a sloped one does, exactly the way a real
-observing site would:
+Divergence spreads telescopes on both sides of the mean pointing, so pointing
+near the horizon can push some of them underground. A flat array pointed at
+the horizon won't show this, since there's no slope to tip telescopes past
+it, but a sloped one will:
 
 .. code-block:: python
 
@@ -229,20 +219,15 @@ observing site would:
     >>> np.round(hillside.pointing_altaz[:, 0].to(u.deg), 2)
     <Quantity [19.72,  0.  ] deg>
 
-Telescope one, up the slope, points where the geometry sends it: 19.72°.
-Telescope two, down the slope, would come out at -3.06° -- checked directly
-against ``pointing.tel_div_pointing``, which does not clamp. A real mount
-cannot follow the ground, though: it rails at its lowest elevation and stops,
-so ``divergent_pointing`` stops it at the horizon instead, at whatever azimuth
-it was already going to use. Nothing else about the array's pointing changes,
-and ``mean_pointing`` still reports the direction you asked to diverge from,
-not what any individual telescope achieved -- a divergent pointing has never
-meant "every telescope ends up there", only "diverge from there", so a
-clamped telescope is no different from any other telescope whose own pointing
-does not match the mean.
+Telescope one, up the slope, ends up at 19.72°. Telescope two, down the
+slope, would reach -3.06°, confirmed directly against
+``pointing.tel_div_pointing``, which doesn't clamp. A real mount can't follow
+the ground below the horizon, though, so ``divergent_pointing`` clamps it
+there instead, at the azimuth it was already using. ``mean_pointing`` still
+reports the direction you asked to diverge from, not what any one telescope
+achieved, clamped or not.
 
-The array remembers what it was last asked for, which saves carrying the
-numbers around yourself:
+The array remembers its last pointing:
 
 .. code-block:: python
 
@@ -251,15 +236,15 @@ numbers around yourself:
     >>> array.mean_pointing
     (<Quantity 70. deg>, <Quantity 180. deg>)
 
-``mean_pointing`` raises a ``ValueError`` on an array that has never been
-pointed; ``div`` reports 0, which is what a fresh array's telescopes are
-in fact doing -- they all sit at alt = az = 0 until you point them.
+``mean_pointing`` raises ``ValueError`` before the array has ever been
+pointed. ``div`` reports 0 by default, since a fresh array's telescopes all
+sit at alt = az = 0.
 
 Pointing at a target
 --------------------
 
-A single telescope can also be aimed at a position in the ground frame, which
-is useful for pointing at something at a finite distance:
+A single telescope can also aim at a position in the ground frame, useful for
+a source at finite distance:
 
 .. code-block:: python
 
@@ -275,15 +260,14 @@ Or directly in alt/az:
 The hyper field of view
 =======================
 
-This is the point of the whole exercise. Each telescope sees a disc on the
-sky. Pointing divergently spreads those discs out, which buys **width** at the
-cost of **depth**: a shower needs to be seen by at least two telescopes to be
-reconstructed stereoscopically, and divergence trades away exactly that
-overlap.
+Each telescope sees a disc on the sky. Divergent pointing spreads those discs
+apart, trading **depth** for **width**: a shower needs at least two
+telescopes to be reconstructed stereoscopically, and divergence trades away
+that overlap.
 
-:meth:`~divtel.telescope.Array.hyper_fov` measures both sides of the bargain.
+:meth:`~divtel.telescope.Array.hyper_fov` measures both sides of the trade.
 It cuts the union of the discs into patches and labels each with its
-**multiplicity** -- how many telescopes see it:
+**multiplicity**, how many telescopes see it:
 
 .. code-block:: python
 
@@ -293,10 +277,10 @@ It cuts the union of the discs into patches and labels each with its
     >>> total, stereo
     (<Quantity 45.95557740 deg2>, <Quantity 30.27381956 deg2>)
 
-Compare that with the parallel case, where all four discs coincide: 25.7 deg²
-covered, all of it at multiplicity 4. A very modest ``div`` of 0.02 has bought
-79% more sky, and 18% more of it is still stereoscopic -- but a shower now
-lands on two telescopes where it used to land on four.
+Compare that to parallel pointing, where all four discs coincide: 25.7 deg²
+covered, all of it at multiplicity 4. A ``div`` of just 0.02 buys 79% more
+sky, 18% of it still stereoscopic, but a shower now lands on two telescopes
+where it used to land on four.
 
 The second return value is the list of ``(polygon, multiplicity)`` patches, if
 you want to do your own accounting:
@@ -306,15 +290,11 @@ you want to do your own accounting:
     >>> for polygon, multiplicity in patches:
     ...     print(multiplicity, round(polygon.area, 2))
 
-Coordinates are degrees of offset from the array's mean pointing, in a Lambert
-azimuthal equal-area projection centred on it: x is offset in azimuth, y is
-offset in altitude, at every pointing -- not just near the centre, where any
-sensible projection agrees, but out to the edge of the map too, so the sky map
-looks the way the telescopes actually swing as ``div`` changes. That
-projection is chosen so patch areas are true solid angles whatever the array
-is pointing at, and so that nothing breaks near the zenith -- where telescopes
-a fraction of a degree apart on the sky are hundreds of degrees apart in
-azimuth.
+Coordinates are degrees of offset from the array's mean pointing, in a
+Lambert azimuthal equal-area projection: x is azimuth offset, y is altitude
+offset. Patch areas come out as true solid angles at any pointing, including
+near the zenith, where telescopes a fraction of a degree apart on the sky can
+be hundreds of degrees apart in azimuth.
 
 Because the cameras here are about 5.7 degrees across while divergence swings
 the pointings by tens of degrees, the discs come apart within the first few
@@ -325,10 +305,9 @@ covers four separate patches of sky with no stereoscopic overlap at all.
 How well the sky is covered
 ===========================
 
-The hyper FoV says how much sky the array covers.
-:meth:`~divtel.telescope.Array.multiplicity_profile` says how well it covers
-it -- how much of that sky is seen by exactly one telescope, by exactly two,
-and so on:
+The hyper FoV says how much sky is covered.
+:meth:`~divtel.telescope.Array.multiplicity_profile` says how well, how much
+of it is seen by exactly one telescope, by exactly two, and so on:
 
 .. code-block:: python
 
@@ -354,9 +333,8 @@ How the mean is defined
 -----------------------
 
 :meth:`~divtel.telescope.Array.hyper_fov` cuts the sky into disjoint patches,
-each lying wholly inside or wholly outside every telescope's camera disc, so
-each has a well-defined multiplicity :math:`m_i` and an area :math:`A_i`. The
-mean and variance are those, **weighted by solid angle**:
+each with a well-defined multiplicity :math:`m_i` and area :math:`A_i`. Mean
+and variance are those values **weighted by solid angle**:
 
 .. math::
 
@@ -364,12 +342,11 @@ mean and variance are those, **weighted by solid angle**:
    \qquad
    \mathrm{Var}(m) = \frac{\sum_i \left(m_i - \langle m \rangle\right)^2 A_i}{\sum_i A_i}
 
-Weighting by area rather than counting patches matters: the patches are the
-regions cut out by overlapping discs, so a two-telescope array makes as many
-slivers as it does large regions, and an unweighted mean would let a sliver
-count for as much sky as the whole field. The areas are true solid angles --
-``hyper_fov`` works in an equal-area projection -- and the patches partition
-the covered area exactly, so nothing is counted twice.
+Weighting by area matters: overlapping discs cut out slivers as often as
+large regions, and an unweighted mean would count a sliver the same as the
+whole field. ``hyper_fov`` works in an equal-area projection, so the areas
+are true solid angles, and the patches partition the covered sky exactly, so
+nothing is double-counted.
 
 Working the example above by hand:
 
@@ -380,18 +357,15 @@ Working the example above by hand:
 
     (1*242.02 + 2*131.34 + 3*70.81 + 4*7.99 + 5*0.55) / 452.70  =  1.6607
 
-Two things follow from the definition that are easy to trip over.
+**The average is over covered sky only.** A ring of discs can enclose a hole
+no telescope sees; ``hyper_fov`` drops those patches, so they don't pull the
+average down. It answers *given a point the array sees at all, how many
+telescopes see it*, which is why the mean and the hyper FoV are independent
+numbers, not two readings of the same thing.
 
-**The average is over the covered sky, not the whole sky.** A ring of discs
-encloses a hole that no telescope sees; ``hyper_fov`` drops those patches, so
-they never reach this average. Read it as *given a point the array sees at all,
-how many telescopes see it*. Sky the array misses does not drag the mean down,
-which is exactly why the mean and the hyper FoV are two independent numbers
-rather than one restating the other.
-
-**The mean ignores** ``m_cut``. ``hyper_fov`` applies ``m_cut`` only to the
-area it returns; the patch list is always every patch with :math:`m \geq 1`.
-So passing patches from a cut run changes nothing:
+**The mean ignores** ``m_cut``. ``hyper_fov`` applies the cut only to the
+area it returns; the patch list always includes every patch with
+:math:`m \geq 1`. Passing patches from a cut run changes nothing:
 
 .. code-block:: python
 
@@ -407,23 +381,21 @@ This matters when reading a
 ``m_cut`` area and the mean side by side: the area respects the cut and the
 mean does not.
 
-There is a shortcut worth knowing. Each telescope's disc contributes its own
-area to every patch it covers, so :math:`\sum_i m_i A_i` is just the total
-camera solid angle of the array, and
+Each telescope's disc contributes its area to every patch it covers, so
+:math:`\sum_i m_i A_i` is the array's total camera solid angle, and
 
 .. math::
 
    \langle m \rangle = \frac{\sum_\mathrm{telescopes} \Omega_\mathrm{camera}}
                               {\Omega_\mathrm{covered}}
 
-the total camera solid angle divided by the sky actually covered. That makes
-the two limits obvious: pointed in parallel every camera lands on the same
-disc, so the sum is :math:`n` times the union and the mean is the number of
-telescopes with zero variance; fully diverged the discs are disjoint, the union
-*equals* the sum, and the mean is one.
+the mean is that total divided by the sky actually covered. Parallel
+pointing puts every camera on the same disc, so the mean is the telescope
+count, with zero variance. Fully diverged, the discs are disjoint, the union
+equals the sum, and the mean is one.
 
-The mean is the summary of how divergent a configuration is, and it moves
-opposite the area. On this array, pointed at 70 degrees:
+The mean summarizes how divergent a configuration is; it moves opposite the
+area. On this array, pointed at 70 degrees:
 
 =========  =================  ===================
 ``div``    hyper FoV [deg²]   mean multiplicity
@@ -434,8 +406,8 @@ opposite the area. On this array, pointed at 70 degrees:
 0.05       452.7              1.7
 =========  =================  ===================
 
-Ten times the sky for a tenth of the telescopes on any part of it. Which end of
-that trade you want is the question divergent pointing exists to ask.
+Ten times the sky, a tenth of the telescopes on any given part of it. Which
+end of that trade to pick depends on the science case.
 
 :func:`~divtel.visualization.multiplicity_plot` draws the profile as a bar
 chart, coloured to match the sky map so the two read together:
@@ -459,7 +431,7 @@ save computing the geometry twice.
 Plotting
 ========
 
-Two views, which together tell the story:
+Two views:
 
 .. code-block:: python
 
@@ -475,9 +447,9 @@ Two views, which together tell the story:
 with an arrow each for where it points; pass ``projection='xz'`` or ``'yz'``
 for a side view. :func:`~divtel.visualization.display_hyper_fov` draws the sky,
 shaded by multiplicity, with the covered area in the title. Pass ``m_cut=2``
-to have that title report the stereoscopic area instead -- the patches below
-the cut are still drawn, faded, so the shape of the whole coverage stays
-visible.
+to have that title report the stereoscopic area instead. The patches below
+the cut are still drawn, faded, so you still see the full shape of the
+coverage.
 
 Both take an existing ``ax`` and return it, so they compose with whatever else
 you are plotting.
@@ -486,11 +458,10 @@ you are plotting.
 Sub-arrays
 ==========
 
-A real array is not one instrument but several sharing a site. On the La Palma
-layout four LSTs sit inside fifteen MSTs, with different cameras, different
-fields of view, and their own barycenters.
-:meth:`~divtel.telescope.Array.group_by` splits the array up so each can be
-looked at on its own:
+A real array is usually several instruments sharing a site. The La Palma
+layout has four LSTs inside fifteen MSTs, each with its own camera, field of
+view, and barycenter. :meth:`~divtel.telescope.Array.group_by` splits them
+apart:
 
 .. code-block:: python
 
@@ -510,18 +481,17 @@ multiplicity rather than area.
 
 Each group is a full :class:`~divtel.telescope.Array`, so everything an array
 can do a group can do too. The ids are
-:attr:`~divtel.telescope.Telescope.id` values, not positions -- which is why
+:attr:`~divtel.telescope.Telescope.id` values, not positions, which is why
 layouts carry them.
 
-Groups hold the same :class:`~divtel.telescope.Telescope` objects as the array
-they came from rather than copies, so re-pointing the array re-points every
-group with it. They also inherit the array's current pointing, so
-:meth:`~divtel.telescope.Array.hyper_fov` works on a group straight away.
-Telescopes may be left out of every group; nothing requires the groups to cover
-the array.
+Groups share the same :class:`~divtel.telescope.Telescope` objects as the
+array they came from, not copies, so re-pointing the array re-points every
+group too. They inherit the array's current pointing, so
+:meth:`~divtel.telescope.Array.hyper_fov` works on a group right away.
+Telescopes can be left out of every group; nothing requires full coverage.
 
-If you would rather not write the ids out, grouping by camera picks the types
-out on its own, since telescopes of a type share one:
+To skip writing ids out, group by camera radius instead, since telescopes of
+a type share one:
 
 .. code-block:: python
 
@@ -537,7 +507,7 @@ each with its own barycenter and mean pointing arrow:
 
     display_groups(groups)
 
-Turn the divergence up and the two barycenter arrows swing apart -- the LSTs,
+Turn the divergence up and the two barycenter arrows swing apart: the LSTs,
 sitting near the centre of the array, diverge far less than the MSTs around
 them.
 
@@ -549,9 +519,9 @@ Everything so far works in the ground frame: an array pointed at alt 70, az 180
 stays pointed there whatever the hour. Real sources rise and set, so the
 direction to point at depends on where you are and when.
 
-:class:`~divtel.observation.Observation` supplies that. It is a place and a
-time, and it converts a sky position into the alt/az pair
-:meth:`~divtel.telescope.Array.divergent_pointing` already takes:
+:class:`~divtel.observation.Observation` is a place and a time. It converts a
+sky position into the alt/az pair
+:meth:`~divtel.telescope.Array.divergent_pointing` takes:
 
 .. code-block:: python
 
@@ -564,16 +534,15 @@ time, and it converts a sky position into the alt/az pair
     '50.93 deg, 270.16 deg'
     >>> array.divergent_pointing(0.02, alt, az)
 
-``site`` takes ``"north"`` or ``"south"`` for the two CTAO sites, whose
-coordinates are built in so this needs no network. Any other name is looked up
-in astropy's site registry, which does; an
-:class:`~astropy.coordinates.EarthLocation` is taken as it is, which is what to
-use when the exact position of a particular telescope matters.
+``site`` takes ``"north"`` or ``"south"`` for the two CTAO sites, built in so
+this needs no network. Any other name is looked up in astropy's site
+registry instead, which does need one. Pass an
+:class:`~astropy.coordinates.EarthLocation` directly when the exact position
+of a particular telescope matters.
 
-An observation never changes. :meth:`~divtel.observation.Observation.at` and
-:meth:`~divtel.observation.Observation.after` hand back a new one, so an array
-pointed from one cannot quietly fall out of step with it. That makes watching a
-source across a night a plain loop:
+An ``Observation`` is immutable. :meth:`~divtel.observation.Observation.at`
+and :meth:`~divtel.observation.Observation.after` return a new one, so
+watching a source across a night is a plain loop:
 
 .. code-block:: python
 
@@ -585,7 +554,7 @@ source across a night a plain loop:
 
 :attr:`~divtel.observation.Observation.sun` and
 :attr:`~divtel.observation.Observation.moon` give those bodies in the same
-frame, which is how you check a time is actually observable:
+frame, to check a time is actually observable:
 
 .. code-block:: python
 
@@ -604,12 +573,11 @@ somewhere different, so this is one coordinate per telescope:
 
 .. note::
 
-   divtel's azimuth is astropy's -- measured from north through east -- so
-   nothing is converted anywhere in between. Point an array at a source and
-   read the telescopes back with
-   :func:`~divtel.observation.pointing_coord` and you recover the position you
-   started from to well under an arcsecond, which is what the test suite
-   checks.
+   divtel's azimuth is astropy's: measured from north through east, no
+   conversion needed. Point an array at a source, read the telescopes back
+   with :func:`~divtel.observation.pointing_coord`, and you recover the
+   original position to well under an arcsecond. The test suite checks
+   exactly this.
 
 
 Exporting to sim_telarray
@@ -624,20 +592,21 @@ a real shower simulation:
     >>> array.export_cfg(outdir="configs/", tel_configs=["lst.cfg"] * 4)
     PosixPath('configs/CTA-ULTRA6-LaPalma-div0_02-az180_0-alt70_0.cfg')
 
-The default filename records the divergence and mean pointing, so a scan over
-``div`` lands in distinct files without naming them. ``tel_configs`` gives the
-per-telescope config each block ``#include``\ s, in array order; left out, it
-defaults to the La Palma layout the writer was built for -- four LSTs followed
-by MSTs with NectarCam -- which is only right if your array is that one.
+The default filename records the divergence and mean pointing, so a scan
+over ``div`` lands in distinct files without naming them yourself.
+``tel_configs`` gives the per-telescope config each block ``#include``\ s, in
+array order. Left out, it defaults to four LSTs followed by MSTs with
+NectarCam, the La Palma layout the writer was built for, which is only
+correct if that's your array.
 
-Note that the angle conventions differ from divtel's: ``sim_telarray`` takes a
-zenith angle rather than an altitude, and its azimuth runs the other way round.
-The conversion is done for you on the way out.
+``sim_telarray``'s angle conventions differ from divtel's: it takes a zenith
+angle instead of altitude, and its azimuth runs the other way.
+``export_cfg`` converts both on the way out.
 
 
 Where to go next
 ================
 
-* :doc:`examples` -- the same model with sliders, running in your browser.
-* :doc:`docstring` -- the full API.
+* :doc:`examples`: the same model with sliders, running in your browser.
+* :doc:`docstring`: the full API.
 * `Source and issue tracker <https://github.com/cta-observatory/divtel>`_.

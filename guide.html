@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="Examples" href="examples.html"><link rel="prev" title="divtel" href="index.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>User guide - divtel 0.2.dev69+ga19f931a1 documentation</title>
+        <title>User guide - divtel 0.2.dev70+g60f989f10 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">divtel 0.2.dev69+ga19f931a1 documentation</div></a>
+      <a href="index.html"><div class="brand">divtel 0.2.dev70+g60f989f10 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -239,11 +239,10 @@
         <article role="main" id="furo-main-content">
           <section id="user-guide">
 <h1>User guide<a class="headerlink" href="#user-guide" title="Link to this heading">¶</a></h1>
-<p>divtel is a small toy model of an Imaging Atmospheric Cherenkov Telescope
-(IACT) array. You place telescopes on the ground, point them – in parallel or
-divergently – and measure the sky they collectively see.</p>
-<p>This guide walks through that from the start. For the signatures and every
-argument, see the <a class="reference internal" href="docstring.html"><span class="doc">API documentation</span></a>; for a version you can
+<p>divtel is a toy model of an Imaging Atmospheric Cherenkov Telescope (IACT)
+array. Place telescopes on the ground, point them in parallel or
+divergently, and measure the sky they see.</p>
+<p>For full signatures, see the <a class="reference internal" href="docstring.html"><span class="doc">API docs</span></a>. For something to
 play with in the browser, see <a class="reference internal" href="examples.html"><span class="doc">Examples</span></a>.</p>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h2>
@@ -256,27 +255,23 @@ play with in the browser, see <a class="reference internal" href="examples.html"
 <h2>The coordinate frame<a class="headerlink" href="#the-coordinate-frame" title="Link to this heading">¶</a></h2>
 <p>divtel uses the same ground frame as <code class="docutils literal notranslate"><span class="pre">simtel_array</span></code>:</p>
 <ul class="simple">
-<li><p><strong>x</strong> points North, <strong>y</strong> points West, <strong>z</strong> points up. Positions are
-lengths, normally metres.</p></li>
-<li><p><strong>azimuth</strong> is measured clockwise from x towards y, in <code class="docutils literal notranslate"><span class="pre">[-180,</span> <span class="pre">180]</span></code>
-degrees.</p></li>
-<li><p><strong>altitude</strong> is measured from the ground towards z, in <code class="docutils literal notranslate"><span class="pre">[-90,</span> <span class="pre">90]</span></code>
-degrees. Altitude 90 is the zenith.</p></li>
+<li><p><strong>x</strong> points North, <strong>y</strong> points West, <strong>z</strong> points up, in metres.</p></li>
+<li><p><strong>azimuth</strong> is measured clockwise from x towards y, <code class="docutils literal notranslate"><span class="pre">[-180,</span> <span class="pre">180]</span></code> degrees.</p></li>
+<li><p><strong>altitude</strong> is measured from the ground up, <code class="docutils literal notranslate"><span class="pre">[-90,</span> <span class="pre">90]</span></code> degrees; 90 is
+the zenith.</p></li>
 </ul>
-<p>Every quantity that carries a physical dimension is an
-<a class="reference external" href="https://docs.astropy.org/en/stable/units/">astropy.units.Quantity</a>. This is
-not decoration: divtel mixes metres and angles freely, and the units are what
-keeps that honest. Pass <code class="docutils literal notranslate"><span class="pre">100</span> <span class="pre">*</span> <span class="pre">u.m</span></code>, not <code class="docutils literal notranslate"><span class="pre">100</span></code>.</p>
+<p>Every physical quantity is an <a class="reference external" href="https://docs.astropy.org/en/stable/units/">astropy.units.Quantity</a>. divtel mixes metres and angles
+freely, so pass <code class="docutils literal notranslate"><span class="pre">100</span> <span class="pre">*</span> <span class="pre">u.m</span></code>, not <code class="docutils literal notranslate"><span class="pre">100</span></code>.</p>
 </section>
 <section id="building-an-array">
 <h2>Building an array<a class="headerlink" href="#building-an-array" title="Link to this heading">¶</a></h2>
-<p>A <a class="reference internal" href="docstring.html#divtel.telescope.Telescope" title="divtel.telescope.Telescope"><code class="xref py py-class docutils literal notranslate"><span class="pre">Telescope</span></code></a> is a ground position plus the two
-numbers that set how much sky it sees: the focal length and the camera radius.
-An <a class="reference internal" href="docstring.html#divtel.telescope.Array" title="divtel.telescope.Array"><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></a> is a list of them.</p>
+<p>A <a class="reference internal" href="docstring.html#divtel.telescope.Telescope" title="divtel.telescope.Telescope"><code class="xref py py-class docutils literal notranslate"><span class="pre">Telescope</span></code></a> is a ground position plus a focal
+length and camera radius, which set how much sky it sees. An
+<a class="reference internal" href="docstring.html#divtel.telescope.Array" title="divtel.telescope.Array"><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></a> is a list of them.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">astropy.units</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">u</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">divtel.telescope</span><span class="w"> </span><span class="kn">import</span> <span class="n">Telescope</span><span class="p">,</span> <span class="n">Array</span>
 
-<span class="c1"># Four telescopes on a 100 m square -- roughly the H.E.S.S.-I layout.</span>
+<span class="c1"># Four telescopes on a 100 m square, roughly the H.E.S.S.-I layout.</span>
 <span class="n">array</span> <span class="o">=</span> <span class="n">Array</span><span class="p">([</span>
     <span class="n">Telescope</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="n">y</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span>
               <span class="n">focal</span><span class="o">=</span><span class="mi">20</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="n">camera_radius</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">)</span>
@@ -284,8 +279,8 @@ An <a class="reference internal" href="docstring.html#divtel.telescope.Array" ti
 <span class="p">])</span>
 </pre></div>
 </div>
-<p>The two camera numbers only ever enter as their ratio, which fixes the angular
-radius of the disc a telescope sees on the sky:</p>
+<p>The two camera numbers only ever enter as their ratio, the angular radius of
+the disc a telescope sees on the sky:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">array</span><span class="o">.</span><span class="n">telescopes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">fov_radius</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">)</span>
 <span class="go">&lt;Quantity 2.86240523 deg&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">array</span><span class="o">.</span><span class="n">telescopes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">fov</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
@@ -295,7 +290,7 @@ radius of the disc a telescope sees on the sky:</p>
 <p><code class="docutils literal notranslate"><span class="pre">fov_radius</span></code> is the half-angle subtended by the camera; <code class="docutils literal notranslate"><span class="pre">fov</span></code> is the solid
 angle of the whole disc. A 20 m focal length with a 1 m camera radius gives a
 camera a little under 6 degrees across.</p>
-<p>An array knows a few things about itself as a whole:</p>
+<p>An array also knows its own geometry:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">array</span><span class="o">.</span><span class="n">barycenter</span>                 <span class="c1"># mean telescope position</span>
 <span class="go">&lt;Quantity [0., 0., 0.] m&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">array</span><span class="o">.</span><span class="n">positions_array</span><span class="o">.</span><span class="n">shape</span>      <span class="c1"># one [x, y, z] row per telescope</span>
@@ -305,9 +300,9 @@ camera a little under 6 degrees across.</p>
 </section>
 <section id="loading-an-array-from-file">
 <h2>Loading an array from file<a class="headerlink" href="#loading-an-array-from-file" title="Link to this heading">¶</a></h2>
-<p>Typing telescopes out gets old quickly. <a class="reference internal" href="docstring.html#divtel.layout.load_array" title="divtel.layout.load_array"><code class="xref py py-func docutils literal notranslate"><span class="pre">load_array()</span></code></a> reads
-a layout from an ECSV file – plain text with a small header naming each column
-and its unit:</p>
+<p>Typing telescopes out by hand gets old fast.
+<a class="reference internal" href="docstring.html#divtel.layout.load_array" title="divtel.layout.load_array"><code class="xref py py-func docutils literal notranslate"><span class="pre">load_array()</span></code></a> reads a layout from an ECSV file instead,
+plain text with a small header naming each column and its unit:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">importlib.resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">files</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">divtel.layout</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_array</span>
 
@@ -331,25 +326,24 @@ id x y z focal camera_radius
 1 -70.04 -7.23 54 28 1.05
 </pre></div>
 </div>
-<p>Because the units live in the file, <code class="docutils literal notranslate"><span class="pre">camera_radius</span></code> may be given either as a
-length or as the half-angle the camera subtends on the sky – whichever the
-instrument is quoted in. An angle is converted with <code class="docutils literal notranslate"><span class="pre">radius</span> <span class="pre">=</span> <span class="pre">focal</span> <span class="pre">*</span> <span class="pre">tan(angle)</span></code>
-on the way in, so the two spellings describe the same telescope:</p>
+<p><code class="docutils literal notranslate"><span class="pre">camera_radius</span></code> may be given as a length or as the half-angle the camera
+subtends on the sky, since the units live in the file.
+<code class="docutils literal notranslate"><span class="pre">radius</span> <span class="pre">=</span> <span class="pre">focal</span> <span class="pre">*</span> <span class="pre">tan(angle)</span></code> converts the angle on the way in, so both
+spellings describe the same telescope:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">divtel.layout</span><span class="w"> </span><span class="kn">import</span> <span class="n">camera_radius_in_metres</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">camera_radius_in_metres</span><span class="p">(</span><span class="mf">2.1476</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span> <span class="mi">28</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">)</span>
 <span class="go">&lt;Quantity 1.05000713 m&gt;</span>
 </pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">id</span></code> column sets <code class="xref py py-attr docutils literal notranslate"><span class="pre">id</span></code>. CTAO numbers
-telescopes by type – LSTs 1 to 4, MSTs 5 to 14, telescopes added to try out a
-configuration from 15 on – so ids carry meaning, and
-<a class="reference internal" href="docstring.html#divtel.telescope.Array.group_by" title="divtel.telescope.Array.group_by"><code class="xref py py-meth docutils literal notranslate"><span class="pre">group_by()</span></code></a> selects on them. Without the column,
-telescopes are numbered 1 to N in file order. Telescopes built by hand instead
-take ids from a counter shared across the session, which makes them unique but
-not meaningful; pass <code class="docutils literal notranslate"><span class="pre">tel_id</span></code> to <a class="reference internal" href="docstring.html#divtel.telescope.Telescope" title="divtel.telescope.Telescope"><code class="xref py py-class docutils literal notranslate"><span class="pre">Telescope</span></code></a> to set
-them yourself.</p>
-<p>To look a layout over, or edit it, before building anything, read it as a table
-first – <a class="reference internal" href="docstring.html#divtel.layout.load_array" title="divtel.layout.load_array"><code class="xref py py-func docutils literal notranslate"><span class="pre">load_array()</span></code></a> takes one:</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">id</span></code> column sets <code class="xref py py-attr docutils literal notranslate"><span class="pre">id</span></code>. CTAO ids are
+semantic: LSTs are 1-4, MSTs 5-14, and anything added to try out a
+configuration is 15+. <a class="reference internal" href="docstring.html#divtel.telescope.Array.group_by" title="divtel.telescope.Array.group_by"><code class="xref py py-meth docutils literal notranslate"><span class="pre">group_by()</span></code></a> selects on
+these ids, so keep them meaningful. Without an <code class="docutils literal notranslate"><span class="pre">id</span></code> column, telescopes are
+numbered 1 to N in file order; telescopes built by hand get ids from a
+session-wide counter, unique but not meaningful, unless you pass <code class="docutils literal notranslate"><span class="pre">tel_id</span></code>
+yourself.</p>
+<p>To inspect or edit a layout before building anything, read it as a table:
+<a class="reference internal" href="docstring.html#divtel.layout.load_array" title="divtel.layout.load_array"><code class="xref py py-func docutils literal notranslate"><span class="pre">load_array()</span></code></a> also accepts one:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">divtel.layout</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_table</span>
 
 <span class="n">table</span> <span class="o">=</span> <span class="n">load_table</span><span class="p">(</span><span class="n">files</span><span class="p">(</span><span class="s2">"divtel"</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"data"</span> <span class="o">/</span> <span class="s2">"la_palma_4LST_15MST.ecsv"</span><span class="p">)</span>
@@ -361,8 +355,7 @@ first – <a class="reference internal" href="docstring.html#divtel.layout.load_
 <h2>Pointing the array<a class="headerlink" href="#pointing-the-array" title="Link to this heading">¶</a></h2>
 <section id="parallel-pointing">
 <h3>Parallel pointing<a class="headerlink" href="#parallel-pointing" title="Link to this heading">¶</a></h3>
-<p>Every telescope aimed the same way. In divtel this is just divergent pointing
-with the divergence turned off:</p>
+<p>Every telescope aimed the same way, divergence turned off:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">array</span><span class="o">.</span><span class="n">divergent_pointing</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">70</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span> <span class="mi">180</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -387,9 +380,9 @@ about two degrees apart on the sky.</p>
 </section>
 <section id="what-div-actually-means">
 <span id="the-div-parameter"></span><h3>What <code class="docutils literal notranslate"><span class="pre">div</span></code> actually means<a class="headerlink" href="#what-div-actually-means" title="Link to this heading">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">div</span></code> runs from 0 (parallel) to 1, and it works through a point <strong>G</strong> placed
-<em>behind</em> the array. Every telescope is aimed directly away from G, so the
-further away G sits, the more nearly parallel the array is:</p>
+<p><code class="docutils literal notranslate"><span class="pre">div</span></code> runs from 0 (parallel) to 1. Internally it works through a point
+<strong>G</strong> placed <em>behind</em> the array: every telescope aims directly away from G,
+so the farther G sits, the more parallel the array is.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">divtel</span><span class="w"> </span><span class="kn">import</span> <span class="n">pointing</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">pointing</span><span class="o">.</span><span class="n">pointG_position</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">barycenter</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span>
@@ -399,21 +392,17 @@ further away G sits, the more nearly parallel the array is:</p>
 </div>
 <p>At <code class="docutils literal notranslate"><span class="pre">div</span> <span class="pre">=</span> <span class="pre">0</span></code> G recedes to infinity and the telescopes point in parallel; at
 <code class="docutils literal notranslate"><span class="pre">div</span> <span class="pre">=</span> <span class="pre">1</span></code> it sits in the middle of the array and they point straight outward.</p>
-<p>The one thing to keep in mind is that <code class="docutils literal notranslate"><span class="pre">div</span></code> is an engineering knob, not an
-angle. It is defined through a fixed 100 m reference distance: <code class="docutils literal notranslate"><span class="pre">div</span></code> is the
-sine of the divergence angle picked up by a telescope 100 m from the
-barycenter, <em>measured perpendicular to the pointing direction</em>. So the same
-<code class="docutils literal notranslate"><span class="pre">div</span></code> produces a different real divergence on an array of a different size or
-layout – and even on the same array pointed a different way. If you need the
-angle the array actually achieved, read it off <code class="docutils literal notranslate"><span class="pre">pointing_altaz</span></code> rather than
-inferring it from <code class="docutils literal notranslate"><span class="pre">div</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">div</span></code> is an engineering knob, not an angle: it’s the sine of the
+divergence picked up by a telescope 100 m from the barycenter, measured
+perpendicular to the pointing direction. The same <code class="docutils literal notranslate"><span class="pre">div</span></code> value gives a
+different real divergence on a different array, or even the same array
+pointed elsewhere. Read <code class="docutils literal notranslate"><span class="pre">pointing_altaz</span></code> for the angle actually achieved.</p>
 <p>Values outside <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1]</span></code> raise a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>; the geometry stops meaning
 anything there.</p>
-<p>Divergence spreads telescopes on both sides of the mean pointing, so one asked
-for near the horizon pushes some of them underground. A flat array pointed
-straight at the horizon does not show it – there is no up or down slope to
-tip telescopes past it – but a sloped one does, exactly the way a real
-observing site would:</p>
+<p>Divergence spreads telescopes on both sides of the mean pointing, so pointing
+near the horizon can push some of them underground. A flat array pointed at
+the horizon won’t show this, since there’s no slope to tip telescopes past
+it, but a sloped one will:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">hillside</span> <span class="o">=</span> <span class="n">Array</span><span class="p">([</span>
 <span class="gp">... </span>    <span class="n">Telescope</span><span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span>  <span class="mi">50</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="mi">20</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="mi">1</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">),</span>
 <span class="gp">... </span>    <span class="n">Telescope</span><span class="p">(</span><span class="o">-</span><span class="mi">100</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="o">-</span><span class="mi">50</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="mi">20</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="mi">1</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">),</span>
@@ -423,33 +412,28 @@ observing site would:</p>
 <span class="go">&lt;Quantity [19.72,  0.  ] deg&gt;</span>
 </pre></div>
 </div>
-<p>Telescope one, up the slope, points where the geometry sends it: 19.72°.
-Telescope two, down the slope, would come out at -3.06° – checked directly
-against <code class="docutils literal notranslate"><span class="pre">pointing.tel_div_pointing</span></code>, which does not clamp. A real mount
-cannot follow the ground, though: it rails at its lowest elevation and stops,
-so <code class="docutils literal notranslate"><span class="pre">divergent_pointing</span></code> stops it at the horizon instead, at whatever azimuth
-it was already going to use. Nothing else about the array’s pointing changes,
-and <code class="docutils literal notranslate"><span class="pre">mean_pointing</span></code> still reports the direction you asked to diverge from,
-not what any individual telescope achieved – a divergent pointing has never
-meant “every telescope ends up there”, only “diverge from there”, so a
-clamped telescope is no different from any other telescope whose own pointing
-does not match the mean.</p>
-<p>The array remembers what it was last asked for, which saves carrying the
-numbers around yourself:</p>
+<p>Telescope one, up the slope, ends up at 19.72°. Telescope two, down the
+slope, would reach -3.06°, confirmed directly against
+<code class="docutils literal notranslate"><span class="pre">pointing.tel_div_pointing</span></code>, which doesn’t clamp. A real mount can’t follow
+the ground below the horizon, though, so <code class="docutils literal notranslate"><span class="pre">divergent_pointing</span></code> clamps it
+there instead, at the azimuth it was already using. <code class="docutils literal notranslate"><span class="pre">mean_pointing</span></code> still
+reports the direction you asked to diverge from, not what any one telescope
+achieved, clamped or not.</p>
+<p>The array remembers its last pointing:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">array</span><span class="o">.</span><span class="n">div</span>
 <span class="go">0.02</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">array</span><span class="o">.</span><span class="n">mean_pointing</span>
 <span class="go">(&lt;Quantity 70. deg&gt;, &lt;Quantity 180. deg&gt;)</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">mean_pointing</span></code> raises a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> on an array that has never been
-pointed; <code class="docutils literal notranslate"><span class="pre">div</span></code> reports 0, which is what a fresh array’s telescopes are
-in fact doing – they all sit at alt = az = 0 until you point them.</p>
+<p><code class="docutils literal notranslate"><span class="pre">mean_pointing</span></code> raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> before the array has ever been
+pointed. <code class="docutils literal notranslate"><span class="pre">div</span></code> reports 0 by default, since a fresh array’s telescopes all
+sit at alt = az = 0.</p>
 </section>
 <section id="pointing-at-a-target">
 <h3>Pointing at a target<a class="headerlink" href="#pointing-at-a-target" title="Link to this heading">¶</a></h3>
-<p>A single telescope can also be aimed at a position in the ground frame, which
-is useful for pointing at something at a finite distance:</p>
+<p>A single telescope can also aim at a position in the ground frame, useful for
+a source at finite distance:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">array</span><span class="o">.</span><span class="n">telescopes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">point_to_object</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10000</span><span class="p">]</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -461,14 +445,13 @@ is useful for pointing at something at a finite distance:</p>
 </section>
 <section id="the-hyper-field-of-view">
 <h2>The hyper field of view<a class="headerlink" href="#the-hyper-field-of-view" title="Link to this heading">¶</a></h2>
-<p>This is the point of the whole exercise. Each telescope sees a disc on the
-sky. Pointing divergently spreads those discs out, which buys <strong>width</strong> at the
-cost of <strong>depth</strong>: a shower needs to be seen by at least two telescopes to be
-reconstructed stereoscopically, and divergence trades away exactly that
-overlap.</p>
-<p><a class="reference internal" href="docstring.html#divtel.telescope.Array.hyper_fov" title="divtel.telescope.Array.hyper_fov"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hyper_fov()</span></code></a> measures both sides of the bargain.
+<p>Each telescope sees a disc on the sky. Divergent pointing spreads those discs
+apart, trading <strong>depth</strong> for <strong>width</strong>: a shower needs at least two
+telescopes to be reconstructed stereoscopically, and divergence trades away
+that overlap.</p>
+<p><a class="reference internal" href="docstring.html#divtel.telescope.Array.hyper_fov" title="divtel.telescope.Array.hyper_fov"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hyper_fov()</span></code></a> measures both sides of the trade.
 It cuts the union of the discs into patches and labels each with its
-<strong>multiplicity</strong> – how many telescopes see it:</p>
+<strong>multiplicity</strong>, how many telescopes see it:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">array</span><span class="o">.</span><span class="n">divergent_pointing</span><span class="p">(</span><span class="mf">0.02</span><span class="p">,</span> <span class="mi">70</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span> <span class="mi">180</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">total</span><span class="p">,</span> <span class="n">patches</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">hyper_fov</span><span class="p">()</span>          <span class="c1"># everything covered</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">stereo</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">hyper_fov</span><span class="p">(</span><span class="n">m_cut</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>        <span class="c1"># seen by 2 or more</span>
@@ -476,25 +459,21 @@ It cuts the union of the discs into patches and labels each with its
 <span class="go">(&lt;Quantity 45.95557740 deg2&gt;, &lt;Quantity 30.27381956 deg2&gt;)</span>
 </pre></div>
 </div>
-<p>Compare that with the parallel case, where all four discs coincide: 25.7 deg²
-covered, all of it at multiplicity 4. A very modest <code class="docutils literal notranslate"><span class="pre">div</span></code> of 0.02 has bought
-79% more sky, and 18% more of it is still stereoscopic – but a shower now
-lands on two telescopes where it used to land on four.</p>
+<p>Compare that to parallel pointing, where all four discs coincide: 25.7 deg²
+covered, all of it at multiplicity 4. A <code class="docutils literal notranslate"><span class="pre">div</span></code> of just 0.02 buys 79% more
+sky, 18% of it still stereoscopic, but a shower now lands on two telescopes
+where it used to land on four.</p>
 <p>The second return value is the list of <code class="docutils literal notranslate"><span class="pre">(polygon,</span> <span class="pre">multiplicity)</span></code> patches, if
 you want to do your own accounting:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">polygon</span><span class="p">,</span> <span class="n">multiplicity</span> <span class="ow">in</span> <span class="n">patches</span><span class="p">:</span>
 <span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">multiplicity</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">polygon</span><span class="o">.</span><span class="n">area</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>Coordinates are degrees of offset from the array’s mean pointing, in a Lambert
-azimuthal equal-area projection centred on it: x is offset in azimuth, y is
-offset in altitude, at every pointing – not just near the centre, where any
-sensible projection agrees, but out to the edge of the map too, so the sky map
-looks the way the telescopes actually swing as <code class="docutils literal notranslate"><span class="pre">div</span></code> changes. That
-projection is chosen so patch areas are true solid angles whatever the array
-is pointing at, and so that nothing breaks near the zenith – where telescopes
-a fraction of a degree apart on the sky are hundreds of degrees apart in
-azimuth.</p>
+<p>Coordinates are degrees of offset from the array’s mean pointing, in a
+Lambert azimuthal equal-area projection: x is azimuth offset, y is altitude
+offset. Patch areas come out as true solid angles at any pointing, including
+near the zenith, where telescopes a fraction of a degree apart on the sky can
+be hundreds of degrees apart in azimuth.</p>
 <p>Because the cameras here are about 5.7 degrees across while divergence swings
 the pointings by tens of degrees, the discs come apart within the first few
 hundredths of the slider. Push <code class="docutils literal notranslate"><span class="pre">div</span></code> past roughly 0.08 on this array and it
@@ -502,10 +481,9 @@ covers four separate patches of sky with no stereoscopic overlap at all.</p>
 </section>
 <section id="how-well-the-sky-is-covered">
 <h2>How well the sky is covered<a class="headerlink" href="#how-well-the-sky-is-covered" title="Link to this heading">¶</a></h2>
-<p>The hyper FoV says how much sky the array covers.
-<a class="reference internal" href="docstring.html#divtel.telescope.Array.multiplicity_profile" title="divtel.telescope.Array.multiplicity_profile"><code class="xref py py-meth docutils literal notranslate"><span class="pre">multiplicity_profile()</span></code></a> says how well it covers
-it – how much of that sky is seen by exactly one telescope, by exactly two,
-and so on:</p>
+<p>The hyper FoV says how much sky is covered.
+<a class="reference internal" href="docstring.html#divtel.telescope.Array.multiplicity_profile" title="divtel.telescope.Array.multiplicity_profile"><code class="xref py py-meth docutils literal notranslate"><span class="pre">multiplicity_profile()</span></code></a> says how well, how much
+of it is seen by exactly one telescope, by exactly two, and so on:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">array</span> <span class="o">=</span> <span class="n">load_array</span><span class="p">(</span><span class="n">files</span><span class="p">(</span><span class="s2">"divtel"</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"data"</span> <span class="o">/</span> <span class="s2">"la_palma_4LST_15MST.ecsv"</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">array</span><span class="o">.</span><span class="n">divergent_pointing</span><span class="p">(</span><span class="mf">0.05</span><span class="p">,</span> <span class="mi">70</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span> <span class="mi">180</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">multiplicity</span><span class="p">,</span> <span class="n">area</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">multiplicity_profile</span><span class="p">()</span>
@@ -525,21 +503,19 @@ numbers:</p>
 <section id="how-the-mean-is-defined">
 <h3>How the mean is defined<a class="headerlink" href="#how-the-mean-is-defined" title="Link to this heading">¶</a></h3>
 <p><a class="reference internal" href="docstring.html#divtel.telescope.Array.hyper_fov" title="divtel.telescope.Array.hyper_fov"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hyper_fov()</span></code></a> cuts the sky into disjoint patches,
-each lying wholly inside or wholly outside every telescope’s camera disc, so
-each has a well-defined multiplicity <span class="math notranslate nohighlight">\(m_i\)</span> and an area <span class="math notranslate nohighlight">\(A_i\)</span>. The
-mean and variance are those, <strong>weighted by solid angle</strong>:</p>
+each with a well-defined multiplicity <span class="math notranslate nohighlight">\(m_i\)</span> and area <span class="math notranslate nohighlight">\(A_i\)</span>. Mean
+and variance are those values <strong>weighted by solid angle</strong>:</p>
 <div class="math-wrapper docutils container">
 <div class="math notranslate nohighlight">
 \[\langle m \rangle = \frac{\sum_i m_i A_i}{\sum_i A_i}
 \qquad
 \mathrm{Var}(m) = \frac{\sum_i \left(m_i - \langle m \rangle\right)^2 A_i}{\sum_i A_i}\]</div>
 </div>
-<p>Weighting by area rather than counting patches matters: the patches are the
-regions cut out by overlapping discs, so a two-telescope array makes as many
-slivers as it does large regions, and an unweighted mean would let a sliver
-count for as much sky as the whole field. The areas are true solid angles –
-<code class="docutils literal notranslate"><span class="pre">hyper_fov</span></code> works in an equal-area projection – and the patches partition
-the covered area exactly, so nothing is counted twice.</p>
+<p>Weighting by area matters: overlapping discs cut out slivers as often as
+large regions, and an unweighted mean would count a sliver the same as the
+whole field. <code class="docutils literal notranslate"><span class="pre">hyper_fov</span></code> works in an equal-area projection, so the areas
+are true solid angles, and the patches partition the covered sky exactly, so
+nothing is double-counted.</p>
 <p>Working the example above by hand:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>m :  [1       2       3      4     5   ]
 A :  [242.02  131.34  70.81  7.99  0.55]  deg²    sum = 452.70
@@ -547,16 +523,14 @@ A :  [242.02  131.34  70.81  7.99  0.55]  deg²    sum = 452.70
 (1*242.02 + 2*131.34 + 3*70.81 + 4*7.99 + 5*0.55) / 452.70  =  1.6607
 </pre></div>
 </div>
-<p>Two things follow from the definition that are easy to trip over.</p>
-<p><strong>The average is over the covered sky, not the whole sky.</strong> A ring of discs
-encloses a hole that no telescope sees; <code class="docutils literal notranslate"><span class="pre">hyper_fov</span></code> drops those patches, so
-they never reach this average. Read it as <em>given a point the array sees at all,
-how many telescopes see it</em>. Sky the array misses does not drag the mean down,
-which is exactly why the mean and the hyper FoV are two independent numbers
-rather than one restating the other.</p>
-<p><strong>The mean ignores</strong> <code class="docutils literal notranslate"><span class="pre">m_cut</span></code>. <code class="docutils literal notranslate"><span class="pre">hyper_fov</span></code> applies <code class="docutils literal notranslate"><span class="pre">m_cut</span></code> only to the
-area it returns; the patch list is always every patch with <span class="math notranslate nohighlight">\(m \geq 1\)</span>.
-So passing patches from a cut run changes nothing:</p>
+<p><strong>The average is over covered sky only.</strong> A ring of discs can enclose a hole
+no telescope sees; <code class="docutils literal notranslate"><span class="pre">hyper_fov</span></code> drops those patches, so they don’t pull the
+average down. It answers <em>given a point the array sees at all, how many
+telescopes see it</em>, which is why the mean and the hyper FoV are independent
+numbers, not two readings of the same thing.</p>
+<p><strong>The mean ignores</strong> <code class="docutils literal notranslate"><span class="pre">m_cut</span></code>. <code class="docutils literal notranslate"><span class="pre">hyper_fov</span></code> applies the cut only to the
+area it returns; the patch list always includes every patch with
+<span class="math notranslate nohighlight">\(m \geq 1\)</span>. Passing patches from a cut run changes nothing:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">cut</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span>
 <span class="gp">... </span>    <span class="n">_</span><span class="p">,</span> <span class="n">patches</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">hyper_fov</span><span class="p">(</span><span class="n">m_cut</span><span class="o">=</span><span class="n">cut</span><span class="p">)</span>
 <span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">cut</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">patches</span><span class="p">),</span> <span class="nb">round</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">multiplicity_moments</span><span class="p">(</span><span class="n">patches</span><span class="o">=</span><span class="n">patches</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">4</span><span class="p">))</span>
@@ -569,21 +543,19 @@ So passing patches from a cut run changes nothing:</p>
 <a class="reference internal" href="docstring.html#divtel.visualization.multiplicity_plot" title="divtel.visualization.multiplicity_plot"><code class="xref py py-func docutils literal notranslate"><span class="pre">multiplicity_plot()</span></code></a> title, which quotes the
 <code class="docutils literal notranslate"><span class="pre">m_cut</span></code> area and the mean side by side: the area respects the cut and the
 mean does not.</p>
-<p>There is a shortcut worth knowing. Each telescope’s disc contributes its own
-area to every patch it covers, so <span class="math notranslate nohighlight">\(\sum_i m_i A_i\)</span> is just the total
-camera solid angle of the array, and</p>
+<p>Each telescope’s disc contributes its area to every patch it covers, so
+<span class="math notranslate nohighlight">\(\sum_i m_i A_i\)</span> is the array’s total camera solid angle, and</p>
 <div class="math-wrapper docutils container">
 <div class="math notranslate nohighlight">
 \[\langle m \rangle = \frac{\sum_\mathrm{telescopes} \Omega_\mathrm{camera}}
                            {\Omega_\mathrm{covered}}\]</div>
 </div>
-<p>the total camera solid angle divided by the sky actually covered. That makes
-the two limits obvious: pointed in parallel every camera lands on the same
-disc, so the sum is <span class="math notranslate nohighlight">\(n\)</span> times the union and the mean is the number of
-telescopes with zero variance; fully diverged the discs are disjoint, the union
-<em>equals</em> the sum, and the mean is one.</p>
-<p>The mean is the summary of how divergent a configuration is, and it moves
-opposite the area. On this array, pointed at 70 degrees:</p>
+<p>the mean is that total divided by the sky actually covered. Parallel
+pointing puts every camera on the same disc, so the mean is the telescope
+count, with zero variance. Fully diverged, the discs are disjoint, the union
+equals the sum, and the mean is one.</p>
+<p>The mean summarizes how divergent a configuration is; it moves opposite the
+area. On this array, pointed at 70 degrees:</p>
 <div class="table-wrapper docutils container">
 <table class="docutils align-default">
 <thead>
@@ -612,8 +584,8 @@ opposite the area. On this array, pointed at 70 degrees:</p>
 </tbody>
 </table>
 </div>
-<p>Ten times the sky for a tenth of the telescopes on any part of it. Which end of
-that trade you want is the question divergent pointing exists to ask.</p>
+<p>Ten times the sky, a tenth of the telescopes on any given part of it. Which
+end of that trade to pick depends on the science case.</p>
 <p><a class="reference internal" href="docstring.html#divtel.visualization.multiplicity_plot" title="divtel.visualization.multiplicity_plot"><code class="xref py py-func docutils literal notranslate"><span class="pre">multiplicity_plot()</span></code></a> draws the profile as a bar
 chart, coloured to match the sky map so the two read together:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">divtel.visualization</span><span class="w"> </span><span class="kn">import</span> <span class="n">display_hyper_fov</span><span class="p">,</span> <span class="n">multiplicity_plot</span>
@@ -632,7 +604,7 @@ save computing the geometry twice.</p>
 </section>
 <section id="plotting">
 <h2>Plotting<a class="headerlink" href="#plotting" title="Link to this heading">¶</a></h2>
-<p>Two views, which together tell the story:</p>
+<p>Two views:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">divtel.visualization</span><span class="w"> </span><span class="kn">import</span> <span class="n">display_hyper_fov</span>
 
@@ -646,19 +618,18 @@ save computing the geometry twice.</p>
 with an arrow each for where it points; pass <code class="docutils literal notranslate"><span class="pre">projection='xz'</span></code> or <code class="docutils literal notranslate"><span class="pre">'yz'</span></code>
 for a side view. <a class="reference internal" href="docstring.html#divtel.visualization.display_hyper_fov" title="divtel.visualization.display_hyper_fov"><code class="xref py py-func docutils literal notranslate"><span class="pre">display_hyper_fov()</span></code></a> draws the sky,
 shaded by multiplicity, with the covered area in the title. Pass <code class="docutils literal notranslate"><span class="pre">m_cut=2</span></code>
-to have that title report the stereoscopic area instead – the patches below
-the cut are still drawn, faded, so the shape of the whole coverage stays
-visible.</p>
+to have that title report the stereoscopic area instead. The patches below
+the cut are still drawn, faded, so you still see the full shape of the
+coverage.</p>
 <p>Both take an existing <code class="docutils literal notranslate"><span class="pre">ax</span></code> and return it, so they compose with whatever else
 you are plotting.</p>
 </section>
 <section id="sub-arrays">
 <h2>Sub-arrays<a class="headerlink" href="#sub-arrays" title="Link to this heading">¶</a></h2>
-<p>A real array is not one instrument but several sharing a site. On the La Palma
-layout four LSTs sit inside fifteen MSTs, with different cameras, different
-fields of view, and their own barycenters.
-<a class="reference internal" href="docstring.html#divtel.telescope.Array.group_by" title="divtel.telescope.Array.group_by"><code class="xref py py-meth docutils literal notranslate"><span class="pre">group_by()</span></code></a> splits the array up so each can be
-looked at on its own:</p>
+<p>A real array is usually several instruments sharing a site. The La Palma
+layout has four LSTs inside fifteen MSTs, each with its own camera, field of
+view, and barycenter. <a class="reference internal" href="docstring.html#divtel.telescope.Array.group_by" title="divtel.telescope.Array.group_by"><code class="xref py py-meth docutils literal notranslate"><span class="pre">group_by()</span></code></a> splits them
+apart:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">array</span> <span class="o">=</span> <span class="n">load_array</span><span class="p">(</span><span class="n">files</span><span class="p">(</span><span class="s2">"divtel"</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"data"</span> <span class="o">/</span> <span class="s2">"la_palma_4LST_15MST.ecsv"</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">array</span><span class="o">.</span><span class="n">divergent_pointing</span><span class="p">(</span><span class="mf">0.02</span><span class="p">,</span> <span class="mi">70</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span> <span class="mi">180</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">groups</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">group_by</span><span class="p">({</span><span class="s2">"LST"</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="s2">"MST"</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">20</span><span class="p">)})</span>
@@ -675,16 +646,15 @@ that they already see everything the LSTs do, so adding the LSTs back adds
 multiplicity rather than area.</p>
 <p>Each group is a full <a class="reference internal" href="docstring.html#divtel.telescope.Array" title="divtel.telescope.Array"><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></a>, so everything an array
 can do a group can do too. The ids are
-<code class="xref py py-attr docutils literal notranslate"><span class="pre">id</span></code> values, not positions – which is why
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">id</span></code> values, not positions, which is why
 layouts carry them.</p>
-<p>Groups hold the same <a class="reference internal" href="docstring.html#divtel.telescope.Telescope" title="divtel.telescope.Telescope"><code class="xref py py-class docutils literal notranslate"><span class="pre">Telescope</span></code></a> objects as the array
-they came from rather than copies, so re-pointing the array re-points every
-group with it. They also inherit the array’s current pointing, so
-<a class="reference internal" href="docstring.html#divtel.telescope.Array.hyper_fov" title="divtel.telescope.Array.hyper_fov"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hyper_fov()</span></code></a> works on a group straight away.
-Telescopes may be left out of every group; nothing requires the groups to cover
-the array.</p>
-<p>If you would rather not write the ids out, grouping by camera picks the types
-out on its own, since telescopes of a type share one:</p>
+<p>Groups share the same <a class="reference internal" href="docstring.html#divtel.telescope.Telescope" title="divtel.telescope.Telescope"><code class="xref py py-class docutils literal notranslate"><span class="pre">Telescope</span></code></a> objects as the
+array they came from, not copies, so re-pointing the array re-points every
+group too. They inherit the array’s current pointing, so
+<a class="reference internal" href="docstring.html#divtel.telescope.Array.hyper_fov" title="divtel.telescope.Array.hyper_fov"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hyper_fov()</span></code></a> works on a group right away.
+Telescopes can be left out of every group; nothing requires full coverage.</p>
+<p>To skip writing ids out, group by camera radius instead, since telescopes of
+a type share one:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">telescopes</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">array</span><span class="o">.</span><span class="n">group_by</span><span class="p">(</span><span class="s2">"camera_radius"</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
 <span class="go">{'1.074 m': 15, '1.05 m': 4}</span>
 </pre></div>
@@ -696,7 +666,7 @@ each with its own barycenter and mean pointing arrow:</p>
 <span class="n">display_groups</span><span class="p">(</span><span class="n">groups</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Turn the divergence up and the two barycenter arrows swing apart – the LSTs,
+<p>Turn the divergence up and the two barycenter arrows swing apart: the LSTs,
 sitting near the centre of the array, diverge far less than the MSTs around
 them.</p>
 </section>
@@ -705,9 +675,9 @@ them.</p>
 <p>Everything so far works in the ground frame: an array pointed at alt 70, az 180
 stays pointed there whatever the hour. Real sources rise and set, so the
 direction to point at depends on where you are and when.</p>
-<p><a class="reference internal" href="docstring.html#divtel.observation.Observation" title="divtel.observation.Observation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Observation</span></code></a> supplies that. It is a place and a
-time, and it converts a sky position into the alt/az pair
-<a class="reference internal" href="docstring.html#divtel.telescope.Array.divergent_pointing" title="divtel.telescope.Array.divergent_pointing"><code class="xref py py-meth docutils literal notranslate"><span class="pre">divergent_pointing()</span></code></a> already takes:</p>
+<p><a class="reference internal" href="docstring.html#divtel.observation.Observation" title="divtel.observation.Observation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Observation</span></code></a> is a place and a time. It converts a
+sky position into the alt/az pair
+<a class="reference internal" href="docstring.html#divtel.telescope.Array.divergent_pointing" title="divtel.telescope.Array.divergent_pointing"><code class="xref py py-meth docutils literal notranslate"><span class="pre">divergent_pointing()</span></code></a> takes:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">astropy.coordinates</span><span class="w"> </span><span class="kn">import</span> <span class="n">SkyCoord</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">divtel.observation</span><span class="w"> </span><span class="kn">import</span> <span class="n">Observation</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">obs</span> <span class="o">=</span> <span class="n">Observation</span><span class="p">(</span><span class="n">site</span><span class="o">=</span><span class="s2">"north"</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="s2">"2026-03-01T23:00:00"</span><span class="p">)</span>
@@ -718,15 +688,14 @@ time, and it converts a sky position into the alt/az pair
 <span class="gp">&gt;&gt;&gt; </span><span class="n">array</span><span class="o">.</span><span class="n">divergent_pointing</span><span class="p">(</span><span class="mf">0.02</span><span class="p">,</span> <span class="n">alt</span><span class="p">,</span> <span class="n">az</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">site</span></code> takes <code class="docutils literal notranslate"><span class="pre">&quot;north&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;south&quot;</span></code> for the two CTAO sites, whose
-coordinates are built in so this needs no network. Any other name is looked up
-in astropy’s site registry, which does; an
-<code class="xref py py-class docutils literal notranslate"><span class="pre">EarthLocation</span></code> is taken as it is, which is what to
-use when the exact position of a particular telescope matters.</p>
-<p>An observation never changes. <a class="reference internal" href="docstring.html#divtel.observation.Observation.at" title="divtel.observation.Observation.at"><code class="xref py py-meth docutils literal notranslate"><span class="pre">at()</span></code></a> and
-<a class="reference internal" href="docstring.html#divtel.observation.Observation.after" title="divtel.observation.Observation.after"><code class="xref py py-meth docutils literal notranslate"><span class="pre">after()</span></code></a> hand back a new one, so an array
-pointed from one cannot quietly fall out of step with it. That makes watching a
-source across a night a plain loop:</p>
+<p><code class="docutils literal notranslate"><span class="pre">site</span></code> takes <code class="docutils literal notranslate"><span class="pre">&quot;north&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;south&quot;</span></code> for the two CTAO sites, built in so
+this needs no network. Any other name is looked up in astropy’s site
+registry instead, which does need one. Pass an
+<code class="xref py py-class docutils literal notranslate"><span class="pre">EarthLocation</span></code> directly when the exact position
+of a particular telescope matters.</p>
+<p>An <code class="docutils literal notranslate"><span class="pre">Observation</span></code> is immutable. <a class="reference internal" href="docstring.html#divtel.observation.Observation.at" title="divtel.observation.Observation.at"><code class="xref py py-meth docutils literal notranslate"><span class="pre">at()</span></code></a>
+and <a class="reference internal" href="docstring.html#divtel.observation.Observation.after" title="divtel.observation.Observation.after"><code class="xref py py-meth docutils literal notranslate"><span class="pre">after()</span></code></a> return a new one, so
+watching a source across a night is a plain loop:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">hours</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
     <span class="n">moment</span> <span class="o">=</span> <span class="n">obs</span><span class="o">.</span><span class="n">after</span><span class="p">(</span><span class="n">hours</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">hour</span><span class="p">)</span>
     <span class="n">alt</span><span class="p">,</span> <span class="n">az</span> <span class="o">=</span> <span class="n">moment</span><span class="o">.</span><span class="n">altaz_of</span><span class="p">(</span><span class="n">crab</span><span class="p">)</span>
@@ -736,7 +705,7 @@ source across a night a plain loop:</p>
 </div>
 <p><a class="reference internal" href="docstring.html#divtel.observation.Observation.sun" title="divtel.observation.Observation.sun"><code class="xref py py-attr docutils literal notranslate"><span class="pre">sun</span></code></a> and
 <a class="reference internal" href="docstring.html#divtel.observation.Observation.moon" title="divtel.observation.Observation.moon"><code class="xref py py-attr docutils literal notranslate"><span class="pre">moon</span></code></a> give those bodies in the same
-frame, which is how you check a time is actually observable:</p>
+frame, to check a time is actually observable:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">obs</span><span class="o">.</span><span class="n">sun</span><span class="o">.</span><span class="n">alt</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">"</span>
 <span class="go">'-49.9 deg'</span>
 </pre></div>
@@ -751,12 +720,11 @@ somewhere different, so this is one coordinate per telescope:</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>divtel’s azimuth is astropy’s – measured from north through east – so
-nothing is converted anywhere in between. Point an array at a source and
-read the telescopes back with
-<a class="reference internal" href="docstring.html#divtel.observation.pointing_coord" title="divtel.observation.pointing_coord"><code class="xref py py-func docutils literal notranslate"><span class="pre">pointing_coord()</span></code></a> and you recover the position you
-started from to well under an arcsecond, which is what the test suite
-checks.</p>
+<p>divtel’s azimuth is astropy’s: measured from north through east, no
+conversion needed. Point an array at a source, read the telescopes back
+with <a class="reference internal" href="docstring.html#divtel.observation.pointing_coord" title="divtel.observation.pointing_coord"><code class="xref py py-func docutils literal notranslate"><span class="pre">pointing_coord()</span></code></a>, and you recover the
+original position to well under an arcsecond. The test suite checks
+exactly this.</p>
 </div>
 </section>
 <section id="exporting-to-sim-telarray">
@@ -768,20 +736,21 @@ a real shower simulation:</p>
 <span class="go">PosixPath('configs/CTA-ULTRA6-LaPalma-div0_02-az180_0-alt70_0.cfg')</span>
 </pre></div>
 </div>
-<p>The default filename records the divergence and mean pointing, so a scan over
-<code class="docutils literal notranslate"><span class="pre">div</span></code> lands in distinct files without naming them. <code class="docutils literal notranslate"><span class="pre">tel_configs</span></code> gives the
-per-telescope config each block <code class="docutils literal notranslate"><span class="pre">#include</span></code>s, in array order; left out, it
-defaults to the La Palma layout the writer was built for – four LSTs followed
-by MSTs with NectarCam – which is only right if your array is that one.</p>
-<p>Note that the angle conventions differ from divtel’s: <code class="docutils literal notranslate"><span class="pre">sim_telarray</span></code> takes a
-zenith angle rather than an altitude, and its azimuth runs the other way round.
-The conversion is done for you on the way out.</p>
+<p>The default filename records the divergence and mean pointing, so a scan
+over <code class="docutils literal notranslate"><span class="pre">div</span></code> lands in distinct files without naming them yourself.
+<code class="docutils literal notranslate"><span class="pre">tel_configs</span></code> gives the per-telescope config each block <code class="docutils literal notranslate"><span class="pre">#include</span></code>s, in
+array order. Left out, it defaults to four LSTs followed by MSTs with
+NectarCam, the La Palma layout the writer was built for, which is only
+correct if that’s your array.</p>
+<p><code class="docutils literal notranslate"><span class="pre">sim_telarray</span></code>’s angle conventions differ from divtel’s: it takes a zenith
+angle instead of altitude, and its azimuth runs the other way.
+<code class="docutils literal notranslate"><span class="pre">export_cfg</span></code> converts both on the way out.</p>
 </section>
 <section id="where-to-go-next">
 <h2>Where to go next<a class="headerlink" href="#where-to-go-next" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="examples.html"><span class="doc">Examples</span></a> – the same model with sliders, running in your browser.</p></li>
-<li><p><a class="reference internal" href="docstring.html"><span class="doc">API documentation</span></a> – the full API.</p></li>
+<li><p><a class="reference internal" href="examples.html"><span class="doc">Examples</span></a>: the same model with sliders, running in your browser.</p></li>
+<li><p><a class="reference internal" href="docstring.html"><span class="doc">API documentation</span></a>: the full API.</p></li>
 <li><p><a class="reference external" href="https://github.com/cta-observatory/divtel">Source and issue tracker</a>.</p></li>
 </ul>
 </section>
@@ -875,7 +844,7 @@ The conversion is done for you on the way out.</p>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=b1f4dcdb"></script>
+</div><script src="_static/documentation_options.js?v=0e4709a3"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>
