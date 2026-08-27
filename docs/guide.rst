@@ -213,6 +213,34 @@ inferring it from ``div``.
 Values outside ``[0, 1]`` raise a ``ValueError``; the geometry stops meaning
 anything there.
 
+Divergence spreads telescopes on both sides of the mean pointing, so one asked
+for near the horizon pushes some of them underground. A flat array pointed
+straight at the horizon does not show it -- there is no up or down slope to
+tip telescopes past it -- but a sloped one does, exactly the way a real
+observing site would:
+
+.. code-block:: python
+
+    >>> hillside = Array([
+    ...     Telescope(100 * u.m, 0 * u.m,  50 * u.m, 20 * u.m, 1 * u.m),
+    ...     Telescope(-100 * u.m, 0 * u.m, -50 * u.m, 20 * u.m, 1 * u.m),
+    ... ])
+    >>> hillside.divergent_pointing(0.3, 5 * u.deg, 180 * u.deg)
+    >>> np.round(hillside.pointing_altaz[:, 0].to(u.deg), 2)
+    <Quantity [19.72,  0.  ] deg>
+
+Telescope one, up the slope, points where the geometry sends it: 19.72°.
+Telescope two, down the slope, would come out at -3.06° -- checked directly
+against ``pointing.tel_div_pointing``, which does not clamp. A real mount
+cannot follow the ground, though: it rails at its lowest elevation and stops,
+so ``divergent_pointing`` stops it at the horizon instead, at whatever azimuth
+it was already going to use. Nothing else about the array's pointing changes,
+and ``mean_pointing`` still reports the direction you asked to diverge from,
+not what any individual telescope achieved -- a divergent pointing has never
+meant "every telescope ends up there", only "diverge from there", so a
+clamped telescope is no different from any other telescope whose own pointing
+does not match the mean.
+
 The array remembers what it was last asked for, which saves carrying the
 numbers around yourself:
 
