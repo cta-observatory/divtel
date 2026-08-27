@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="API documentation" href="docstring.html"><link rel="prev" title="User guide" href="guide.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>Examples - divtel 0.2.dev64+g311547a1a documentation</title>
+        <title>Examples - divtel 0.2.dev69+ga19f931a1 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">divtel 0.2.dev64+g311547a1a documentation</div></a>
+      <a href="index.html"><div class="brand">divtel 0.2.dev69+ga19f931a1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -246,11 +246,11 @@ repoint. This runs on a Python interpreter compiled to WebAssembly, so it
 executes in your browser: nothing is installed and no code leaves your
 machine. The first load fetches the interpreter and takes a few seconds.</p>
 <div class="divtel-demo">
-  <iframe src="marimo/index.html"
+  <iframe src="marimo/interactive_display/index.html"
           title="Divergent pointing, interactive demo"
           loading="lazy"></iframe>
   <p class="divtel-demo__fallback">
-    <a href="marimo/index.html" target="_blank" rel="noopener">Open the
+    <a href="marimo/interactive_display/index.html" target="_blank" rel="noopener">Open the
     demo in its own tab</a> for the full-screen version.
   </p>
 </div></section>
@@ -279,6 +279,40 @@ edit it locally:</p>
 its <code class="docutils literal notranslate"><span class="pre">ipywidgets</span></code> sliders need a Python kernel, which a static page has not
 got, so it would render here as controls that cannot move. Run it in a local
 Jupyter session instead.</p>
+</section>
+<section id="tutorials">
+<h2>Tutorials<a class="headerlink" href="#tutorials" title="Link to this heading">¶</a></h2>
+<p>Three worked notebooks, each running in your browser the same way. They pick up
+where the <a class="reference internal" href="guide.html"><span class="doc">User guide</span></a> leaves off: the guide says what the API does, these ask
+what to do with it.</p>
+<div class="table-wrapper colwidths-given docutils container">
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 30.0%" />
+<col style="width: 70.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference external" href="marimo/sub_arrays/index.html">One site, two instruments</a></p></td>
+<td><p>The La Palma layout is four LSTs inside fifteen MSTs, with different
+cameras. Why the hyper FoV of the whole array is the MSTs’ number, why
+one <code class="docutils literal notranslate"><span class="pre">div</span></code> means two different angles, and what
+<a class="reference internal" href="docstring.html#divtel.telescope.Array.group_by" title="divtel.telescope.Array.group_by"><code class="xref py py-meth docutils literal notranslate"><span class="pre">group_by()</span></code></a> is for.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="marimo/observing_a_source/index.html">Observing a real source</a></p></td>
+<td><p>Pick a source and a night. When is it up, when is the sun down, and what
+happens to the array’s coverage as it tracks a source across the sky.
+Uses <a class="reference internal" href="docstring.html#divtel.observation.Observation" title="divtel.observation.Observation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Observation</span></code></a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="marimo/choosing_div/index.html">Choosing div</a></p></td>
+<td><p>The question the guide leaves open. Decide what field of view you want
+and what multiplicity you can live with, and those two fix <code class="docutils literal notranslate"><span class="pre">div</span></code> –
+which turns out to move as the source does.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Each is a marimo notebook under <code class="docutils literal notranslate"><span class="pre">examples/marimo/</span></code>, editable locally with
+<code class="docutils literal notranslate"><span class="pre">marimo</span> <span class="pre">edit</span> <span class="pre">examples/marimo/&lt;name&gt;.py</span></code>.</p>
 </section>
 </section>
 
@@ -331,7 +365,7 @@ Jupyter session instead.</p>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=4ef0487d"></script>
+</div><script src="_static/documentation_options.js?v=b1f4dcdb"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>
