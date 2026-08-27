@@ -236,6 +236,112 @@ class Array:
                              "call divergent_pointing first")
         return self._alt_mean, self._az_mean
 
+    def group_by(self, groups):
+        """
+        Split the array into sub-arrays.
+
+        A real array is not one instrument but several sharing a site: on the
+        CTA La Palma layout four LSTs sit inside fifteen MSTs, with different
+        cameras, different fields of view, and their own barycenters. Grouping
+        lets each be looked at on its own.
+
+        Parameters
+        ----------
+        groups: dict or str
+            either a mapping of group name to the telescope ids in it, e.g.
+            ``{"LST": [1, 2, 3, 4], "MST": range(5, 20)}``, or the string
+            ``"camera_radius"`` to group telescopes by the camera they carry.
+
+        Returns
+        -------
+        dict of str to `Array`
+            one sub-array per group, in the order the groups were given
+
+        Raises
+        ------
+        ValueError
+            if an id is not in the array, or a telescope is put in two groups
+
+        Notes
+        -----
+        Ids are `Telescope.id`, not positions in the array. CTAO numbers
+        telescopes by type -- LSTs 1 to 4, MSTs 5 to 14, telescopes added to try
+        out a configuration from 15 on -- and `divtel.layout.load_array` takes
+        those ids from the layout file, so they mean what the layout says.
+
+        The sub-arrays hold the *same* `Telescope` objects as this array rather
+        than copies, so pointing the whole array points every group with it.
+        Each sub-array is handed the array's current pointing, so `hyper_fov`
+        and `export_cfg` work on it straight away.
+
+        Telescopes may be left out of every group; nothing requires the groups
+        to cover the array.
+
+        Examples
+        --------
+        >>> groups = array.group_by({"LST": range(1, 5), "MST": range(5, 20)})
+        >>> groups["LST"].barycenter
+        <Quantity [ 0.895 , 44.8475, 44.925 ] m>
+        """
+        if isinstance(groups, str):
+            if groups != "camera_radius":
+                raise ValueError(
+                    f"group_by takes a dict of ids or 'camera_radius', got {groups!r}"
+                )
+            return self._group_by_camera_radius()
+
+        by_id = {tel.id: tel for tel in self.telescopes}
+        seen = {}
+        grouped = {}
+
+        for name, ids in groups.items():
+            ids = list(ids)
+
+            unknown = [tel_id for tel_id in ids if tel_id not in by_id]
+            if unknown:
+                raise ValueError(
+                    f"group {name!r} asks for telescope id(s) "
+                    f"{', '.join(map(str, unknown))}, which the array does not have; "
+                    f"its ids are {', '.join(str(tel.id) for tel in self.telescopes)}"
+                )
+
+            for tel_id in ids:
+                if tel_id in seen:
+                    raise ValueError(
+                        f"telescope {tel_id} is in both group {seen[tel_id]!r} "
+                        f"and group {name!r}"
+                    )
+                seen[tel_id] = name
+
+            grouped[name] = self._sub_array([by_id[tel_id] for tel_id in ids])
+
+        return grouped
+
+    def _group_by_camera_radius(self):
+        """
+        One sub-array per distinct camera radius, largest camera first.
+
+        Telescopes of a type share a camera, so on a real layout this recovers
+        the types without being told them. Groups are named after the radius,
+        since that is all this knows -- pass a dict to name them yourself.
+        """
+        radii = sorted({tel.camera_radius for tel in self.telescopes}, reverse=True)
+
+        return {
+            f"{radius.to_value(u.m):.4g} m": self._sub_array(
+                [tel for tel in self.telescopes if tel.camera_radius == radius]
+            )
+            for radius in radii
+        }
+
+    def _sub_array(self, telescopes):
+        """An `Array` of some of these telescopes, keeping the pointing state."""
+        sub = Array(telescopes)
+        sub._div = self._div
+        sub._alt_mean = self._alt_mean
+        sub._az_mean = self._az_mean
+        return sub
+
     def divergent_pointing(self, div, alt_mean, az_mean):
         """
         Divergent pointing given a parameter div.

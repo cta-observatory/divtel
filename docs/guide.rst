@@ -317,6 +317,65 @@ Both take an existing ``ax`` and return it, so they compose with whatever else
 you are plotting.
 
 
+Sub-arrays
+==========
+
+A real array is not one instrument but several sharing a site. On the La Palma
+layout four LSTs sit inside fifteen MSTs, with different cameras, different
+fields of view, and their own barycenters.
+:meth:`~divtel.telescope.Array.group_by` splits the array up so each can be
+looked at on its own:
+
+.. code-block:: python
+
+    >>> array = load_array(files("divtel") / "data" / "la_palma_4LST_15MST.ecsv")
+    >>> array.divergent_pointing(0.02, 70 * u.deg, 180 * u.deg)
+    >>> groups = array.group_by({"LST": range(1, 5), "MST": range(5, 20)})
+    >>> groups["LST"].barycenter
+    <Quantity [ 0.895 , 44.8475, 44.925 ] m>
+    >>> groups["LST"].hyper_fov()[0]
+    <Quantity 26.83755561 deg2>
+    >>> groups["MST"].hyper_fov()[0]
+    <Quantity 169.76149694 deg2>
+
+The MST figure is the whole array's coverage: the MSTs' cameras are wide enough
+that they already see everything the LSTs do, so adding the LSTs back adds
+multiplicity rather than area.
+
+Each group is a full :class:`~divtel.telescope.Array`, so everything an array
+can do a group can do too. The ids are
+:attr:`~divtel.telescope.Telescope.id` values, not positions -- which is why
+layouts carry them.
+
+Groups hold the same :class:`~divtel.telescope.Telescope` objects as the array
+they came from rather than copies, so re-pointing the array re-points every
+group with it. They also inherit the array's current pointing, so
+:meth:`~divtel.telescope.Array.hyper_fov` works on a group straight away.
+Telescopes may be left out of every group; nothing requires the groups to cover
+the array.
+
+If you would rather not write the ids out, grouping by camera picks the types
+out on its own, since telescopes of a type share one:
+
+.. code-block:: python
+
+    >>> {name: len(group.telescopes) for name, group in array.group_by("camera_radius").items()}
+    {'1.074 m': 15, '1.05 m': 4}
+
+:func:`~divtel.visualization.display_groups` draws them, one colour per group,
+each with its own barycenter and mean pointing arrow:
+
+.. code-block:: python
+
+    from divtel.visualization import display_groups
+
+    display_groups(groups)
+
+Turn the divergence up and the two barycenter arrows swing apart -- the LSTs,
+sitting near the centre of the array, diverge far less than the MSTs around
+them.
+
+
 Exporting to sim_telarray
 =========================
 
