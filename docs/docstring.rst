@@ -8,11 +8,11 @@ they fit together, start with the :doc:`guide`.
 ``divtel.telescope``
 ====================
 
-The two classes you build a simulation from:
-:class:`~divtel.telescope.Telescope` is one telescope on the ground,
-:class:`~divtel.telescope.Array` is a list of them plus everything that is a
-property of the array as a whole -- where it points, how much sky it sees, and
-how to write that out.
+The two classes you build a simulation from.
+:class:`~divtel.telescope.Telescope` is one telescope on the ground.
+:class:`~divtel.telescope.Array` is a list of them, plus everything about the
+array as a whole: where it points, how much sky it sees, how to write that
+out.
 
 .. automodule:: divtel.telescope
    :members:
@@ -34,10 +34,10 @@ without ambiguity.
 ``divtel.pointing``
 ===================
 
-The pointing geometry underneath :meth:`~divtel.telescope.Array.divergent_pointing`.
-Most users will not need to call these directly, but they are what defines the
-coordinate frame and the point **G** that divergence is built around -- see
-:ref:`the-div-parameter`.
+The pointing geometry underneath
+:meth:`~divtel.telescope.Array.divergent_pointing`. Most users won't need to
+call these directly. They define the coordinate frame and the point **G**
+that divergence is built around; see :ref:`the-div-parameter`.
 
 .. automodule:: divtel.pointing
    :members:
@@ -47,7 +47,7 @@ coordinate frame and the point **G** that divergence is built around -- see
 ``divtel.observation``
 ======================
 
-Where and when the array is observing from -- the optional half that connects
+Where and when the array is observing from: the optional half that connects
 the ground-frame geometry to real sources at real times. Nothing in
 :mod:`divtel.telescope` depends on it.
 

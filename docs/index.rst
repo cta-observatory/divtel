@@ -6,7 +6,7 @@ divtel makes toy simulations of the **divergent pointing** mode for arrays of
 Imaging Atmospheric Cherenkov Telescopes.
 
 Point an array's telescopes slightly away from one another and it sees a wider
-patch of sky, but fewer telescopes see any given part of it -- and a shower
+patch of sky, but fewer telescopes see any given part of it, and a shower
 needs two of them to be reconstructed stereoscopically. divtel lets you set up
 that trade and measure both sides of it.
 
