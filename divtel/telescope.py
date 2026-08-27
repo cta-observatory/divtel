@@ -382,6 +382,84 @@ class Array:
         area = sum(p.area for p, m in labelled if m >= m_cut)
         return u.Quantity(area, u.deg ** 2), labelled
 
+    def multiplicity_profile(self, patches=None):
+        """
+        How much sky is seen by exactly one telescope, by exactly two, and so on.
+
+        `hyper_fov` reports how much sky the array covers; this reports how well
+        it covers it. Both matter, and divergence trades one for the other.
+
+        Parameters
+        ----------
+        patches: list of (`shapely.Polygon`, int), optional
+            the patches from a previous `hyper_fov` call, to save computing them
+            again; recomputed if not given
+
+        Returns
+        -------
+        multiplicity: `numpy.ndarray` of int
+            the multiplicities present, in increasing order
+        area: `astropy.Quantity`
+            sky seen by exactly that many telescopes, in deg**2
+
+        Examples
+        --------
+        >>> array.divergent_pointing(0.05, 70 * u.deg, 180 * u.deg)
+        >>> multiplicity, area = array.multiplicity_profile()
+        >>> multiplicity
+        array([1, 2, 3, 4, 5])
+        >>> np.round(area, 1)
+        <Quantity [242. , 131.3,  70.8,   8. ,   0.6] deg2>
+        """
+        if patches is None:
+            _, patches = self.hyper_fov()
+
+        multiplicities = sorted({multiplicity for _, multiplicity in patches})
+        areas = [
+            sum(patch.area for patch, m in patches if m == multiplicity)
+            for multiplicity in multiplicities
+        ]
+
+        return np.array(multiplicities, dtype=int), u.Quantity(areas, u.deg ** 2)
+
+    def multiplicity_moments(self, patches=None):
+        """
+        Mean and variance of the multiplicity, weighted by area.
+
+        One number for how divergent a configuration is, and one for how evenly.
+        A parallel array has every patch seen by every telescope, so the mean is
+        the number of telescopes and the variance is zero; as divergence grows
+        the mean falls towards one.
+
+        Weighting is by solid angle, so a patch counts for as much sky as it
+        covers -- an unweighted mean over patches would let a sliver of overlap
+        count for as much as the whole field.
+
+        Parameters
+        ----------
+        patches: list of (`shapely.Polygon`, int), optional
+            the patches from a previous `hyper_fov` call, to save computing them
+            again; recomputed if not given
+
+        Returns
+        -------
+        (mean, variance): tuple of float
+
+        Examples
+        --------
+        >>> array.divergent_pointing(0.05, 70 * u.deg, 180 * u.deg)
+        >>> mean, variance = array.multiplicity_moments()
+        >>> f"{mean:.2f} +- {np.sqrt(variance):.2f}"
+        '1.66 +- 0.81'
+        """
+        multiplicity, area = self.multiplicity_profile(patches=patches)
+
+        weights = area.to_value(u.deg ** 2)
+        mean = np.average(multiplicity, weights=weights)
+        variance = np.average((multiplicity - mean) ** 2, weights=weights)
+
+        return float(mean), float(variance)
+
     def export_cfg(self, filename=None, outdir="./", tel_configs=None,
                    verbose=False):
         """
