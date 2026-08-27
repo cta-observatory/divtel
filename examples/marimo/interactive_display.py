@@ -8,26 +8,20 @@ app = marimo.App(width="full")
 async def _():
     import sys
 
-    # In the WASM build there is no site-packages: Python is Pyodide, and
-    # divtel has to be fetched as a wheel published next to this page. The
-    # released sdist on PyPI cannot be used -- Pyodide installs wheels only.
+    # WASM has no site-packages, so divtel has to come from a wheel.
     if sys.platform == "emscripten":
         import json
 
         import micropip
         from pyodide.http import pyfetch
 
-        # Pyodide runs in a worker loaded from <export root>/assets/, so
-        # relative URLs resolve against assets/ rather than the page. marimo
-        # always emits index.html alongside assets/, so stepping up one level
-        # reaches the export root whatever subpath the site is deployed under.
+        # Pyodide runs from a worker under assets/, so step up one level
+        # to reach the site root where the wheel is published.
         base = "../pypi/"
-        # setuptools_scm bakes the version into the wheel filename, so the
-        # docs build writes a manifest rather than us hardcoding it here.
+        # The wheel's filename carries a version, so read it from a
+        # manifest instead of hardcoding it.
         response = await pyfetch(base + "manifest.json")
         if response.status != 200:
-            # Without this the JSON decode fails on a 404 page and the reader
-            # is told only "see console for details".
             raise RuntimeError(
                 f"could not fetch {base}manifest.json (HTTP {response.status}). "
                 "The divtel wheel is missing from the published site."
@@ -48,17 +42,15 @@ def _():
     from divtel.telescope import Telescope, Array
     from divtel.visualization import display_hyper_fov
 
-    # Render figures as SVG. marimo's PNG path stamps an explicit pixel width
-    # on the image -- figsize x 100 -- which overflows a frame narrower than
-    # the figure. SVG carries no such width, so it scales to its container.
+    # SVG scales to its container; marimo's PNG path stamps a fixed pixel
+    # width that overflows a frame narrower than the figure.
     plt.rcParams["savefig.format"] = "svg"
     return Array, Telescope, display_hyper_fov, mo, np, plt, pointing, u
 
 
 @app.cell(hide_code=True)
 def _(mo):
-    # Belt and braces alongside the SVG format above: nothing in the output
-    # should be able to out-run its container when embedded in a frame.
+    # Belt and braces: caps output size so it can't overflow an embedded frame.
     mo.Html(
         """<style>
           img, svg { max-width: 100%; height: auto; }
@@ -104,14 +96,13 @@ def _(Array, Telescope, u):
 
 @app.cell(hide_code=True)
 def _(alt, array, az, div, pointing, u):
-    # Marimo is reactive: touching a slider re-runs only the cells that read
-    # it. This one repoints the array and hands it on under a new name, which
-    # is what puts the two plot cells below downstream of the sliders.
+    # Renaming to `pointed` puts the plot cells below downstream of the
+    # sliders, since marimo re-runs only cells that read a changed value.
     array.divergent_pointing(div.value, alt.value * u.deg, az.value * u.deg)
     pointed = array
-    # G is the point behind the array that the telescopes' pointing
-    # directions all trace back to. At div=0 the telescopes point in
-    # parallel and G recedes to infinity, so there is nothing to plot.
+    # G is where the telescopes' pointing directions all trace back to.
+    # At div=0 they're parallel and G recedes to infinity, so there's
+    # nothing to plot.
     g_point = (
         pointing.pointG_position(
             pointed.barycenter, div.value, alt.value * u.deg, az.value * u.deg
@@ -124,12 +115,10 @@ def _(alt, array, az, div, pointing, u):
 
 @app.cell(hide_code=True)
 def _(g_point, mo, np, pointed, u):
-    # G is shown as a marker in the panels below, but at low divergence it
-    # sits far outside the array's plotted extent (see the note in the cell
-    # above) and would otherwise just seem to have vanished. Print its
-    # position and distance unconditionally so it stays visible even then.
+    # At low divergence G falls outside the plotted extent below and would
+    # seem to have vanished, so print its position and distance regardless.
     if g_point is None:
-        _text = "**G**: undefined at zero divergence -- pointing is parallel and never converges."
+        _text = "**G**: undefined at zero divergence, pointing is parallel and never converges."
     else:
         _gx, _gy, _gz = g_point.to_value(u.m)
         _dist = np.linalg.norm((g_point - pointed.barycenter).to_value(u.m))
@@ -153,11 +142,9 @@ def _(g_point, plt, pointed, u):
         for ax, projection in zip(axes, ("xz", "xy", "yz")):
             array.display_2d(projection=projection, ax=ax)
             if g is not None:
-                # At low divergence G sits far outside the array's view (it
-                # recedes to infinity as div -> 0). Pin the limits display_2d
-                # already chose so adding G can't blow up the scale and
-                # shrink the array to a dot; G simply drops out of frame
-                # instead.
+                # Pin the limits display_2d already chose, so plotting G
+                # far out at low divergence can't rescale the array to a
+                # dot. G just drops out of frame instead.
                 xlim, ylim = ax.get_xlim(), ax.get_ylim()
                 i, j = _axes_for[projection]
                 gx, gy = g.to_value(u.m)[i], g.to_value(u.m)[j]
@@ -176,8 +163,8 @@ def _(g_point, plt, pointed, u):
 @app.cell(hide_code=True)
 def _(display_hyper_fov, np, plt, pointed, u):
     def _plot_sky(array):
-        # One figure rather than two cells: the demo is embedded in a frame of
-        # fixed height, so the panels have to share a row to stay in view.
+        # One figure, not two cells, so the panels share a row and fit the
+        # fixed-height frame this demo is embedded in.
         fig = plt.figure(figsize=(11, 4.2), layout="constrained")
         ax3d = fig.add_subplot(1, 2, 1, projection="3d")
         ax_fov = fig.add_subplot(1, 2, 2)

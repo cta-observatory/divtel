@@ -64,7 +64,15 @@ source_suffix = [
 # notebook exported to WebAssembly: it carries its own Python and runs entirely
 # in the reader's browser.
 
-MARIMO_NOTEBOOK = REPO_ROOT / 'examples' / 'marimo' / 'interactive_display.py'
+MARIMO_DIR = REPO_ROOT / 'examples' / 'marimo'
+
+# Exported in this order; each becomes marimo/<name>/index.html on the site.
+MARIMO_NOTEBOOKS = [
+    'interactive_display',
+    'sub_arrays',
+    'observing_a_source',
+    'choosing_div',
+]
 
 
 def _build_divtel_wheel(destination):
@@ -98,26 +106,14 @@ def _build_divtel_wheel(destination):
     return sorted(destination.glob('divtel-*.whl'))[0]
 
 
-def _export_marimo(app, exception):
-    """Export the marimo notebook to WebAssembly into the built site."""
-    if exception is not None or app.builder.name != 'html':
-        return
-
-    outdir = Path(app.outdir) / 'marimo'
+def _export_one_marimo(notebook, outdir, wheel):
+    """Export a single marimo notebook to WebAssembly, ready to serve."""
     if outdir.exists():
         shutil.rmtree(outdir)
 
-    # marimo shells out to uv to resolve the notebook's imports, so a machine
-    # without it fails here rather than at install time.
-    if not shutil.which('uv'):
-        raise RuntimeError(
-            'uv is required to export the marimo notebook to WebAssembly; '
-            'install it with `pip install uv`'
-        )
-
     export = subprocess.run(
         [sys.executable, '-m', 'marimo', 'export', 'html-wasm',
-         str(MARIMO_NOTEBOOK), '-o', str(outdir), '--mode', 'run'],
+         str(notebook), '-o', str(outdir), '--mode', 'run'],
         capture_output=True,
         text=True,
     )
@@ -126,7 +122,7 @@ def _export_marimo(app, exception):
         # nothing about what marimo objected to. Carry its output into the
         # exception so the build log explains itself.
         raise RuntimeError(
-            f'marimo export failed (exit {export.returncode}):\n'
+            f'marimo export of {notebook.name} failed (exit {export.returncode}):\n'
             f'{export.stdout}\n{export.stderr}'
         )
 
@@ -134,8 +130,9 @@ def _export_marimo(app, exception):
     # being published as part of the documentation.
     (outdir / 'CLAUDE.md').unlink(missing_ok=True)
 
-    # setuptools_scm bakes the version into the wheel filename, so record it in
-    # a manifest the notebook can read instead of hardcoding it there.
+    # Each notebook resolves the wheel relative to its own page, so every
+    # export carries its own copy. The wheel is a few tens of kilobytes, which
+    # is far cheaper than teaching the notebooks how deep they are published.
     #
     # Do not rename this to `wheels`: publishing to gh-pages honours the
     # repository's .gitignore, and the standard Python template ignores
@@ -143,8 +140,42 @@ def _export_marimo(app, exception):
     # leaving the published notebook unable to install divtel.
     wheelhouse = outdir / 'pypi'
     wheelhouse.mkdir(parents=True, exist_ok=True)
-    wheel = _build_divtel_wheel(wheelhouse)
+    shutil.copy2(wheel, wheelhouse / wheel.name)
+    # setuptools_scm bakes the version into the wheel filename, so record it in
+    # a manifest the notebook can read instead of hardcoding it there.
     (wheelhouse / 'manifest.json').write_text(json.dumps({'divtel': wheel.name}))
+
+
+def _export_marimo(app, exception):
+    """Export every marimo notebook to WebAssembly into the built site."""
+    if exception is not None or app.builder.name != 'html':
+        return
+
+    # marimo shells out to uv to resolve the notebook's imports, so a machine
+    # without it fails here rather than at install time.
+    if not shutil.which('uv'):
+        raise RuntimeError(
+            'uv is required to export the marimo notebooks to WebAssembly; '
+            'install it with `pip install uv`'
+        )
+
+    root = Path(app.outdir) / 'marimo'
+    if root.exists():
+        shutil.rmtree(root)
+
+    # Built once and copied into each export, rather than once per notebook:
+    # the wheel is identical every time and building it is the slow part.
+    staging = root / '_wheel'
+    staging.mkdir(parents=True, exist_ok=True)
+    wheel = _build_divtel_wheel(staging)
+
+    for name in MARIMO_NOTEBOOKS:
+        notebook = MARIMO_DIR / f'{name}.py'
+        if not notebook.exists():
+            raise RuntimeError(f'{notebook} is listed in MARIMO_NOTEBOOKS but missing')
+        _export_one_marimo(notebook, root / name, wheel)
+
+    shutil.rmtree(staging)
 
 
 def setup(app):
