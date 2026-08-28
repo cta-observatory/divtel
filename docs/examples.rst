@@ -56,7 +56,7 @@ doesn't have. Run it in a local Jupyter session instead.
 Tutorials
 ---------
 
-Three worked notebooks, running in your browser the same way. They pick up
+Four worked notebooks, running in your browser the same way. They pick up
 where the :doc:`guide` leaves off: the guide says what the API does, these
 ask what to do with it.
 
@@ -64,8 +64,13 @@ ask what to do with it.
    :widths: 30 70
    :header-rows: 0
 
+   * - `Two sites <marimo/two_sites/index.html>`_
+     - CTAO is two arrays: North at La Palma, 4 LSTs and 9 MSTs, and South
+       at Paranal, 14 MSTs and 37 SSTs with no LSTs at all. Loads both, and
+       compares what their size and camera mix buy in hyper FoV and
+       multiplicity.
    * - `One site, two instruments <marimo/sub_arrays/index.html>`_
-     - The La Palma layout is four LSTs inside fifteen MSTs, with different
+     - The CTAO North layout is four LSTs inside nine MSTs, with different
        cameras. Why the hyper FoV of the whole array is the MSTs' number, why
        one ``div`` means two different angles, and what
        :meth:`~divtel.telescope.Array.group_by` is for.

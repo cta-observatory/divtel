@@ -89,7 +89,9 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(files, load_array):
-    ARRAY = load_array(files("divtel") / "data" / "la_palma_4LST_15MST.ecsv")
+    ARRAY = load_array(
+        files("divtel") / "data" / "cta-north-lapalma-alpha-prod6.ecsv"
+    )
     # Fine enough to interpolate a threshold, coarse enough to stay fast.
     DIVS = [0.0, 0.005, 0.01, 0.015, 0.02, 0.03, 0.04, 0.06]
     ALTITUDES = [80, 70, 60, 50, 40, 30, 20]
@@ -156,8 +158,8 @@ def _(mo):
         Both panels are ordered by altitude, and the order is the point.
 
         **The same `div` buys less at low altitude.** At `div = 0.02` the
-        array covers about 2.9x its parallel field near the zenith, but only
-        2.3x at 20 degrees. The array is flat and the sky isn't: as the
+        array covers about 2.1x its parallel field near the zenith, but only
+        1.8x at 20 degrees. The array is flat and the sky isn't: as the
         pointing tips over, more of each telescope's offset from the
         barycenter points along the line of sight instead of across it, and
         only the across-axis part drives divergence. The fan closes up.
@@ -176,7 +178,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     target = mo.ui.slider(
-        1.5, 4.0, step=0.1, value=2.5, label="wanted hyper FoV gain",
+        1.5, 4.0, step=0.1, value=1.8, label="wanted hyper FoV gain",
         show_value=True, full_width=True,
     )
     floor = mo.ui.slider(
@@ -270,14 +272,14 @@ def _(mo):
         multiplicity floor up, and the two constraints collide. Crosses mark
         altitudes where no divergence reaches the target without thinning
         the array past the floor. That's not a software limitation, it's the
-        trade itself: there's only so much sky nineteen telescopes can cover
+        trade itself: there's only so much sky thirteen telescopes can cover
         and still see twice.
 
         ## Across the sky
 
         Altitude is most of the story but not all of it. The array isn't
         azimuthally symmetric, so the answer wobbles a few percent with
-        azimuth, up to about 12% at low altitude. The map below computes each
+        azimuth, up to about 8% at low altitude. The map below computes each
         sky position directly rather than reading it off the altitude curve.
 
         It's also the most expensive cell here, a few seconds of geometry
@@ -400,8 +402,8 @@ The first two panels line up: wherever the sky sits low, the map asks
 
         The third panel is the payoff. Across the whole visible sky the
         multiplicity barely moves: from 80 down to 20 degrees altitude, `div`
-        climbs about 40%, from 0.016 to 0.022, while mean multiplicity drifts
-        only from 5.3 to 5.6.
+        climbs about 50%, from 0.014 to 0.022, while mean multiplicity stays
+        close to 4.4-4.9.
 
         **An adaptive `div` gives you a stable array all night, same
         coverage, same depth, where a fixed one gives you neither.**
@@ -425,7 +427,7 @@ The first two panels line up: wherever the sky sits low, the map asks
            appear, no divergence satisfies both: the array isn't big enough
            to cover that much sky stereoscopically.
 
-        These numbers are specific to the 4 LST + 15 MST La Palma layout and
+        These numbers are specific to the 4 LST + 9 MST CTAO North layout and
         a stereo cut of two. Change the layout, the cut, or the floor and
         the curves move, but the argument's shape doesn't.
         """
