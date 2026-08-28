@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="Examples" href="examples.html"><link rel="prev" title="divtel" href="index.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>User guide - divtel 1.0.1.dev2+gdbb2aa195 documentation</title>
+        <title>User guide - divtel 1.0.1.dev4+g3e4a2353a documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">divtel 1.0.1.dev2+gdbb2aa195 documentation</div></a>
+      <a href="index.html"><div class="brand">divtel 1.0.1.dev4+g3e4a2353a documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -307,12 +307,15 @@ plain text with a small header naming each column and its unit:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">importlib.resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">files</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">divtel.layout</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_array</span>
 
-<span class="n">array</span> <span class="o">=</span> <span class="n">load_array</span><span class="p">(</span><span class="n">files</span><span class="p">(</span><span class="s2">"divtel"</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"data"</span> <span class="o">/</span> <span class="s2">"la_palma_4LST_15MST.ecsv"</span><span class="p">)</span>
+<span class="n">array</span> <span class="o">=</span> <span class="n">load_array</span><span class="p">(</span><span class="n">files</span><span class="p">(</span><span class="s2">"divtel"</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"data"</span> <span class="o">/</span> <span class="s2">"cta-north-lapalma-alpha-prod6.ecsv"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Two layouts ship with the package: <code class="docutils literal notranslate"><span class="pre">dummy_array.ecsv</span></code>, five telescopes to try
-things on, and <code class="docutils literal notranslate"><span class="pre">la_palma_4LST_15MST.ecsv</span></code>, a CTA La Palma layout of 4 LSTs and
-15 MSTs. A layout file needs the columns <code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code>, <code class="docutils literal notranslate"><span class="pre">z</span></code>, <code class="docutils literal notranslate"><span class="pre">focal</span></code> and
+things on, and <code class="docutils literal notranslate"><span class="pre">cta-north-lapalma-alpha-prod6.ecsv</span></code>, the official CTAO
+North layout at La Palma, 4 LSTs and 9 MSTs (Prod6, Alpha configuration).
+There’s a South counterpart too, <code class="docutils literal notranslate"><span class="pre">cta-south-paranal-alpha-prod6.ecsv</span></code>, 14
+MSTs and 37 SSTs at Paranal, no LSTs; see <a class="reference internal" href="examples.html"><span class="doc">Examples</span></a> for a tutorial that
+loads both. A layout file needs the columns <code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code>, <code class="docutils literal notranslate"><span class="pre">z</span></code>, <code class="docutils literal notranslate"><span class="pre">focal</span></code> and
 <code class="docutils literal notranslate"><span class="pre">camera_radius</span></code>, and may carry an <code class="docutils literal notranslate"><span class="pre">id</span></code> column:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span># %ECSV 1.0
 # ---
@@ -324,7 +327,7 @@ things on, and <code class="docutils literal notranslate"><span class="pre">la_p
 # - {name: focal, datatype: float64, unit: m}
 # - {name: camera_radius, datatype: float64, unit: m}
 id x y z focal camera_radius
-1 -70.04 -7.23 54 28 1.05
+1 -70.91 -52.35 45.00 28.00 1.05000
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">camera_radius</span></code> may be given as a length or as the half-angle the camera
@@ -347,7 +350,7 @@ yourself.</p>
 <a class="reference internal" href="docstring.html#divtel.layout.load_array" title="divtel.layout.load_array"><code class="xref py py-func docutils literal notranslate"><span class="pre">load_array()</span></code></a> also accepts one:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">divtel.layout</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_table</span>
 
-<span class="n">table</span> <span class="o">=</span> <span class="n">load_table</span><span class="p">(</span><span class="n">files</span><span class="p">(</span><span class="s2">"divtel"</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"data"</span> <span class="o">/</span> <span class="s2">"la_palma_4LST_15MST.ecsv"</span><span class="p">)</span>
+<span class="n">table</span> <span class="o">=</span> <span class="n">load_table</span><span class="p">(</span><span class="n">files</span><span class="p">(</span><span class="s2">"divtel"</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"data"</span> <span class="o">/</span> <span class="s2">"cta-north-lapalma-alpha-prod6.ecsv"</span><span class="p">)</span>
 <span class="n">lsts</span> <span class="o">=</span> <span class="n">load_array</span><span class="p">(</span><span class="n">table</span><span class="p">[:</span><span class="mi">4</span><span class="p">])</span>
 </pre></div>
 </div>
@@ -485,20 +488,20 @@ covers four separate patches of sky with no stereoscopic overlap at all.</p>
 <p>The hyper FoV says how much sky is covered.
 <a class="reference internal" href="docstring.html#divtel.telescope.Array.multiplicity_profile" title="divtel.telescope.Array.multiplicity_profile"><code class="xref py py-meth docutils literal notranslate"><span class="pre">multiplicity_profile()</span></code></a> says how well, how much
 of it is seen by exactly one telescope, by exactly two, and so on:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">array</span> <span class="o">=</span> <span class="n">load_array</span><span class="p">(</span><span class="n">files</span><span class="p">(</span><span class="s2">"divtel"</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"data"</span> <span class="o">/</span> <span class="s2">"la_palma_4LST_15MST.ecsv"</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">array</span> <span class="o">=</span> <span class="n">load_array</span><span class="p">(</span><span class="n">files</span><span class="p">(</span><span class="s2">"divtel"</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"data"</span> <span class="o">/</span> <span class="s2">"cta-north-lapalma-alpha-prod6.ecsv"</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">array</span><span class="o">.</span><span class="n">divergent_pointing</span><span class="p">(</span><span class="mf">0.05</span><span class="p">,</span> <span class="mi">70</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span> <span class="mi">180</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">multiplicity</span><span class="p">,</span> <span class="n">area</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">multiplicity_profile</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">multiplicity</span>
 <span class="go">array([1, 2, 3, 4, 5])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">area</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="go">&lt;Quantity [242. , 131.3,  70.8,   8. ,   0.6] deg2&gt;</span>
+<span class="go">&lt;Quantity [171.1,  85. ,  31.7,   8.8,   0.6] deg2&gt;</span>
 </pre></div>
 </div>
 <p><a class="reference internal" href="docstring.html#divtel.telescope.Array.multiplicity_moments" title="divtel.telescope.Array.multiplicity_moments"><code class="xref py py-meth docutils literal notranslate"><span class="pre">multiplicity_moments()</span></code></a> boils that down to two
 numbers:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mean</span><span class="p">,</span> <span class="n">variance</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">multiplicity_moments</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">mean</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> +- </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">variance</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span>
-<span class="go">'1.66 +- 0.81'</span>
+<span class="go">'1.60 +- 0.81'</span>
 </pre></div>
 </div>
 <section id="how-the-mean-is-defined">
@@ -518,10 +521,10 @@ whole field. <code class="docutils literal notranslate"><span class="pre">hyper_
 are true solid angles, and the patches partition the covered sky exactly, so
 nothing is double-counted.</p>
 <p>Working the example above by hand:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>m :  [1       2       3      4     5   ]
-A :  [242.02  131.34  70.81  7.99  0.55]  deg²    sum = 452.70
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>m :  [1       2      3      4     5   ]
+A :  [171.08  84.95  31.73  8.81  0.57]  deg²    sum = 297.14
 
-(1*242.02 + 2*131.34 + 3*70.81 + 4*7.99 + 5*0.55) / 452.70  =  1.6607
+(1*171.08 + 2*84.95 + 3*31.73 + 4*8.81 + 5*0.57) / 297.14  =  1.5961
 </pre></div>
 </div>
 <p><strong>The average is over covered sky only.</strong> A ring of discs can enclose a hole
@@ -535,9 +538,9 @@ area it returns; the patch list always includes every patch with
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">cut</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span>
 <span class="gp">... </span>    <span class="n">_</span><span class="p">,</span> <span class="n">patches</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">hyper_fov</span><span class="p">(</span><span class="n">m_cut</span><span class="o">=</span><span class="n">cut</span><span class="p">)</span>
 <span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">cut</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">patches</span><span class="p">),</span> <span class="nb">round</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">multiplicity_moments</span><span class="p">(</span><span class="n">patches</span><span class="o">=</span><span class="n">patches</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">4</span><span class="p">))</span>
-<span class="go">1 105 1.6607</span>
-<span class="go">2 105 1.6607</span>
-<span class="go">3 105 1.6607</span>
+<span class="go">1 75 1.5961</span>
+<span class="go">2 75 1.5961</span>
+<span class="go">3 75 1.5961</span>
 </pre></div>
 </div>
 <p>This matters when reading a
@@ -568,25 +571,25 @@ area. On this array, pointed at 70 degrees:</p>
 <tbody>
 <tr class="row-even"><td><p>0</p></td>
 <td><p>46.3</p></td>
-<td><p>16.3</p></td>
+<td><p>10.3</p></td>
 </tr>
 <tr class="row-odd"><td><p>0.01</p></td>
-<td><p>100.0</p></td>
-<td><p>7.5</p></td>
+<td><p>82.5</p></td>
+<td><p>5.7</p></td>
 </tr>
 <tr class="row-even"><td><p>0.02</p></td>
-<td><p>169.8</p></td>
-<td><p>4.4</p></td>
+<td><p>126.9</p></td>
+<td><p>3.7</p></td>
 </tr>
 <tr class="row-odd"><td><p>0.05</p></td>
-<td><p>452.7</p></td>
-<td><p>1.7</p></td>
+<td><p>297.1</p></td>
+<td><p>1.6</p></td>
 </tr>
 </tbody>
 </table>
 </div>
-<p>Ten times the sky, a tenth of the telescopes on any given part of it. Which
-end of that trade to pick depends on the science case.</p>
+<p>About 6.4 times the sky, a sixth of the telescopes on any given part of it.
+Which end of that trade to pick depends on the science case.</p>
 <p><a class="reference internal" href="docstring.html#divtel.visualization.multiplicity_plot" title="divtel.visualization.multiplicity_plot"><code class="xref py py-func docutils literal notranslate"><span class="pre">multiplicity_plot()</span></code></a> draws the profile as a bar
 chart, coloured to match the sky map so the two read together:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">divtel.visualization</span><span class="w"> </span><span class="kn">import</span> <span class="n">display_hyper_fov</span><span class="p">,</span> <span class="n">multiplicity_plot</span>
@@ -627,19 +630,19 @@ you are plotting.</p>
 </section>
 <section id="sub-arrays">
 <h2>Sub-arrays<a class="headerlink" href="#sub-arrays" title="Link to this heading">¶</a></h2>
-<p>A real array is usually several instruments sharing a site. The La Palma
-layout has four LSTs inside fifteen MSTs, each with its own camera, field of
+<p>A real array is usually several instruments sharing a site. The CTAO North
+layout has four LSTs inside nine MSTs, each with its own camera, field of
 view, and barycenter. <a class="reference internal" href="docstring.html#divtel.telescope.Array.group_by" title="divtel.telescope.Array.group_by"><code class="xref py py-meth docutils literal notranslate"><span class="pre">group_by()</span></code></a> splits them
 apart:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">array</span> <span class="o">=</span> <span class="n">load_array</span><span class="p">(</span><span class="n">files</span><span class="p">(</span><span class="s2">"divtel"</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"data"</span> <span class="o">/</span> <span class="s2">"la_palma_4LST_15MST.ecsv"</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">array</span> <span class="o">=</span> <span class="n">load_array</span><span class="p">(</span><span class="n">files</span><span class="p">(</span><span class="s2">"divtel"</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"data"</span> <span class="o">/</span> <span class="s2">"cta-north-lapalma-alpha-prod6.ecsv"</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">array</span><span class="o">.</span><span class="n">divergent_pointing</span><span class="p">(</span><span class="mf">0.02</span><span class="p">,</span> <span class="mi">70</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span> <span class="mi">180</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">groups</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">group_by</span><span class="p">({</span><span class="s2">"LST"</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="s2">"MST"</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">20</span><span class="p">)})</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">groups</span><span class="p">[</span><span class="s2">"LST"</span><span class="p">]</span><span class="o">.</span><span class="n">barycenter</span>
-<span class="go">&lt;Quantity [ 0.895 , 44.8475, 44.925 ] m&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">groups</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">group_by</span><span class="p">({</span><span class="s2">"LST"</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="s2">"MST"</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">14</span><span class="p">)})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">groups</span><span class="p">[</span><span class="s2">"LST"</span><span class="p">]</span><span class="o">.</span><span class="n">barycenter</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="go">&lt;Quantity [ 0.   ,  0.   , 34.625] m&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">groups</span><span class="p">[</span><span class="s2">"LST"</span><span class="p">]</span><span class="o">.</span><span class="n">hyper_fov</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
-<span class="go">&lt;Quantity 26.83755561 deg2&gt;</span>
+<span class="go">&lt;Quantity 26.69187612 deg2&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">groups</span><span class="p">[</span><span class="s2">"MST"</span><span class="p">]</span><span class="o">.</span><span class="n">hyper_fov</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
-<span class="go">&lt;Quantity 169.76149694 deg2&gt;</span>
+<span class="go">&lt;Quantity 126.94036502 deg2&gt;</span>
 </pre></div>
 </div>
 <p>The MST figure is the whole array’s coverage: the MSTs’ cameras are wide enough
@@ -657,7 +660,7 @@ Telescopes can be left out of every group; nothing requires full coverage.</p>
 <p>To skip writing ids out, group by camera radius instead, since telescopes of
 a type share one:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">telescopes</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">array</span><span class="o">.</span><span class="n">group_by</span><span class="p">(</span><span class="s2">"camera_radius"</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
-<span class="go">{'1.074 m': 15, '1.05 m': 4}</span>
+<span class="go">{'1.074 m': 9, '1.05 m': 4}</span>
 </pre></div>
 </div>
 <p><a class="reference internal" href="docstring.html#divtel.visualization.display_groups" title="divtel.visualization.display_groups"><code class="xref py py-func docutils literal notranslate"><span class="pre">display_groups()</span></code></a> draws them, one colour per group,
@@ -716,7 +719,7 @@ telescope is looking on the sky. Under divergent pointing they all look
 somewhere different, so this is one coordinate per telescope:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">divtel.observation</span><span class="w"> </span><span class="kn">import</span> <span class="n">pointing_coord</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pointing_coord</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">obs</span><span class="p">)</span><span class="o">.</span><span class="n">separation</span><span class="p">(</span><span class="n">crab</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-<span class="go">&lt;Angle 4.3121837 deg&gt;</span>
+<span class="go">&lt;Angle 3.16795168 deg&gt;</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -845,7 +848,7 @@ angle instead of altitude, and its azimuth runs the other way.
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=e08c0abc"></script>
+</div><script src="_static/documentation_options.js?v=3e7641fb"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>
