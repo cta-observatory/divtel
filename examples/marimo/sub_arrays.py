@@ -60,66 +60,76 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(
-        r"""
-        # One site, two instruments
+    mo.md(r"""
+    # Two sites, two instruments each
 
-        The CTAO North layout at La Palma is really two arrays sharing a
-        field: four Large-Sized Telescopes sitting inside nine Medium-Sized
-        ones, with different optics and different fields of view. An LST
-        camera subtends about 2.15 degrees on the sky, an MST camera about
-        3.84.
+    On each site, CTAO is composed of two subarrays of different
+    telescope types sharing a field: a smaller, inner group and a
+    larger, outer one with a wider camera. La Palma pairs LSTs with
+    MSTs; Paranal pairs MSTs with SSTs.
 
-        Divergence is a *geometric* construction: every telescope points
-        away from a virtual point behind the array, so how far it swings
-        depends on how far it sits from the centre. The LSTs cluster near
-        the middle; the MSTs spread out around them.
+    Divergence is a *geometric* construction: every telescope points
+    away from a virtual point behind the array, so how far it swings
+    depends on how far it sits from the centre. The inner group
+    clusters near the middle; the outer one spreads out around it.
 
-        This notebook is about what that asymmetry does.
-        """
-    )
+    This notebook looks at what that asymmetry does, site by site.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## North: La Palma, LST + MST
+
+    Four Large-Sized Telescopes sit inside nine Medium-Sized ones, with
+    different optics and different fields of view. An LST camera
+    subtends about 2.15 degrees on the sky, an MST camera about 3.84,
+    so the outer, more numerous subarray also carries the wider camera.
+    """)
     return
 
 
 @app.cell(hide_code=True)
 def _(files, load_array):
-    ARRAY = load_array(
+    ARRAY_N = load_array(
         files("divtel") / "data" / "cta-north-lapalma-alpha-prod6.ecsv"
     )
     # Ids follow the CTAO convention, so type maps directly to id range.
-    # `ARRAY.group_by("camera_radius")` finds the same split unprompted,
+    # `ARRAY_N.group_by("camera_radius")` finds the same split unprompted,
     # since each type shares a camera.
-    TYPES = {"LST": range(1, 5), "MST": range(5, 14)}
-    return ARRAY, TYPES
+    TYPES_N = {"LST": range(1, 5), "MST": range(5, 14)}
+    return ARRAY_N, TYPES_N
 
 
 @app.cell(hide_code=True)
 def _(mo):
-    div = mo.ui.slider(
+    div_n = mo.ui.slider(
         0, 0.3, step=0.005, value=0.02, label="divergence", show_value=True,
         full_width=True,
     )
-    alt = mo.ui.slider(
+    alt_n = mo.ui.slider(
         20, 90, step=1, value=70, label="altitude [deg]", show_value=True,
         full_width=True,
     )
-    mo.vstack([div, alt])
-    return alt, div
+    mo.vstack([div_n, alt_n])
+    return alt_n, div_n
 
 
 @app.cell(hide_code=True)
-def _(ARRAY, TYPES, alt, div, u):
-    ARRAY.divergent_pointing(div.value, alt.value * u.deg, 180 * u.deg)
-    GROUPS = ARRAY.group_by(TYPES)
-    return (GROUPS,)
+def _(ARRAY_N, TYPES_N, alt_n, div_n, u):
+    ARRAY_N.divergent_pointing(div_n.value, alt_n.value * u.deg, 180 * u.deg)
+    GROUPS_N = ARRAY_N.group_by(TYPES_N)
+    return (GROUPS_N,)
 
 
 @app.cell(hide_code=True)
-def _(ARRAY, GROUPS, display_groups, display_hyper_fov, plt, u):
+def _(ARRAY_N, GROUPS_N, display_groups, display_hyper_fov, plt):
     def _both_views():
         fig, (ground, sky) = plt.subplots(1, 2, figsize=(11, 5))
-        display_groups(GROUPS, ax=ground)
-        display_hyper_fov(ARRAY, ax=sky)
+        display_groups(GROUPS_N, ax=ground)
+        display_hyper_fov(ARRAY_N, ax=sky)
         ground.set_title("on the ground")
         fig.tight_layout()
         return fig
@@ -129,10 +139,10 @@ def _(ARRAY, GROUPS, display_groups, display_hyper_fov, plt, u):
 
 
 @app.cell(hide_code=True)
-def _(ARRAY, GROUPS, mo, u):
+def _(ARRAY_N, GROUPS_N, mo, u):
     def _summary():
         rows = []
-        for name, group in list(GROUPS.items()) + [("both", ARRAY)]:
+        for name, group in list(GROUPS_N.items()) + [("both", ARRAY_N)]:
             area = group.hyper_fov()[0].to_value(u.deg**2)
             mean, _ = group.multiplicity_moments()
             rows.append(
@@ -149,52 +159,50 @@ def _(ARRAY, GROUPS, mo, u):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(
-        r"""
-        ## Two things to notice
+    mo.md(r"""
+    ### Two things to notice
 
-        **At low divergence, the MST row and the "both" row report the same
-        area.** Not a coincidence: an MST camera is wider than an LST one,
-        and the two types sit on top of each other, so the sky the LSTs see
-        is *inside* the sky the MSTs see. Adding the LSTs back buys no new
-        sky, just multiplicity, the "both" row's mean is higher because four
-        more telescopes are piled onto a patch the MSTs already watch.
+    **At low divergence, the MST row and the "both" row report the same
+    area.** Not a coincidence: an MST camera is wider than an LST one,
+    and the two types sit on top of each other, so the sky the LSTs see
+    is *inside* the sky the MSTs see. Adding the LSTs back buys no new
+    sky, just multiplicity, the "both" row's mean is higher because four
+    more telescopes are piled onto a patch the MSTs already watch.
 
-        Worth knowing before quoting a hyper FoV for a mixed array: the
-        number is set by the widest camera. Narrow-camera telescopes add
-        depth, not width, and area alone won't show that.
+    Worth knowing before quoting a hyper FoV for a mixed array: the
+    number is set by the widest camera. Narrow-camera telescopes add
+    depth, not width, and area alone won't show that.
 
-        **One `div` doesn't mean one angle.** A telescope's divergence angle
-        is set by how far it sits from the array centre, across the pointing
-        axis:
+    **One `div` doesn't mean one angle.** A telescope's divergence angle
+    is set by how far it sits from the array centre, across the pointing
+    axis:
 
-        $$\alpha_i = \arctan\frac{|r_{\perp,i}|}{\text{norm} + r_{\parallel,i}}$$
+    $$\alpha_i = \arctan\frac{|r_{\perp,i}|}{\text{norm} + r_{\parallel,i}}$$
 
-        The LSTs cluster near the centre; the MSTs run out past 300 m. At
-        `div = 0.02` the LSTs swing between 0.5 and 1.4 degrees off the mean
-        pointing, the MSTs between 0.5 and 3.7, roughly two and a half times
-        the angle on the same knob.
+    The LSTs cluster near the centre; the MSTs run out past 300 m. At
+    `div = 0.02` the LSTs swing between 0.5 and 1.4 degrees off the mean
+    pointing, the MSTs between 0.5 and 3.7, roughly two and a half times
+    the angle on the same knob.
 
-        The consequence is easy to guess wrong. It does *not* follow that
-        the MSTs lose stereo overlap first: their camera is also the wider
-        one, 3.84 degrees of radius against 2.15. The bigger swing and the
-        bigger camera partly cancel out, so both types thin to multiplicity
-        one at a similar `div`, around 0.08 to 0.1 here, even though the
-        angular spread stays roughly two and a half times apart the whole
-        way.
-        """
-    )
+    The consequence is easy to guess wrong. It does *not* follow that
+    the MSTs lose stereo overlap first: their camera is also the wider
+    one, 3.84 degrees of radius against 2.15. The bigger swing and the
+    bigger camera partly cancel out, so both types thin to multiplicity
+    one at a similar `div`, around 0.08 to 0.1 here, even though the
+    angular spread stays roughly two and a half times apart the whole
+    way.
+    """)
     return
 
 
 @app.cell(hide_code=True)
-def _(ARRAY, TYPES, plt, u):
+def _(ARRAY_N, TYPES_N, plt, u):
     def _spread():
         divs = [0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.3]
-        curves = {name: [] for name in TYPES}
+        curves = {name: [] for name in TYPES_N}
         for value in divs:
-            ARRAY.divergent_pointing(value, 70 * u.deg, 180 * u.deg)
-            for name, group in ARRAY.group_by(TYPES).items():
+            ARRAY_N.divergent_pointing(value, 70 * u.deg, 180 * u.deg)
+            for name, group in ARRAY_N.group_by(TYPES_N).items():
                 curves[name].append(group.hyper_fov()[0].to_value(u.deg**2))
 
         fig, ax = plt.subplots(figsize=(7, 4.5))
@@ -216,20 +224,123 @@ def _(ARRAY, TYPES, plt, u):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(
-        r"""
-        The two curves never meet. As `div` goes to zero, each type collapses
-        onto a single camera, so the gap bottoms out at the ratio of the two
-        camera areas, about 3.2. The MST curve then pulls away, reaching
-        roughly seven times the LST area by `div = 0.3`, and both flatten
-        once every telescope sees its own patch of sky, no more area to win.
+    mo.md(r"""
+    The two curves never meet. As `div` goes to zero, each type collapses
+    onto a single camera, so the gap bottoms out at the ratio of the two
+    camera areas, about 3.2. The MST curve then pulls away, reaching
+    roughly seven times the LST area by `div = 0.3`, and both flatten
+    once every telescope sees its own patch of sky, no more area to win.
 
-        To make the two types diverge by comparable *angles* instead of a
-        shared `div`, group the array and point each group on its own. Each
-        sub-array is a full `Array`, with its own barycenter and its own
-        `divergent_pointing`.
-        """
+    To make the two types diverge by comparable *angles* instead of a
+    shared `div`, group the array and point each group on its own. Each
+    sub-array is a full `Array`, with its own barycenter and its own
+    `divergent_pointing`.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## South: Paranal, MST + SST
+
+    Paranal pairs the same idea with a different pair of instruments:
+    14 Medium-Sized Telescopes sit inside 37 Small-Sized ones. The SST
+    mirror is by far the smaller of the two, but its focal length is
+    also much shorter, so its camera ends up covering the wider patch
+    of sky: about 4.4 degrees of radius against 3.75 for the MST. Same
+    shape as La Palma — the outer, more numerous subarray carries the
+    wider camera — but the two cameras here are much closer in size.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(files, load_array):
+    ARRAY_S = load_array(
+        files("divtel") / "data" / "cta-south-paranal-alpha-prod6.ecsv"
     )
+    TYPES_S = {"MST": range(1, 15), "SST": range(15, 52)}
+    return ARRAY_S, TYPES_S
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    div_s = mo.ui.slider(
+        0, 0.3, step=0.005, value=0.02, label="divergence", show_value=True,
+        full_width=True,
+    )
+    alt_s = mo.ui.slider(
+        20, 90, step=1, value=70, label="altitude [deg]", show_value=True,
+        full_width=True,
+    )
+    mo.vstack([div_s, alt_s])
+    return alt_s, div_s
+
+
+@app.cell(hide_code=True)
+def _(ARRAY_S, TYPES_S, alt_s, div_s, u):
+    ARRAY_S.divergent_pointing(div_s.value, alt_s.value * u.deg, 180 * u.deg)
+    GROUPS_S = ARRAY_S.group_by(TYPES_S)
+    return (GROUPS_S,)
+
+
+@app.cell(hide_code=True)
+def _(ARRAY_S, GROUPS_S, display_groups, display_hyper_fov, plt):
+    def _both_views():
+        fig, (ground, sky) = plt.subplots(1, 2, figsize=(11, 5))
+        display_groups(GROUPS_S, ax=ground)
+        display_hyper_fov(ARRAY_S, ax=sky)
+        ground.set_title("on the ground")
+        fig.tight_layout()
+        return fig
+
+    _both_views()
+    return
+
+
+@app.cell(hide_code=True)
+def _(ARRAY_S, GROUPS_S, mo, u):
+    def _summary():
+        rows = []
+        for name, group in list(GROUPS_S.items()) + [("both", ARRAY_S)]:
+            area = group.hyper_fov()[0].to_value(u.deg**2)
+            mean, _ = group.multiplicity_moments()
+            rows.append(
+                f"| {name} | {len(group.telescopes)} | {area:.1f} | {mean:.2f} |"
+            )
+        return mo.md(
+            "| | telescopes | hyper FoV [deg²] | mean multiplicity |\n"
+            "|---|---|---|---|\n" + "\n".join(rows)
+        )
+
+    _summary()
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Same phenomenon, smaller effect
+
+    The "both" row still tracks the wider camera: at `div = 0.02` it
+    matches the SST row almost exactly, for the same reason as at La
+    Palma — the MSTs' narrower sky sits inside the SSTs' wider one, so
+    folding them in only adds multiplicity, not area.
+
+    The angles tell a similar story. At `div = 0.02` the MSTs swing
+    between 0.2 and 3.7 degrees off the mean pointing, the SSTs between
+    1.9 and 11.1 — roughly three times the spread, echoing the LST/MST
+    split at La Palma even though the telescopes are different.
+
+    Where Paranal actually differs: because the two camera sizes are
+    close (4.4 vs 3.75 degrees, against 3.84 vs 2.15 at La Palma), the
+    area gap between MST and SST is muted and *not* monotonic. It
+    grows from about 2.2x at `div = 0.005` to a peak near 4.8x around
+    `div = 0.05`, then falls back to about 3.6x once both subarrays
+    saturate — MST and SST both reach mean multiplicity 1 at the same
+    `div ≈ 0.1`. La Palma's gap only ever grows, plateauing at 7x.
+    """)
     return
 
 
