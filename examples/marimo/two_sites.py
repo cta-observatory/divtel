@@ -157,8 +157,8 @@ def _(NORTH, POINTED, SOUTH, display_hyper_fov, plt):
         north_ground.set_title("North, on the ground")
         south_ground.set_title("South, on the ground")
 
-        display_hyper_fov(NORTH, ax=north_sky, min_telescopes=1)
-        display_hyper_fov(SOUTH, ax=south_sky, min_telescopes=1)
+        display_hyper_fov(NORTH, ax=north_sky)
+        display_hyper_fov(SOUTH, ax=south_sky)
         north_sky.set_title("North: " + north_sky.get_title())
         south_sky.set_title("South: " + south_sky.get_title())
 
@@ -172,10 +172,13 @@ def _(NORTH, POINTED, SOUTH, display_hyper_fov, plt):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    South's hyper FoV runs roughly ten times North's at the same `div`
-    and altitude. Four times the telescope count, cameras up to five
-    times wider, and the two effects compound rather than add: an order
-    of magnitude more sky.
+    South's stereo hyper FoV runs roughly five times North's at the same
+    `div` and altitude — real, but well short of what four times the
+    telescope count and up to five times the camera width would suggest
+    if the two just multiplied together. Requiring two telescopes to
+    overlap cuts hardest at an array's sparse edges, and that's exactly
+    where the wider SST cameras would otherwise buy the most extra sky
+    for free.
 
     South also starts from a higher mean
     multiplicity at the same `div`. Stack discs from 51 telescopes

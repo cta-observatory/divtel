@@ -251,11 +251,11 @@ def _(ARRAY, MIDNIGHT, TARGET, display_hyper_fov, div, hour, mo, plt, u):
             )
 
         ARRAY.divergent_pointing(div.value, alt, az)
-        area = ARRAY.hyper_fov(min_telescopes=1)[0]
+        area = ARRAY.hyper_fov()[0]
         mean, _ = ARRAY.multiplicity_moments()
 
         fig, ax = plt.subplots(figsize=(6.5, 5.5))
-        display_hyper_fov(ARRAY, ax=ax, min_telescopes=1)
+        display_hyper_fov(ARRAY, ax=ax)
         fig.tight_layout()
 
         return mo.hstack([
@@ -285,7 +285,7 @@ def _(ARRAY, MIDNIGHT, TARGET, div, np, plt, source, u):
                 continue
             ARRAY.divergent_pointing(div.value, alt, az)
             times.append(offset)
-            areas.append(ARRAY.hyper_fov(min_telescopes=1)[0].to_value(u.deg**2))
+            areas.append(ARRAY.hyper_fov()[0].to_value(u.deg**2))
             means.append(ARRAY.multiplicity_moments()[0])
 
         fig, ax = plt.subplots(figsize=(9, 4.5))
