@@ -107,10 +107,10 @@ def _(ALTITUDES, ARRAY, AZIMUTH, DIVS, np, u):
         multiplicity = np.zeros_like(gain)
         for i, alt in enumerate(ALTITUDES):
             ARRAY.divergent_pointing(0.0, alt * u.deg, AZIMUTH * u.deg)
-            parallel = ARRAY.hyper_fov(m_cut=2)[0].to_value(u.deg**2)
+            parallel = ARRAY.hyper_fov(min_telescopes=2)[0].to_value(u.deg**2)
             for j, div in enumerate(DIVS):
                 ARRAY.divergent_pointing(div, alt * u.deg, AZIMUTH * u.deg)
-                area, patches = ARRAY.hyper_fov(m_cut=2)
+                area, patches = ARRAY.hyper_fov(min_telescopes=2)
                 gain[i, j] = area.to_value(u.deg**2) / parallel
                 multiplicity[i, j] = ARRAY.multiplicity_moments(patches=patches)[0]
         return gain, multiplicity
@@ -324,7 +324,7 @@ def _(ARRAY, Observation, SkyCoord, floor, np, run, target, u):
                     continue
 
                 ARRAY.divergent_pointing(0.0, alt, az)
-                parallel_area, parallel_patches = ARRAY.hyper_fov(m_cut=2)
+                parallel_area, parallel_patches = ARRAY.hyper_fov(min_telescopes=2)
                 parallel = parallel_area.to_value(u.deg**2)
 
                 # Walk up the divergences until the target is met, then
@@ -335,7 +335,7 @@ def _(ARRAY, Observation, SkyCoord, floor, np, run, target, u):
                 last_mean = ARRAY.multiplicity_moments(patches=parallel_patches)[0]
                 for div in divs:
                     ARRAY.divergent_pointing(div, alt, az)
-                    area, patches = ARRAY.hyper_fov(m_cut=2)
+                    area, patches = ARRAY.hyper_fov(min_telescopes=2)
                     gain = area.to_value(u.deg**2) / parallel
                     mean = ARRAY.multiplicity_moments(patches=patches)[0]
 

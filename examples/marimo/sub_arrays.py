@@ -162,16 +162,22 @@ def _(mo):
     mo.md(r"""
     ### Two things to notice
 
-    **At low divergence, the MST row and the "both" row report the same
-    area.** Not a coincidence: an MST camera is wider than an LST one,
-    and the two types sit on top of each other, so the sky the LSTs see
-    is *inside* the sky the MSTs see. Adding the LSTs back buys no new
-    sky, just multiplicity, the "both" row's mean is higher because four
-    more telescopes are piled onto a patch the MSTs already watch.
+    **Hyper FoV here means stereo FoV.** `hyper_fov` only counts sky seen
+    by two or more telescopes by default, since a shower only one
+    telescope sees can't be reconstructed stereoscopically. That is why
+    every row in the table above rises with `div` at first, then falls
+    back towards zero: past some divergence, overlap runs out.
 
-    Worth knowing before quoting a hyper FoV for a mixed array: the
-    number is set by the widest camera. Narrow-camera telescopes add
-    depth, not width, and area alone won't show that.
+    **Mixing types buys back overlap the wider camera alone can't.** At
+    low `div` the "both" row simply tracks the MSTs, the wider camera,
+    same as before. But push `div` past the point where the MSTs stop
+    overlapping *each other* and the picture changes: an MST and an LST
+    can still share a patch of sky even when no two MSTs do. At
+    `div = 0.1` the MSTs alone are down to 4.6 deg², yet the full array
+    still covers 19.5 deg², over four times as much, entirely from
+    LST-MST pairs. At `div = 0.12` the MSTs alone are essentially gone
+    (0.7 deg²) while the full array still holds 5.1 deg². Cross-type
+    stereo is what keeps the array useful in that gap.
 
     **One `div` doesn't mean one angle.** A telescope's divergence angle
     is set by how far it sits from the array centre, across the pointing
@@ -198,22 +204,23 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(ARRAY_N, TYPES_N, plt, u):
     def _spread():
-        divs = [0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.3]
-        curves = {name: [] for name in TYPES_N}
+        divs = [0.005, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.08, 0.1, 0.12, 0.15]
+        curves = {name: [] for name in list(TYPES_N) + ["both"]}
         for value in divs:
             ARRAY_N.divergent_pointing(value, 70 * u.deg, 180 * u.deg)
             for name, group in ARRAY_N.group_by(TYPES_N).items():
                 curves[name].append(group.hyper_fov()[0].to_value(u.deg**2))
+            curves["both"].append(ARRAY_N.hyper_fov()[0].to_value(u.deg**2))
 
+        # Linear, not log: the stereo area actually reaches zero, which a
+        # log axis can't show.
         fig, ax = plt.subplots(figsize=(7, 4.5))
         for name, areas in curves.items():
             ax.plot(divs, areas, marker="o", label=name)
-        ax.set_xscale("log")
-        ax.set_yscale("log")
         ax.set_xlabel("div")
-        ax.set_ylabel("hyper FoV [deg$^2$]")
-        ax.set_title("the two types respond to div differently")
-        ax.grid(True, which="both", alpha=0.3)
+        ax.set_ylabel("stereo hyper FoV [deg$^2$]")
+        ax.set_title("overlap rises, then runs out")
+        ax.grid(True, alpha=0.3)
         ax.legend(frameon=False)
         fig.tight_layout()
         return fig
@@ -225,11 +232,15 @@ def _(ARRAY_N, TYPES_N, plt, u):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The two curves never meet. As `div` goes to zero, each type collapses
-    onto a single camera, so the gap bottoms out at the ratio of the two
-    camera areas, about 3.2. The MST curve then pulls away, reaching
-    roughly seven times the LST area by `div = 0.3`, and both flatten
-    once every telescope sees its own patch of sky, no more area to win.
+    Every curve rises, peaks, then falls back to zero, and they peak in
+    the order you'd expect from how tightly each type is packed: the
+    LSTs, closest together, peak first and lowest, around 17 deg² near
+    `div = 0.02`; the MSTs peak later and higher, around 127 deg² near
+    `div = 0.04`. The "both" curve tracks the MSTs closely up to their
+    peak, then pulls ahead of them, held up by cross-type pairs alone
+    while the MST-only curve keeps falling. By `div = 0.15` every curve
+    is at zero: no two telescopes anywhere in the array still share a
+    patch of sky.
 
     To make the two types diverge by comparable *angles* instead of a
     shared `div`, group the array and point each group on its own. Each
@@ -319,27 +330,61 @@ def _(ARRAY_S, GROUPS_S, mo, u):
 
 
 @app.cell(hide_code=True)
+def _(ARRAY_S, TYPES_S, plt, u):
+    def _spread():
+        divs = [0.005, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.08, 0.1, 0.12, 0.15]
+        curves = {name: [] for name in list(TYPES_S) + ["both"]}
+        for value in divs:
+            ARRAY_S.divergent_pointing(value, 70 * u.deg, 180 * u.deg)
+            for name, group in ARRAY_S.group_by(TYPES_S).items():
+                curves[name].append(group.hyper_fov()[0].to_value(u.deg**2))
+            curves["both"].append(ARRAY_S.hyper_fov()[0].to_value(u.deg**2))
+
+        fig, ax = plt.subplots(figsize=(7, 4.5))
+        for name, areas in curves.items():
+            ax.plot(divs, areas, marker="o", label=name)
+        ax.set_xlabel("div")
+        ax.set_ylabel("stereo hyper FoV [deg$^2$]")
+        ax.set_title("overlap rises, then runs out")
+        ax.grid(True, alpha=0.3)
+        ax.legend(frameon=False)
+        fig.tight_layout()
+        return fig
+
+    _spread()
+    return
+
+
+@app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ### Same phenomenon, smaller effect
+    ### Cross-type pairs matter even more here
 
-    The "both" row still tracks the wider camera: at `div = 0.02` it
-    matches the SST row almost exactly, for the same reason as at La
-    Palma — the MSTs' narrower sky sits inside the SSTs' wider one, so
-    folding them in only adds multiplicity, not area.
+    Same rise-then-collapse shape as La Palma, just bigger and faster:
+    the SSTs, more numerous and wider-eyed, peak around 698 deg² near
+    `div = 0.03`; the MSTs peak lower, around 174 deg², a bit later,
+    near `div = 0.05`.
+
+    At `div = 0.02` the "both" row still matches the SST row almost
+    exactly, same reason as at La Palma: the MSTs' narrower sky sits
+    inside the SSTs' wider one, so folding the MSTs in adds
+    multiplicity, not area, while both curves are still climbing.
 
     The angles tell a similar story. At `div = 0.02` the MSTs swing
     between 0.2 and 3.7 degrees off the mean pointing, the SSTs between
     1.9 and 11.1 — roughly three times the spread, echoing the LST/MST
     split at La Palma even though the telescopes are different.
 
-    Where Paranal actually differs: because the two camera sizes are
-    close (4.4 vs 3.75 degrees, against 3.84 vs 2.15 at La Palma), the
-    area gap between MST and SST is muted and *not* monotonic. It
-    grows from about 2.2x at `div = 0.005` to a peak near 4.8x around
-    `div = 0.05`, then falls back to about 3.6x once both subarrays
-    saturate — MST and SST both reach mean multiplicity 1 at the same
-    `div ≈ 0.1`. La Palma's gap only ever grows, plateauing at 7x.
+    Push `div` further and cross-type pairs carry far more of the
+    coverage here than at La Palma. At `div = 0.1` the MSTs no longer
+    overlap each other at all, and the SSTs are down to 1.7 deg², yet
+    the full array still covers 65 deg² — essentially all of it from
+    MST-SST pairs. At `div = 0.12` neither type overlaps itself at all,
+    and the mixed array still holds 26 deg²: the entire remaining
+    stereo field of view comes from telescopes of different types
+    seeing the same patch. With 51 telescopes of two very differently
+    sized cameras to pair up, Paranal keeps a usable stereo field far
+    past the point where either subarray alone has given out.
     """)
     return
 

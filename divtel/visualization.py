@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def display_hyper_fov(array, ax=None, m_cut=1, cmap="viridis", show_area=True):
+def display_hyper_fov(array, ax=None, min_telescopes=2, cmap="viridis", show_area=True):
     """
     Display the array's hyper field of view on the sky.
 
@@ -18,9 +18,10 @@ def display_hyper_fov(array, ax=None, m_cut=1, cmap="viridis", show_area=True):
     ----------
     array: `Array`
     ax: `matplotlib.pyplot.axes`, optional
-    m_cut: int
+    min_telescopes: int
         multiplicity counted towards the area reported in the title; patches
-        below it are still drawn, faded.
+        below it are still drawn, faded. The default, 2, reports the
+        stereoscopic area; pass 1 for the whole covered area.
     cmap: str
         colormap used to shade multiplicity
     show_area: bool
@@ -42,7 +43,7 @@ def display_hyper_fov(array, ax=None, m_cut=1, cmap="viridis", show_area=True):
 
     ax = plt.gca() if ax is None else ax
 
-    area, patches = array.hyper_fov(m_cut=m_cut)
+    area, patches = array.hyper_fov(min_telescopes=min_telescopes)
     if not patches:
         raise ValueError("the array covers no sky; are the telescopes pointed?")
 
@@ -69,7 +70,7 @@ def display_hyper_fov(array, ax=None, m_cut=1, cmap="viridis", show_area=True):
     ax.add_collection(collection)
 
     for patch, multiplicity in patches:
-        if multiplicity < m_cut:
+        if multiplicity < min_telescopes:
             x, y = patch.exterior.xy
             ax.fill(x, y, facecolor="white", alpha=0.55, edgecolor="none", zorder=2)
 
@@ -85,13 +86,13 @@ def display_hyper_fov(array, ax=None, m_cut=1, cmap="viridis", show_area=True):
     colourbar.ax.set_yticklabels([str(i) for i in range(1, m_max + 1)])
 
     if show_area:
-        label = "covered" if m_cut <= 1 else f"seen by $\\geq${m_cut}"
+        label = "covered" if min_telescopes <= 1 else f"seen by $\\geq${min_telescopes}"
         ax.set_title(f"hyper FoV: {area.value:.1f} deg$^2$ {label}")
 
     return ax
 
 
-def multiplicity_plot(array, m_cut=1, ax=None, cmap="viridis"):
+def multiplicity_plot(array, min_telescopes=2, ax=None, cmap="viridis"):
     """
     Bar chart of how much sky is seen by how many telescopes.
 
@@ -102,9 +103,10 @@ def multiplicity_plot(array, m_cut=1, ax=None, cmap="viridis"):
     Parameters
     ----------
     array: `Array`
-    m_cut: int
+    min_telescopes: int
         multiplicity counted towards the area reported in the title; bars below
-        it are still drawn, faded
+        it are still drawn, faded. The default, 2, reports the stereoscopic
+        area; pass 1 for the whole covered area.
     ax: `matplotlib.pyplot.axes`, optional
     cmap: str
         colormap used to shade multiplicity, as in `display_hyper_fov`
@@ -120,7 +122,7 @@ def multiplicity_plot(array, m_cut=1, ax=None, cmap="viridis"):
     """
     from matplotlib.colors import BoundaryNorm
 
-    area, patches = array.hyper_fov(m_cut=m_cut)
+    area, patches = array.hyper_fov(min_telescopes=min_telescopes)
     if not patches:
         raise ValueError("the array covers no sky; are the telescopes pointed?")
 
@@ -141,10 +143,10 @@ def multiplicity_plot(array, m_cut=1, ax=None, cmap="viridis"):
                   edgecolor="black", linewidth=0.5)
 
     for bar, m in zip(bars, multiplicity, strict=True):
-        if m < m_cut:
+        if m < min_telescopes:
             bar.set_alpha(0.25)
 
-    label = "covered" if m_cut <= 1 else rf"seen by $\geq${m_cut}"
+    label = "covered" if min_telescopes <= 1 else rf"seen by $\geq${min_telescopes}"
     ax.set_title(f"hyper FoV: {area.value:.1f} deg$^2$ {label}\n"
                  rf"multiplicity {mean:.1f} $\pm$ {np.sqrt(variance):.1f}")
     ax.set_xlabel("multiplicity")

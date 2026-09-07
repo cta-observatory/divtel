@@ -192,7 +192,7 @@ def _(display_hyper_fov, np, plt, pointed, u):
         ax3d.set_zlabel("z [m]")
         ax3d.set_title("pointing on the ground")
 
-        display_hyper_fov(array, ax=ax_fov, m_cut=2)
+        display_hyper_fov(array, ax=ax_fov, min_telescopes=2)
         return fig
 
     _plot_sky(pointed)
