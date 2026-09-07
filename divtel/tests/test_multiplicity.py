@@ -42,7 +42,9 @@ def la_palma():
 
 def test_the_profile_accounts_for_all_the_covered_sky(square_array):
     square_array.divergent_pointing(0.05, 70 * u.deg, 180 * u.deg)
-    area, _ = square_array.hyper_fov()
+    # min_telescopes=1: the profile covers single-telescope sky too, so it
+    # has to be compared against the whole covered area, not the stereo one.
+    area, _ = square_array.hyper_fov(min_telescopes=1)
 
     _, per_multiplicity = square_array.multiplicity_profile()
 
@@ -89,7 +91,10 @@ def test_area_and_multiplicity_pull_against_each_other(square_array):
     areas, means = [], []
     for div in [0, 0.02, 0.05, 0.1]:
         square_array.divergent_pointing(div, 70 * u.deg, 180 * u.deg)
-        areas.append(square_array.hyper_fov()[0].to_value(u.deg ** 2))
+        # min_telescopes=1: the whole covered area only ever grows with
+        # divergence; the stereo area (the default) does not, since it
+        # eventually loses overlap altogether.
+        areas.append(square_array.hyper_fov(min_telescopes=1)[0].to_value(u.deg ** 2))
         means.append(square_array.multiplicity_moments()[0])
 
     assert areas == sorted(areas)
@@ -166,7 +171,7 @@ def test_multiplicity_plot_bar_heights_are_the_profile(la_palma):
 def test_multiplicity_plot_fades_the_bars_below_the_cut(la_palma):
     la_palma.divergent_pointing(0.05, 70 * u.deg, 180 * u.deg)
 
-    ax = multiplicity_plot(la_palma, m_cut=3)
+    ax = multiplicity_plot(la_palma, min_telescopes=3)
 
     faded = [bar.get_alpha() for bar in ax.patches[:2]]
     kept = [bar.get_alpha() for bar in ax.patches[2:]]
@@ -176,9 +181,9 @@ def test_multiplicity_plot_fades_the_bars_below_the_cut(la_palma):
 
 def test_multiplicity_plot_reports_the_area_above_the_cut(la_palma):
     la_palma.divergent_pointing(0.05, 70 * u.deg, 180 * u.deg)
-    above_cut, _ = la_palma.hyper_fov(m_cut=3)
+    above_cut, _ = la_palma.hyper_fov(min_telescopes=3)
 
-    ax = multiplicity_plot(la_palma, m_cut=3)
+    ax = multiplicity_plot(la_palma, min_telescopes=3)
 
     assert f"{above_cut.value:.1f}" in ax.get_title()
     assert r"seen by $\geq$3" in ax.get_title()

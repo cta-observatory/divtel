@@ -157,8 +157,8 @@ def _(NORTH, POINTED, SOUTH, display_hyper_fov, plt):
         north_ground.set_title("North, on the ground")
         south_ground.set_title("South, on the ground")
 
-        display_hyper_fov(NORTH, ax=north_sky)
-        display_hyper_fov(SOUTH, ax=south_sky)
+        display_hyper_fov(NORTH, ax=north_sky, min_telescopes=1)
+        display_hyper_fov(SOUTH, ax=south_sky, min_telescopes=1)
         north_sky.set_title("North: " + north_sky.get_title())
         south_sky.set_title("South: " + south_sky.get_title())
 

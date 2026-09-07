@@ -390,7 +390,7 @@ class Array:
                 alt_tel, az_tel = pointing.tel_div_pointing(tel.position, g_point)
                 tel.point_to_altaz(np.maximum(alt_tel, 0 * u.rad), az_tel)
 
-    def hyper_fov(self, m_cut=1, rim_points=128, centre=None):
+    def hyper_fov(self, min_telescopes=2, rim_points=128, centre=None):
         """
         Hyper field of view: the sky area covered by the array's cameras.
 
@@ -417,10 +417,12 @@ class Array:
 
         Parameters
         ----------
-        m_cut: int
-            only count patches seen by at least this many telescopes.
-            The default of 1 measures the whole covered area; 2 measures the
-            part that can be reconstructed stereoscopically.
+        min_telescopes: int
+            only count patches seen by at least this many telescopes. The
+            default, 2, is the smallest multiplicity a shower can be
+            reconstructed stereoscopically from -- sky seen by a single
+            telescope doesn't give a stereo reconstruction, so it isn't
+            counted. Pass 1 to measure the whole covered area instead.
         rim_points: int
             number of points sampled around each camera's rim. The default is
             accurate to about 0.01% of a disc's area.
@@ -436,7 +438,8 @@ class Array:
         Returns
         -------
         area: `astropy.Quantity`
-            covered area in deg**2, counting only patches above `m_cut`
+            covered area in deg**2, counting only patches at or above
+            `min_telescopes`
         patches: list of (`shapely.Polygon`, int)
             each patch and the number of telescopes seeing it. x is degrees of
             offset in azimuth from the array's mean pointing, y degrees of
@@ -513,7 +516,7 @@ class Array:
             if multiplicity > 0:
                 labelled.append((patch, multiplicity))
 
-        area = sum(p.area for p, m in labelled if m >= m_cut)
+        area = sum(p.area for p, m in labelled if m >= min_telescopes)
         return u.Quantity(area, u.deg ** 2), labelled
 
     def multiplicity_profile(self, patches=None):
@@ -583,9 +586,10 @@ class Array:
         solid angle divided by the sky it covers.
 
         The average runs over the sky the array sees, not the whole sky -- see
-        `multiplicity_profile`. It also ignores `m_cut`: `hyper_fov` applies
-        that only to the area it returns, never to the patch list, so patches
-        from a cut run give the same answer as patches from an uncut one.
+        `multiplicity_profile`. It also ignores `min_telescopes`: `hyper_fov`
+        applies that only to the area it returns, never to the patch list, so
+        patches from a cut run give the same answer as patches from an uncut
+        one.
 
         Parameters
         ----------

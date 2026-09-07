@@ -129,7 +129,7 @@ def _(ARRAY_N, GROUPS_N, display_groups, display_hyper_fov, plt):
     def _both_views():
         fig, (ground, sky) = plt.subplots(1, 2, figsize=(11, 5))
         display_groups(GROUPS_N, ax=ground)
-        display_hyper_fov(ARRAY_N, ax=sky)
+        display_hyper_fov(ARRAY_N, ax=sky, min_telescopes=1)
         ground.set_title("on the ground")
         fig.tight_layout()
         return fig
@@ -143,7 +143,7 @@ def _(ARRAY_N, GROUPS_N, mo, u):
     def _summary():
         rows = []
         for name, group in list(GROUPS_N.items()) + [("both", ARRAY_N)]:
-            area = group.hyper_fov()[0].to_value(u.deg**2)
+            area = group.hyper_fov(min_telescopes=1)[0].to_value(u.deg**2)
             mean, _ = group.multiplicity_moments()
             rows.append(
                 f"| {name} | {len(group.telescopes)} | {area:.1f} | {mean:.2f} |"
@@ -203,7 +203,7 @@ def _(ARRAY_N, TYPES_N, plt, u):
         for value in divs:
             ARRAY_N.divergent_pointing(value, 70 * u.deg, 180 * u.deg)
             for name, group in ARRAY_N.group_by(TYPES_N).items():
-                curves[name].append(group.hyper_fov()[0].to_value(u.deg**2))
+                curves[name].append(group.hyper_fov(min_telescopes=1)[0].to_value(u.deg**2))
 
         fig, ax = plt.subplots(figsize=(7, 4.5))
         for name, areas in curves.items():
@@ -290,7 +290,7 @@ def _(ARRAY_S, GROUPS_S, display_groups, display_hyper_fov, plt):
     def _both_views():
         fig, (ground, sky) = plt.subplots(1, 2, figsize=(11, 5))
         display_groups(GROUPS_S, ax=ground)
-        display_hyper_fov(ARRAY_S, ax=sky)
+        display_hyper_fov(ARRAY_S, ax=sky, min_telescopes=1)
         ground.set_title("on the ground")
         fig.tight_layout()
         return fig
@@ -304,7 +304,7 @@ def _(ARRAY_S, GROUPS_S, mo, u):
     def _summary():
         rows = []
         for name, group in list(GROUPS_S.items()) + [("both", ARRAY_S)]:
-            area = group.hyper_fov()[0].to_value(u.deg**2)
+            area = group.hyper_fov(min_telescopes=1)[0].to_value(u.deg**2)
             mean, _ = group.multiplicity_moments()
             rows.append(
                 f"| {name} | {len(group.telescopes)} | {area:.1f} | {mean:.2f} |"
