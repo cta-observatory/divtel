@@ -1,0 +1,63 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "divtel"
+version: "1.0.0"
+date-released: "2022-01-01"
+license: "MIT"
+repository-code: "https://github.com/cta-observatory/divtel"
+url: "https://github.com/cta-observatory/divtel"
+abstract: "Divergent pointing mode for Imaging Atmospheric Cherenkov Telescopes arrays"
+keywords:
+  - Astronomy
+  - Python
+authors:
+  - family-names: "Vuillaume"
+    given-names: "Thomas"
+    orcid: "https://orcid.org/0000-0002-5686-2078"
+    email: "thomas.vuillaume@lapp.in2p3.fr"
+    affiliation: "Univ. Savoie Mont-Blanc, CNRS, LAPP"
+  - family-names: "Tak"
+    given-names: "Donggeun"
+    orcid: "https://orcid.org/0000-0002-9852-2469"
+    email: "donggeun.tak@gmail.com"
+    affiliation: "DESY, Zeuthen"
+  - family-names: "Donini"
+    given-names: "Alice"
+    orcid: "https://orcid.org/0000-0002-3066-724X"
+    email: "alice.donini@inaf.it"
+    affiliation: "INAF, Astronomical Observatory of Rome"
+  - family-names: "Gasparetto"
+    given-names: "Thomas"
+    orcid: "https://orcid.org/0000-0002-7913-4866"
+  - family-names: "Burelli"
+    given-names: "Irene"
+    orcid: "https://orcid.org/0000-0002-8383-2202"
+
+contact:
+  - family-names: "Vuillaume"
+    given-names: "Thomas"
+    orcid: "https://orcid.org/0000-0002-5686-2078"
+    email: "thomas.vuillaume@lapp.in2p3.fr"
+
+preferred-citation:
+  type: software
+  title: "divtel"
+  authors:
+    - family-names: "Vuillaume"
+      given-names: "Thomas"
+      orcid: "https://orcid.org/0000-0002-5686-2078"
+    - family-names: "Tak"
+      given-names: "Donggeun"
+      orcid: "https://orcid.org/0000-0002-9852-2469"
+    - family-names: "Donini"
+      given-names: "Alice"
+      orcid: "https://orcid.org/0000-0002-3066-724X"
+    - family-names: "Gasparetto"
+      given-names: "Thomas"
+      orcid: "https://orcid.org/0000-0002-7913-4866"
+    - family-names: "Burelli"
+      given-names: "Irene"
+      orcid: "https://orcid.org/0000-0002-8383-2202"
+  version: "1.0.0"
+  date-released: "2022-01-01"
+  url: "https://github.com/cta-observatory/divtel"
