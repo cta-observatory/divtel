@@ -330,9 +330,40 @@ def _(ARRAY_S, GROUPS_S, mo, u):
 
 
 @app.cell(hide_code=True)
+def _(ARRAY_S, TYPES_S, plt, u):
+    def _spread():
+        divs = [0.005, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.08, 0.1, 0.12, 0.15]
+        curves = {name: [] for name in list(TYPES_S) + ["both"]}
+        for value in divs:
+            ARRAY_S.divergent_pointing(value, 70 * u.deg, 180 * u.deg)
+            for name, group in ARRAY_S.group_by(TYPES_S).items():
+                curves[name].append(group.hyper_fov()[0].to_value(u.deg**2))
+            curves["both"].append(ARRAY_S.hyper_fov()[0].to_value(u.deg**2))
+
+        fig, ax = plt.subplots(figsize=(7, 4.5))
+        for name, areas in curves.items():
+            ax.plot(divs, areas, marker="o", label=name)
+        ax.set_xlabel("div")
+        ax.set_ylabel("stereo hyper FoV [deg$^2$]")
+        ax.set_title("overlap rises, then runs out")
+        ax.grid(True, alpha=0.3)
+        ax.legend(frameon=False)
+        fig.tight_layout()
+        return fig
+
+    _spread()
+    return
+
+
+@app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
     ### Cross-type pairs matter even more here
+
+    Same rise-then-collapse shape as La Palma, just bigger and faster:
+    the SSTs, more numerous and wider-eyed, peak around 698 deg² near
+    `div = 0.03`; the MSTs peak lower, around 174 deg², a bit later,
+    near `div = 0.05`.
 
     At `div = 0.02` the "both" row still matches the SST row almost
     exactly, same reason as at La Palma: the MSTs' narrower sky sits
