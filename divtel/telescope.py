@@ -390,7 +390,7 @@ class Array:
                 alt_tel, az_tel = pointing.tel_div_pointing(tel.position, g_point)
                 tel.point_to_altaz(np.maximum(alt_tel, 0 * u.rad), az_tel)
 
-    def hyper_fov(self, m_cut=1, rim_points=128):
+    def hyper_fov(self, m_cut=1, rim_points=128, centre=None):
         """
         Hyper field of view: the sky area covered by the array's cameras.
 
@@ -424,6 +424,14 @@ class Array:
         rim_points: int
             number of points sampled around each camera's rim. The default is
             accurate to about 0.01% of a disc's area.
+        centre: array-like, optional
+            unit vector to centre the projection on. The mean pointing by
+            default, which is the right choice when the array is looking at one
+            thing. Pass a direction when the patches have to line up with
+            something else drawn in its own projection -- a sky map centred on a
+            localization, say -- since two equal-area projections about
+            different points do not share coordinates, and overlaying one on the
+            other without saying so puts the telescopes in the wrong place.
 
         Returns
         -------
@@ -441,10 +449,11 @@ class Array:
         directions = self.pointing_vectors
         radii = np.array([tel.fov_radius.to_value(u.rad) for tel in self.telescopes])
 
-        # Centre the projection on the mean pointing. If the array points every
-        # which way the mean can vanish, and any direction is as good as
-        # another; the zenith is the natural choice.
-        centre = directions.mean(axis=0)
+        # Centre the projection on the mean pointing unless told otherwise. If
+        # the array points every which way the mean can vanish, and any
+        # direction is as good as another; the zenith is the natural choice.
+        centre = directions.mean(axis=0) if centre is None else np.asarray(
+            centre, dtype=float)
         norm = np.linalg.norm(centre)
         centre = centre / norm if norm > 1e-9 else np.array([0.0, 0.0, 1.0])
 
