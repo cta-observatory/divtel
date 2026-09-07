@@ -90,11 +90,15 @@ def test_default_is_stereo(hess_1):
     counted unless asked for explicitly."""
     hess_1.divergent_pointing(0.008, 70 * u.deg, 0 * u.deg)
 
-    assert hess_1.hyper_fov()[0] == hess_1.hyper_fov(min_telescopes=2)[0]
-    assert hess_1.hyper_fov()[0] < hess_1.hyper_fov(min_telescopes=1)[0]
+    default, patches_default = hess_1.hyper_fov()
+    stereo, patches_stereo = hess_1.hyper_fov(min_telescopes=2)
+    covered, patches_covered = hess_1.hyper_fov(min_telescopes=1)
+
+    assert default.to_value(u.deg**2) == pytest.approx(stereo.to_value(u.deg**2))
+    assert default < covered
 
     # The cut changes the area reported, never the patches returned.
-    assert len(hess_1.hyper_fov(min_telescopes=1)[1]) == len(hess_1.hyper_fov(min_telescopes=4)[1])
+    assert len(patches_default) == len(patches_stereo) == len(patches_covered)
 
 
 def test_patches_partition_the_covered_area(hess_1):
