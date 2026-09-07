@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="divtel: Divergent pointing mode for Imaging Atmospheric Cherenkov Telescopes arrays" href="README.html"><link rel="prev" title="Examples" href="examples.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>API documentation - divtel 1.0.1.dev9+g6a8bf9f97 documentation</title>
+        <title>API documentation - divtel 1.0.1.dev14+g2ce73e0ca documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">divtel 1.0.1.dev9+g6a8bf9f97 documentation</div></a>
+      <a href="index.html"><div class="brand">divtel 1.0.1.dev14+g2ce73e0ca documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -428,7 +428,7 @@ to cover the array.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="divtel.telescope.Array.hyper_fov">
-<span class="sig-name descname"><span class="pre">hyper_fov</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m_cut</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rim_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">128</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">centre</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.telescope.Array.hyper_fov" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">hyper_fov</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">min_telescopes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rim_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">128</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">centre</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.telescope.Array.hyper_fov" title="Link to this definition">¶</a></dt>
 <dd><p>Hyper field of view: the sky area covered by the array’s cameras.</p>
 <p>Each telescope sees a disc on the sky. Pointing divergently spreads
 those discs out, trading depth of coverage for width: where several
@@ -451,9 +451,11 @@ the sky map looks the way the telescopes actually move.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>m_cut</strong> (<em>int</em>) – only count patches seen by at least this many telescopes.
-The default of 1 measures the whole covered area; 2 measures the
-part that can be reconstructed stereoscopically.</p></li>
+<li><p><strong>min_telescopes</strong> (<em>int</em>) – only count patches seen by at least this many telescopes. The
+default, 2, is the smallest multiplicity a shower can be
+reconstructed stereoscopically from – sky seen by a single
+telescope doesn’t give a stereo reconstruction, so it isn’t
+counted. Pass 1 to measure the whole covered area instead.</p></li>
 <li><p><strong>rim_points</strong> (<em>int</em>) – number of points sampled around each camera’s rim. The default is
 accurate to about 0.01% of a disc’s area.</p></li>
 <li><p><strong>centre</strong> (<em>array-like</em><em>, </em><em>optional</em>) – unit vector to centre the projection on. The mean pointing by
@@ -467,7 +469,8 @@ other without saying so puts the telescopes in the wrong place.</p></li>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
-<li><p><strong>area</strong> (<cite>astropy.Quantity</cite>) – covered area in deg**2, counting only patches above <cite>m_cut</cite></p></li>
+<li><p><strong>area</strong> (<cite>astropy.Quantity</cite>) – covered area in deg**2, counting only patches at or above
+<cite>min_telescopes</cite></p></li>
 <li><p><strong>patches</strong> (list of (<cite>shapely.Polygon</cite>, int)) – each patch and the number of telescopes seeing it. x is degrees of
 offset in azimuth from the array’s mean pointing, y degrees of
 offset in altitude, both in the equal-area projection, so polygon
@@ -515,9 +518,10 @@ the mean falls towards one. Equivalently, since each disc contributes
 its area to every patch it covers, the mean is the array’s total camera
 solid angle divided by the sky it covers.</p>
 <p>The average runs over the sky the array sees, not the whole sky – see
-<cite>multiplicity_profile</cite>. It also ignores <cite>m_cut</cite>: <cite>hyper_fov</cite> applies
-that only to the area it returns, never to the patch list, so patches
-from a cut run give the same answer as patches from an uncut one.</p>
+<cite>multiplicity_profile</cite>. It also ignores <cite>min_telescopes</cite>: <cite>hyper_fov</cite>
+applies that only to the area it returns, never to the patch list, so
+patches from a cut run give the same answer as patches from an uncut
+one.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>patches</strong> (list of (<cite>shapely.Polygon</cite>, int), optional) – the patches from a previous <cite>hyper_fov</cite> call, to save computing them
@@ -1175,7 +1179,7 @@ has swung away from the others under divergence.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="divtel.visualization.display_hyper_fov">
-<span class="sig-prename descclassname"><span class="pre">divtel.visualization.</span></span><span class="sig-name descname"><span class="pre">display_hyper_fov</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_cut</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'viridis'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.visualization.display_hyper_fov" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">divtel.visualization.</span></span><span class="sig-name descname"><span class="pre">display_hyper_fov</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_telescopes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'viridis'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.visualization.display_hyper_fov" title="Link to this definition">¶</a></dt>
 <dd><p>Display the array’s hyper field of view on the sky.</p>
 <p>Each telescope sees a disc; divergent pointing spreads those discs out,
 widening the sky the array covers at the cost of how many telescopes see
@@ -1188,8 +1192,9 @@ cannot.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>array</strong> (<cite>Array</cite>)</p></li>
 <li><p><strong>ax</strong> (<cite>matplotlib.pyplot.axes</cite>, optional)</p></li>
-<li><p><strong>m_cut</strong> (<em>int</em>) – multiplicity counted towards the area reported in the title; patches
-below it are still drawn, faded.</p></li>
+<li><p><strong>min_telescopes</strong> (<em>int</em>) – multiplicity counted towards the area reported in the title; patches
+below it are still drawn, faded. The default, 2, reports the
+stereoscopic area; pass 1 for the whole covered area.</p></li>
 <li><p><strong>cmap</strong> (<em>str</em>) – colormap used to shade multiplicity</p></li>
 <li><p><strong>show_area</strong> (<em>bool</em>) – title the axes with the covered area</p></li>
 </ul>
@@ -1209,7 +1214,7 @@ solid angles – see <cite>Array.hyper_fov</cite>.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="divtel.visualization.multiplicity_plot">
-<span class="sig-prename descclassname"><span class="pre">divtel.visualization.</span></span><span class="sig-name descname"><span class="pre">multiplicity_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_cut</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'viridis'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.visualization.multiplicity_plot" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">divtel.visualization.</span></span><span class="sig-name descname"><span class="pre">multiplicity_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_telescopes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'viridis'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.visualization.multiplicity_plot" title="Link to this definition">¶</a></dt>
 <dd><p>Bar chart of how much sky is seen by how many telescopes.</p>
 <p><cite>display_hyper_fov</cite> shades the sky map by multiplicity, which shows where
 the well-covered parts are; this counts them up, which shows how much there
@@ -1218,8 +1223,9 @@ is of each. Bars are coloured to match that map, so the two read together.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>array</strong> (<cite>Array</cite>)</p></li>
-<li><p><strong>m_cut</strong> (<em>int</em>) – multiplicity counted towards the area reported in the title; bars below
-it are still drawn, faded</p></li>
+<li><p><strong>min_telescopes</strong> (<em>int</em>) – multiplicity counted towards the area reported in the title; bars below
+it are still drawn, faded. The default, 2, reports the stereoscopic
+area; pass 1 for the whole covered area.</p></li>
 <li><p><strong>ax</strong> (<cite>matplotlib.pyplot.axes</cite>, optional)</p></li>
 <li><p><strong>cmap</strong> (<em>str</em>) – colormap used to shade multiplicity, as in <cite>display_hyper_fov</cite></p></li>
 </ul>
@@ -1394,7 +1400,7 @@ it are still drawn, faded</p></li>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=13f7fb95"></script>
+</div><script src="_static/documentation_options.js?v=c6b11aa6"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>
