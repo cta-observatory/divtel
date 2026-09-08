@@ -1,5 +1,23 @@
 # Changelog
 
+## v1.1.0 (2026-09-08)
+
+**Hyper field of view**
+- `hyper_fov`, `display_hyper_fov` and `multiplicity_plot` rename their
+  `m_cut` argument to `min_telescopes` and default it to 2 instead of 1: sky
+  seen by only one telescope isn't stereo-reconstructable, so it no longer
+  counts by default. Pass `min_telescopes=1` to get the old behavior.
+
+**Data**
+- Fixed the South array (`cta-south-paranal-alpha-prod6.ecsv`) telescope
+  specs, which were wrong.
+
+**Docs**
+- Sub-arrays marimo notebook now covers both CTAO sites.
+- New 3D divergence-geometry marimo notebook, wired into
+  `interactive_display`.
+- `CITATION.cff` added, derived from `codemeta.json`.
+
 ## v1.0.0 (2026-08-28)
 
 First stable release. Everything below shipped since `v0.1` (April 2022).
