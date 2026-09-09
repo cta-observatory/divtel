@@ -126,8 +126,21 @@ def test_a_telescope_in_two_groups_is_rejected(la_palma):
 
 
 def test_an_unknown_grouping_rule_is_rejected(la_palma):
-    with pytest.raises(ValueError, match="dict of ids or 'camera_radius'"):
+    with pytest.raises(ValueError, match="'camera_radius' or 'fov_radius'"):
         la_palma.group_by("focal")
+
+
+def test_grouping_by_reach_finds_the_telescope_types(la_palma):
+    """
+    What a telescope sees off-axis is its camera radius over its focal length,
+    and that angle -- not the camera -- is what every pointing strategy means by
+    a telescope's type.
+    """
+    groups = la_palma.group_by("fov_radius")
+
+    assert [len(group.telescopes) for group in groups.values()] == [15, 4]
+    # Widest camera first, and named by the angle it subtends.
+    assert list(groups)[0].endswith("deg")
 
 
 def test_ids_are_telescope_ids_not_positions():

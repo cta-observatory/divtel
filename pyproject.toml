@@ -53,6 +53,15 @@ dependencies = [
 # Consumer-facing optional feature: published in the wheel metadata, so
 # `pip install divtel[examples]` works for users of the released package.
 [project.optional-dependencies]
+# Reading a published HEALPix localization. Deliberately not a hard dependency:
+# divtel models array geometry and has no business requiring a sky-map reader,
+# and `divtel.data.gw170817` ships precomputed regions for the studies that
+# need one. astropy-healpix over healpy (heavier to build, no Windows wheels)
+# and over ligo.skymap (pulls in lalsuite); the greedy credible-level algorithm
+# those would supply is five lines, and is in divtel/skymap.py.
+skymap = [
+    "astropy-healpix>=1.0",
+]
 examples = [
     "ipympl>=0.9",
     "ipywidgets>=8.0",
@@ -94,7 +103,7 @@ Issues = "https://github.com/cta-observatory/divtel/issues"
 include = ["divtel*"]
 
 [tool.setuptools.package-data]
-divtel = ["data/*.ecsv"]
+divtel = ["data/*.ecsv", "data/gw170817/*"]
 
 [tool.setuptools_scm]
 version_file = "divtel/_version.py"
