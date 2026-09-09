@@ -43,7 +43,7 @@ counts only the part still seen by at least two.
    introduction
    definitions
    ceiling
-   capabilities
+   tracking
 
 .. toctree::
    :maxdepth: 1
