@@ -61,7 +61,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    # Two sites
+    # CTAO sites
 
     CTAO has two sites, one in each hemisphere. The North site, on La Palma, is four
     Large-Sized Telescopes surrounded by nine Medium-Sized ones. The

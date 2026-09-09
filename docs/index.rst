@@ -1,3 +1,5 @@
+:hide-toc:
+
 ======
 divtel
 ======
@@ -5,28 +7,26 @@ divtel
 divtel makes toy simulations of the **divergent pointing** mode for arrays of
 Imaging Atmospheric Cherenkov Telescopes.
 
-Point an array's telescopes slightly away from one another and it sees a wider
-patch of sky, but fewer telescopes see any given part of it, and a shower
-needs two of them to be reconstructed stereoscopically. divtel lets you set up
-that trade and measure both sides of it.
+.. raw:: html
 
-.. code-block:: python
+    <div class="divtel-demo">
+      <iframe src="marimo/interactive_display/index.html"
+              title="Divergent pointing, interactive demo"
+              loading="lazy"></iframe>
+      <p class="divtel-demo__fallback">
+        <a href="marimo/interactive_display/index.html" target="_blank" rel="noopener">Open the
+        demo in its own tab</a> for the full-screen version.
+      </p>
+    </div>
 
-    import astropy.units as u
-    from divtel.telescope import Telescope, Array
 
-    array = Array([
-        Telescope(x * u.m, y * u.m, 0 * u.m, 20 * u.m, 1 * u.m)
-        for x, y in [(100, 0), (0, 100), (-100, 0), (0, -100)]
-    ])
+The **ground** view plots each telescope and the direction it points. The
+**hyper field of view** is the sky the array actually sees: every telescope
+covers a disc, and the shading counts how many telescopes see each patch.
+Two or more can reconstruct a shower stereoscopically, one cannot, so
+divergence buys width at the cost of depth. The area quoted in the title
+counts only the part still seen by at least two.
 
-    array.divergent_pointing(0.02, 70 * u.deg, 180 * u.deg)
-
-    covered, _ = array.hyper_fov()           # 45.96 deg2 seen at all
-    stereo, _ = array.hyper_fov(m_cut=2)     # 30.27 deg2 seen by 2 or more
-
-Start with the :doc:`guide`, or go straight to the
-:doc:`interactive demo <examples>` and move the sliders.
 
 .. toctree::
    :maxdepth: 2
@@ -35,6 +35,15 @@ Start with the :doc:`guide`, or go straight to the
    guide
    examples
    docstring
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Studies
+
+   introduction
+   definitions
+   ceiling
+   capabilities
 
 .. toctree::
    :maxdepth: 1

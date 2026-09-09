@@ -613,5 +613,8 @@ Where to go next
 ================
 
 * :doc:`examples`: the same model with sliders, running in your browser.
+* :doc:`introduction`: the Studies section, the paper this package comes
+  from written up as documentation, as far as how far divergence can
+  usefully spread an array.
 * :doc:`docstring`: the full API.
 * `Source and issue tracker <https://github.com/cta-observatory/divtel>`_.
