@@ -70,7 +70,6 @@ MARIMO_DIR = REPO_ROOT / 'examples' / 'marimo'
 MARIMO_NOTEBOOKS = [
     'interactive_display',
     'two_sites',
-    'sub_arrays',
     'observing_a_source',
     'choosing_div',
 ]

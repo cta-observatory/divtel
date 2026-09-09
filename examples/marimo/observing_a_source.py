@@ -47,8 +47,12 @@ def _():
 
     # Pyodide has no network, so skip astropy's default fetch of the current
     # Earth-orientation table. The bundled table is accurate to well under
-    # an arcsecond near the release date, plenty for pointing an array.
+    # an arcsecond near the release date, plenty for pointing an array. With
+    # no download, astropy also refuses to extrapolate more than 30 days past
+    # the bundled table's predictive range and raises instead; disable that
+    # check too; a dropdown offering nights a year out would otherwise crash.
     iers.conf.auto_download = False
+    iers.conf.auto_max_age = None
 
     plt.rcParams["savefig.format"] = "svg"
     return (
@@ -110,7 +114,7 @@ def _(mo):
     )
     night = mo.ui.dropdown(
         ["2026-03-01", "2026-06-01", "2026-09-01", "2026-12-01"],
-        value="2026-03-01", label="night of", full_width=True,
+        value="2026-12-01", label="night of", full_width=True,
     )
     mo.hstack([source, site, night], widths="equal")
     return SOURCES, night, site, source
@@ -226,7 +230,7 @@ def _(files, load_array):
 @app.cell(hide_code=True)
 def _(mo):
     div = mo.ui.slider(
-        0, 0.1, step=0.005, value=0.02, label="divergence", show_value=True,
+        0, 0.1, step=0.005, value=0.04, label="divergence", show_value=True,
         full_width=True,
     )
     hour = mo.ui.slider(
