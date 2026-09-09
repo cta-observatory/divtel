@@ -176,6 +176,8 @@ def _generate_static_plots(app):
     from divtel.layout import load_array
     from divtel.observation import Observation
     from divtel.visualization import display_hyper_fov
+    from divtel.telescope import Telescope, Array
+    from divtel.pointing import pointG_position
 
     for path in STATIC_PLOTS:
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -187,39 +189,76 @@ def _generate_static_plots(app):
     array_n.divergent_pointing(0.03, 70 * u.deg, 180 * u.deg)
     array_n.display_2d(projection='xy', ax=axes[0])
     axes[0].set_title('CTAO-North on the ground')
+    axes[0].legend(loc='lower right')
     display_hyper_fov(array_n, ax=axes[1])
     fig.tight_layout()
     fig.savefig(HERE / '_static' / 'studies' / 'array_and_sky.png', dpi=200)
     plt.close(fig)
 
-    fig, ax = plt.subplots(figsize=(8, 4.5))
-    barycentre = np.array([0.0, 0.0])
-    ground_point = np.array([0.0, -4.0])
-    tel_x = np.array([-3.0, -1.5, 0.0, 1.5, 3.0])
-    for x in tel_x:
-        point = np.array([x, 0.0])
-        ax.plot([ground_point[0], point[0]], [ground_point[1], point[1]],
-                '--', color='tab:orange', lw=1)
-        direction = (point - ground_point) / np.linalg.norm(point - ground_point)
-        ax.arrow(point[0], point[1], direction[0] * 1.8, direction[1] * 1.8,
-                 width=0.02, head_width=0.18, head_length=0.22, color='k',
-                 length_includes_head=True)
-    ax.scatter(tel_x, np.zeros_like(tel_x), color='tab:blue', s=35,
-               label='telescopes')
-    ax.scatter([barycentre[0]], [barycentre[1]], color='tab:red', marker='+',
-               s=180, linewidths=2.5, label='B')
-    ax.scatter([ground_point[0]], [ground_point[1]], color='tab:orange',
-               marker='D', s=65, label='G')
-    ax.annotate('D', xy=(1.5, 0), xytext=(1.5, -0.6), ha='center')
-    ax.annotate(r'$\theta_D$', xy=(1.5, 0.7), xytext=(2.0, 1.25),
-                arrowprops=dict(arrowstyle='->', lw=1), fontsize=11)
-    ax.set_xlim(-3.8, 3.8)
-    ax.set_ylim(-4.8, 2.8)
-    ax.set_xlabel('ground axis')
-    ax.set_ylabel('mean-pointing plane')
-    ax.set_title('Divergent pointing schematic')
-    ax.grid(alpha=0.25)
-    ax.legend(frameon=False, loc='upper right')
+    # A toy array whose divergent pointing is computed the same way as the
+    # real arrays above, so the schematic is a faithful picture of the
+    # geometry `pointG_position` / `tel_div_pointing` actually produce,
+    # rather than a hand-drawn stand-in.
+    div = 0.12
+    tel_x = np.array([-300.0, -180.0, -60.0, 60.0, 180.0, 300.0]) * u.m
+    toy = Array([Telescope(x, 0 * u.m, 0 * u.m, focal=16 * u.m,
+                            camera_radius=1 * u.m, tel_id=i)
+                 for i, x in enumerate(tel_x, start=1)])
+    toy.divergent_pointing(div, 90 * u.deg, 180 * u.deg)
+
+    positions = toy.positions_array.to_value(u.m)
+    vectors = toy.pointing_vectors
+    barycentre = toy.barycenter.to_value(u.m)
+    g_point = pointG_position(toy.barycenter, div, 90 * u.deg,
+                               180 * u.deg).to_value(u.m)
+
+    fig, ax = plt.subplots(figsize=(5.5, 8))
+    arrow_len = 220
+    for (x, _, z), (vx, _, vz) in zip(positions, vectors):
+        ax.plot([g_point[0], x], [g_point[2], z], '--', color='tab:orange', lw=1)
+        ax.arrow(x, z, vx * arrow_len, vz * arrow_len,
+                 width=3, head_width=16, head_length=22, color='k',
+                 length_includes_head=True, zorder=3)
+
+    ax.scatter(positions[:, 0], positions[:, 2], color='tab:blue', s=40, zorder=4)
+    ax.annotate('telescope', xy=(positions[-1, 0], positions[-1, 2]),
+                xytext=(12, 8), textcoords='offset points')
+    ax.scatter([barycentre[0]], [barycentre[2]], color='black', s=25, zorder=4)
+    ax.annotate('B', xy=(barycentre[0], barycentre[2]),
+                xytext=(barycentre[0] + 12, barycentre[2] + 10))
+    ax.scatter([g_point[0]], [g_point[2]], color='tab:orange', marker='*',
+               s=160, zorder=4)
+    ax.annotate('G', xy=(g_point[0], g_point[2]),
+                xytext=(g_point[0] + 15, g_point[2] - 5))
+
+    # |BG|: the barycenter-to-G distance the divergence angle is measured against.
+    ax.annotate('', xy=(barycentre[0], g_point[2]), xytext=(barycentre[0], barycentre[2]),
+                arrowprops=dict(arrowstyle='-', lw=1.3, color='gray'))
+    ax.annotate('|BG|', xy=(barycentre[0] - 15, (barycentre[2] + g_point[2]) / 2),
+                ha='right', va='center', color='gray')
+
+    # D and theta_D: one telescope's baseline from the barycenter and the
+    # angle its pointing diverges by, i.e. div = sin(theta_D) at D = 100 m.
+    i_ref = 4
+    x_ref, z_ref = positions[i_ref, 0], positions[i_ref, 2]
+    vx_ref, vz_ref = vectors[i_ref, 0], vectors[i_ref, 2]
+    ax.annotate('', xy=(x_ref, -25), xytext=(barycentre[0], -25),
+                arrowprops=dict(arrowstyle='<->', lw=1))
+    ax.annotate('D', xy=((barycentre[0] + x_ref) / 2, -55), ha='center')
+
+    ax.plot([x_ref, x_ref], [z_ref, z_ref + 200], color='gray', linestyle=':', lw=1.2)
+    arc_r = 60
+    angles = np.linspace(np.pi / 2, np.arctan2(vz_ref, vx_ref), 20)
+    ax.plot(x_ref + arc_r * np.cos(angles), z_ref + arc_r * np.sin(angles),
+            color='k', lw=1)
+    ax.annotate(r'$\theta_D$', xy=(x_ref + arc_r * 1.5, z_ref + arc_r * 1.1))
+
+    ax.set_xlim(-420, 420)
+    ax.set_ylim(-1050, 300)
+    ax.set_aspect('equal', adjustable='box')
+    ax.set_xlabel('ground position [m]')
+    ax.set_ylabel('along the mean pointing [m]')
+    ax.set_title(f'Divergent pointing, div = {div:.2f}')
     fig.tight_layout()
     fig.savefig(HERE / '_static' / 'studies' / 'div_schema.png', dpi=200)
     plt.close(fig)
