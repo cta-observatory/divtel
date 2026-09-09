@@ -626,6 +626,8 @@ MigrationBackup/
 # Sphinx / JupyterLite build artefacts
 docs/examples/
 docs/_build/
+docs/_static/studies/*.png
+docs/_static/ceiling/*.png
 
 # marimo editor session cache, not source
 __marimo__/
