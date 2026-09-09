@@ -3,10 +3,10 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="API documentation" href="docstring.html"><link rel="prev" title="User guide" href="guide.html">
+<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="divtel: Divergent pointing mode for Imaging Atmospheric Cherenkov Telescopes arrays" href="README.html"><link rel="prev" title="The divergence spread and ceiling" href="ceiling.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>Interactive Examples - divtel 1.1.1.dev3+g956316cc6 documentation</title>
+        <title>Tracking a source - divtel 1.1.1.dev3+g956316cc6 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -191,17 +191,17 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
-<ul class="current">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="guide.html">User guide</a></li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Interactive Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Interactive Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docstring.html">API documentation</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Studies</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="definitions.html">Definitions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ceiling.html">The divergence spread and ceiling</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tracking.html">Tracking a source</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Tracking a source</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Project</span></p>
 <ul>
@@ -226,7 +226,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="_sources/examples.rst.txt" title="View this page">
+  <a class="muted-link" href="_sources/tracking.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -244,41 +244,46 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="interactive-examples">
-<h1>Interactive Examples<a class="headerlink" href="#interactive-examples" title="Link to this heading">¶</a></h1>
-<div class="table-wrapper colwidths-given docutils container">
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 30.0%" />
-<col style="width: 70.0%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference external" href="marimo/interactive_display/index.html">Divergent pointing</a></p></td>
-<td><p>Introduction to the divergent pointing mode, with a single array. Drag the
-divergence parameter and see how the hyper field of view and mean
-multiplicity trade off.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference external" href="marimo/two_sites/index.html">CTAO sites</a></p></td>
-<td><p>CTAO is two arrays: North at La Palma, 4 LSTs and 9 MSTs, and South
-at Paranal, 14 MSTs and 37 SSTs with no LSTs at all. Loads both, and
-compares what their size and camera mix buy in hyper FoV and
-multiplicity.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference external" href="marimo/observing_a_source/index.html">Observing a real source</a></p></td>
-<td><p>Pick a source and a night. When is it up, when is the sun down, and what
-happens to the array’s coverage as it tracks a source across the sky.
-Uses <a class="reference internal" href="docstring.html#divtel.observation.Observation" title="divtel.observation.Observation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Observation</span></code></a>.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference external" href="marimo/choosing_div/index.html">Choosing div</a></p></td>
-<td><p>The question the guide leaves open. Decide what field of view you want
-and what multiplicity you can live with, and those two fix <code class="docutils literal notranslate"><span class="pre">div</span></code> –
-which turns out to move as the source does.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>Each is a marimo notebook under <code class="docutils literal notranslate"><span class="pre">examples/marimo/</span></code>, editable locally with
-<code class="docutils literal notranslate"><span class="pre">marimo</span> <span class="pre">edit</span> <span class="pre">examples/marimo/&lt;name&gt;.py</span></code>.</p>
+          <section id="tracking-a-source">
+<h1>Tracking a source<a class="headerlink" href="#tracking-a-source" title="Link to this heading">¶</a></h1>
+<p>Everything in <a class="reference internal" href="definitions.html"><span class="doc">Definitions</span></a> works in the ground frame: an array
+pointed at alt 70°, az 180° stays pointed there whatever the hour. Real
+sources rise and set, so <a class="reference internal" href="docstring.html#divtel.observation.Observation" title="divtel.observation.Observation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Observation</span></code></a> ties the
+ground frame to a site and a time and converts a sky position into the
+alt/az pair <a class="reference internal" href="docstring.html#divtel.telescope.Array.divergent_pointing" title="divtel.telescope.Array.divergent_pointing"><code class="xref py py-meth docutils literal notranslate"><span class="pre">divergent_pointing()</span></code></a> takes. A
+configuration chosen once therefore does not stay the configuration in
+force all night:</p>
+<a class="reference internal image-reference" href="_static/studies/tracking.png"><img alt="CTAO-North tracking the Crab Nebula through a night, hyper FoV and mean multiplicity against time" src="_static/studies/tracking.png" style="width: 100%;" />
+</a>
+<p>CTAO-North tracking the Crab Nebula at a fixed <code class="docutils literal notranslate"><span class="pre">div</span></code> = 0.04. Over eleven
+hours the stereoscopic footprint moves between 100 and 132 deg², and the
+mean multiplicity crosses the stereoscopic floor of two twice, once on
+either side of transit — because the same altitude is reached rising and
+setting. A configuration picked at the start of the night is not the
+configuration a fixed <code class="docutils literal notranslate"><span class="pre">div</span></code> gives at the end of it; matching one to the
+other means re-pointing during the night, not choosing <code class="docutils literal notranslate"><span class="pre">div</span></code> once.</p>
+<section id="try-it-yourself">
+<h2>Try it yourself<a class="headerlink" href="#try-it-yourself" title="Link to this heading">¶</a></h2>
+<p>The plot above is one fixed <code class="docutils literal notranslate"><span class="pre">div</span></code>, read off at a handful of hours. The
+notebook behind it lets you change any of that: pick a different source,
+site or night, drag <code class="docutils literal notranslate"><span class="pre">div</span></code>, and step through the night hour by hour to
+see the sky map update. It opens on the same array and source as the plot
+above — CTAO-North, the Crab Nebula, <code class="docutils literal notranslate"><span class="pre">div</span></code> = 0.04 — on a night chosen so
+the source stays up for the whole window, so the first thing it shows is
+that same trade-off, before you touch anything.</p>
+<div class="divtel-demo">
+  <iframe src="marimo/observing_a_source/index.html"
+          title="Observing a real source, interactive demo"
+          loading="lazy"></iframe>
+  <p class="divtel-demo__fallback">
+    <a href="marimo/observing_a_source/index.html" target="_blank" rel="noopener">Open the
+    demo in its own tab</a> for the full-screen version.
+  </p>
+</div><p>This runs on a Python interpreter compiled to WebAssembly: nothing is
+installed, no code leaves your machine. It is built from
+<code class="docutils literal notranslate"><span class="pre">examples/marimo/observing_a_source.py</span></code>; run or edit it locally with
+<code class="docutils literal notranslate"><span class="pre">marimo</span> <span class="pre">edit</span> <span class="pre">examples/marimo/observing_a_source.py</span></code>.</p>
+</section>
 </section>
 
         </article>
@@ -286,23 +291,23 @@ which turns out to move as the source does.</p></td>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="docstring.html">
+          <a class="next-page" href="README.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">API documentation</div>
+                <div class="title">divtel: Divergent pointing mode for Imaging Atmospheric Cherenkov Telescopes arrays</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="guide.html">
+          <a class="prev-page" href="ceiling.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">User guide</div>
+                <div class="title">The divergence spread and ceiling</div>
                 
               </div>
             </a>

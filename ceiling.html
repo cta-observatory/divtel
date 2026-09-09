@@ -3,10 +3,10 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="API documentation" href="docstring.html"><link rel="prev" title="User guide" href="guide.html">
+<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="Tracking a source" href="tracking.html"><link rel="prev" title="Definitions" href="definitions.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>Interactive Examples - divtel 1.1.1.dev3+g956316cc6 documentation</title>
+        <title>The divergence spread and ceiling - divtel 1.1.1.dev3+g956316cc6 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -173,7 +173,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
       </label>
     </div>
@@ -191,16 +191,16 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
-<ul class="current">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="guide.html">User guide</a></li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Interactive Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Interactive Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docstring.html">API documentation</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Studies</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="definitions.html">Definitions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ceiling.html">The divergence spread and ceiling</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">The divergence spread and ceiling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tracking.html">Tracking a source</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Project</span></p>
@@ -226,7 +226,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="_sources/examples.rst.txt" title="View this page">
+  <a class="muted-link" href="_sources/ceiling.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -239,46 +239,184 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="interactive-examples">
-<h1>Interactive Examples<a class="headerlink" href="#interactive-examples" title="Link to this heading">¶</a></h1>
-<div class="table-wrapper colwidths-given docutils container">
+          <section id="the-divergence-spread-and-ceiling">
+<h1>The divergence spread and ceiling<a class="headerlink" href="#the-divergence-spread-and-ceiling" title="Link to this heading">¶</a></h1>
+<p>This page applies the quantities from <a class="reference internal" href="definitions.html"><span class="doc">Definitions</span></a>, the
+stereoscopic hyper field of view <span class="math notranslate nohighlight">\(A(2)\)</span> and the mean multiplicity,
+to both CTAO sites: fine-grained curves against <code class="docutils literal notranslate"><span class="pre">div</span></code>, then exactly
+where they turn over, the <strong>divergence ceiling</strong>.</p>
+<section id="definition">
+<h2>Definition<a class="headerlink" href="#definition" title="Link to this heading">¶</a></h2>
+<p>Two numbers say how far an array can usefully be spread. The <strong>parallel
+reach</strong> is the angular radius of the widest camera, what the array sees
+pointed conventionally. The <strong>ceiling divergence</strong> is the <code class="docutils literal notranslate"><span class="pre">div</span></code> where
+the mean multiplicity falls to two. Below it, spreading grows
+<span class="math notranslate nohighlight">\(A(2)\)</span>. Above it, the typical direction is seen by fewer than two
+telescopes, so spreading trades stereoscopic sky for sky the array can’t
+reconstruct from. <span class="math notranslate nohighlight">\(A(2)\)</span> peaks exactly at the ceiling and falls
+back towards zero past it. Push further and both <code class="docutils literal notranslate"><span class="pre">divtel</span></code> and a real
+array comply anyway, returning a configuration that records less, not
+more.</p>
+<p>Divergence conserves <span class="math notranslate nohighlight">\(\Omega\)</span> (<a class="reference internal" href="definitions.html"><span class="doc">Definitions</span></a>). Rotating the
+discs apart doesn’t shrink them, so an array that puts exactly two
+telescopes on every direction it covers would reach</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[A(2) = \Omega / 2\]</div>
+</div>
+<p>That bound is never hit. The multiplicity distribution at the ceiling
+spreads around its mean of two rather than sitting on it: some covered
+sky sits at multiplicity one and is wasted, some sits at three or more
+and is deeper than stereoscopy needs. Both gaps eat into the bound. The
+next two sections measure them for CTAO-North and CTAO-South.</p>
+</section>
+<section id="ctao-north-la-palma">
+<h2>CTAO-North: La Palma<a class="headerlink" href="#ctao-north-la-palma" title="Link to this heading">¶</a></h2>
+<p>Four LSTs sit inside nine MSTs. An LST camera has a field-of-view radius
+of about 2.15°, an MST’s about 3.84°, so the outer, more numerous
+subarray also carries the wider camera.</p>
+<a class="reference internal image-reference" href="_static/ceiling/fig3_north.png"><img alt="CTAO-North stereoscopic hyper FoV and mean multiplicity against div" src="_static/ceiling/fig3_north.png" style="width: 100%;" />
+</a>
+<p>Left, stereoscopic hyper FoV against <code class="docutils literal notranslate"><span class="pre">div</span></code>, for the whole array at four
+altitudes and for the two telescope types alone at the zenith. Right, the
+corresponding mean multiplicity, with the stereoscopic floor of two
+marked.</p>
+<p>Each type saturates on its own schedule. The four LSTs, the narrower
+camera, peak near <code class="docutils literal notranslate"><span class="pre">div</span></code> = 0.022 at 17 deg². The nine MSTs peak later,
+near <code class="docutils literal notranslate"><span class="pre">div</span></code> = 0.038, at 128 deg². The whole-array curve is not their sum:
+at low <code class="docutils literal notranslate"><span class="pre">div</span></code> it tracks the MSTs, then pulls ahead of them once the MSTs
+stop overlapping each other and cross-type pairs take over.</p>
+<p>Altitude moves the peak without moving its height by much. Between 30°
+and 90° altitude the <code class="docutils literal notranslate"><span class="pre">div</span></code> that maximises coverage shifts from 0.043 to
+0.059, while the coverage it buys stays within 1% of 132 deg². The
+parameter has to be chosen for the pointing. What it delivers is close to
+a property of the array.</p>
+</section>
+<section id="ctao-south-paranal">
+<h2>CTAO-South: Paranal<a class="headerlink" href="#ctao-south-paranal" title="Link to this heading">¶</a></h2>
+<p>Fourteen MSTs sit inside thirty-seven SSTs. The SST mirror is the
+smaller of the two, but its shorter focal length gives it the wider
+field of view: about 4.40° against 3.75° for the MST. Same shape as
+La Palma: the outer, more numerous subarray carries the wider camera.
+But the two cameras here are much closer in size.</p>
+<a class="reference internal image-reference" href="_static/ceiling/fig3_south.png"><img alt="CTAO-South stereoscopic hyper FoV and mean multiplicity against div" src="_static/ceiling/fig3_south.png" style="width: 100%;" />
+</a>
+<p>Same rise-then-collapse shape as La Palma, just bigger and faster. The
+SSTs, more numerous and wider-eyed, peak near <code class="docutils literal notranslate"><span class="pre">div</span></code> = 0.030 at
+716 deg². The MSTs peak lower, near <code class="docutils literal notranslate"><span class="pre">div</span></code> = 0.043, at 180 deg². At low
+<code class="docutils literal notranslate"><span class="pre">div</span></code> the whole array tracks the SSTs almost exactly, since the MSTs’
+narrower sky sits inside the SSTs’ wider one, so folding them in adds
+multiplicity rather than area. Push <code class="docutils literal notranslate"><span class="pre">div</span></code> further and cross-type pairs
+start carrying coverage the SSTs alone have lost.</p>
+<p>Across 30° to 90° altitude the <code class="docutils literal notranslate"><span class="pre">div</span></code> that maximises coverage shifts
+from 0.038 to 0.055, while the coverage it buys stays within 8% of
+851 deg². With fifty-one telescopes of two similarly sized cameras to
+pair up, Paranal keeps mean multiplicity above the stereoscopic floor of
+two well past the <code class="docutils literal notranslate"><span class="pre">div</span></code> where either subarray alone has given out.</p>
+</section>
+<section id="locating-the-ceiling">
+<h2>Locating the ceiling<a class="headerlink" href="#locating-the-ceiling" title="Link to this heading">¶</a></h2>
+<p>The table gives the parallel reach and the ceiling divergence for both
+arrays, at 60° altitude, 180° azimuth.</p>
+<div class="table-wrapper docutils container">
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 30.0%" />
-<col style="width: 70.0%" />
-</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"></th>
+<th class="head"><p>CTAO-North</p></th>
+<th class="head"><p>CTAO-South</p></th>
+</tr>
+</thead>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference external" href="marimo/interactive_display/index.html">Divergent pointing</a></p></td>
-<td><p>Introduction to the divergent pointing mode, with a single array. Drag the
-divergence parameter and see how the hyper field of view and mean
-multiplicity trade off.</p></td>
+<tr class="row-even"><td><p>Telescopes</p></td>
+<td><p>4 LST, 9 MST</p></td>
+<td><p>14 MST, 37 SST</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference external" href="marimo/two_sites/index.html">CTAO sites</a></p></td>
-<td><p>CTAO is two arrays: North at La Palma, 4 LSTs and 9 MSTs, and South
-at Paranal, 14 MSTs and 37 SSTs with no LSTs at all. Loads both, and
-compares what their size and camera mix buy in hyper FoV and
-multiplicity.</p></td>
+<tr class="row-odd"><td><p>Parallel reach</p></td>
+<td><p>3.8°</p></td>
+<td><p>4.4°</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference external" href="marimo/observing_a_source/index.html">Observing a real source</a></p></td>
-<td><p>Pick a source and a night. When is it up, when is the sun down, and what
-happens to the array’s coverage as it tracks a source across the sky.
-Uses <a class="reference internal" href="docstring.html#divtel.observation.Observation" title="divtel.observation.Observation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Observation</span></code></a>.</p></td>
+<tr class="row-even"><td><p>Parallel field of view <span class="math notranslate nohighlight">\(A(1)\)</span></p></td>
+<td><p>46 deg²</p></td>
+<td><p>61 deg²</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference external" href="marimo/choosing_div/index.html">Choosing div</a></p></td>
-<td><p>The question the guide leaves open. Decide what field of view you want
-and what multiplicity you can live with, and those two fix <code class="docutils literal notranslate"><span class="pre">div</span></code> –
-which turns out to move as the source does.</p></td>
+<tr class="row-odd"><td><p>Parallel mean multiplicity</p></td>
+<td><p>10.3</p></td>
+<td><p>47.2</p></td>
+</tr>
+<tr class="row-even"><td><p>Total camera solid angle <span class="math notranslate nohighlight">\(\Omega\)</span></p></td>
+<td><p>474 deg²</p></td>
+<td><p>2867 deg²</p></td>
+</tr>
+<tr class="row-odd"><td><p>Ceiling divergence</p></td>
+<td><p>0.042</p></td>
+<td><p>0.040</p></td>
+</tr>
+<tr class="row-even"><td><p>Spread at the ceiling</p></td>
+<td><p>7.7°</p></td>
+<td><p>22.6°</p></td>
+</tr>
+<tr class="row-odd"><td><p>Stereoscopic footprint <span class="math notranslate nohighlight">\(A(2)\)</span></p></td>
+<td><p>129 deg²</p></td>
+<td><p>839 deg²</p></td>
+</tr>
+<tr class="row-even"><td><p>Gain over parallel</p></td>
+<td><p>2.8×</p></td>
+<td><p>13.8×</p></td>
+</tr>
+<tr class="row-odd"><td><p>Fraction of the <span class="math notranslate nohighlight">\(\Omega/2\)</span> bound</p></td>
+<td><p>54%</p></td>
+<td><p>59%</p></td>
+</tr>
+<tr class="row-even"><td><p>Covered sky wasted at multiplicity 1</p></td>
+<td><p>46%</p></td>
+<td><p>41%</p></td>
+</tr>
+<tr class="row-odd"><td><p>Covered sky deeper than needed (<span class="math notranslate nohighlight">\(\geq\)</span>3)</p></td>
+<td><p>25%</p></td>
+<td><p>28%</p></td>
 </tr>
 </tbody>
 </table>
 </div>
-<p>Each is a marimo notebook under <code class="docutils literal notranslate"><span class="pre">examples/marimo/</span></code>, editable locally with
-<code class="docutils literal notranslate"><span class="pre">marimo</span> <span class="pre">edit</span> <span class="pre">examples/marimo/&lt;name&gt;.py</span></code>.</p>
+<p><em>Spread is the largest angle between a telescope’s pointing and the
+array’s mean pointing, at the ceiling. Camera radii come from the prod6
+layout files.</em></p>
+<a class="reference internal image-reference" href="_static/ceiling/ceiling_maps.png"><img alt="CTAO-North and CTAO-South sky coverage at the ceiling divergence, shaded by multiplicity" src="_static/ceiling/ceiling_maps.png" style="width: 100%;" />
+</a>
+<section id="two-things-the-table-and-the-maps-show">
+<h3>Two things the table and the maps show<a class="headerlink" href="#two-things-the-table-and-the-maps-show" title="Link to this heading">¶</a></h3>
+<p><strong>The two arrays are alike in reach and differ in depth.</strong> CTAO-South is
+four times larger on the ground with four times the telescopes, yet the
+two parallel reaches sit within half a degree of each other and the two
+ceiling divergences within 0.002. Both quantities depend on the ratio of
+camera size to array scale, and that ratio happens to be similar at La
+Palma and Paranal. What the ceiling buys differs by a much larger
+factor, and the parallel mean multiplicity explains it: the gain
+available over parallel pointing is half of it, so South, with roughly
+four times North’s parallel depth, converts that depth into a
+correspondingly larger stereoscopic footprint. Divergence does not make
+a large array reach further than a small one. It lets a deep array trade
+depth it does not need for sky, and a shallow array has less to trade.</p>
+<p><strong>Nearly half of what a divergent array watches is wasted.</strong> Neither
+array attains the <span class="math notranslate nohighlight">\(\Omega/2\)</span> bound. The reason isn’t the mean
+multiplicity, it’s its spread: mean multiplicity is two at the ceiling
+in both cases, but a large share of the covered sky sits at multiplicity
+one, seen by a single telescope and useless for stereoscopic
+reconstruction, while a comparable share sits at three or more, deeper
+than stereoscopy requires. The maps above draw that structure directly:
+an over-covered core where several cameras pile up, ringed by a broad
+band seen by exactly one telescope. A symmetric fan is shaped like the
+array’s ground footprint and has no way to move depth from where there
+is too much of it to where there is none. Recovering that waste means
+giving up the single global parameter and letting each telescope’s
+pointing follow the target instead of the ground.</p>
+</section>
+</section>
 </section>
 
         </article>
@@ -286,23 +424,23 @@ which turns out to move as the source does.</p></td>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="docstring.html">
+          <a class="next-page" href="tracking.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">API documentation</div>
+                <div class="title">Tracking a source</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="guide.html">
+          <a class="prev-page" href="definitions.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">User guide</div>
+                <div class="title">Definitions</div>
                 
               </div>
             </a>
@@ -324,8 +462,33 @@ which turns out to move as the source does.</p></td>
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">The divergence spread and ceiling</a><ul>
+<li><a class="reference internal" href="#definition">Definition</a></li>
+<li><a class="reference internal" href="#ctao-north-la-palma">CTAO-North: La Palma</a></li>
+<li><a class="reference internal" href="#ctao-south-paranal">CTAO-South: Paranal</a></li>
+<li><a class="reference internal" href="#locating-the-ceiling">Locating the ceiling</a><ul>
+<li><a class="reference internal" href="#two-things-the-table-and-the-maps-show">Two things the table and the maps show</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
@@ -334,5 +497,6 @@ which turns out to move as the source does.</p></td>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     </body>
 </html>

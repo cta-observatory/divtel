@@ -3,10 +3,10 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="API documentation" href="docstring.html"><link rel="prev" title="User guide" href="guide.html">
+<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="Definitions" href="definitions.html"><link rel="prev" title="API documentation" href="docstring.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>Interactive Examples - divtel 1.1.1.dev3+g956316cc6 documentation</title>
+        <title>Introduction - divtel 1.1.1.dev3+g956316cc6 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -191,14 +191,14 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
-<ul class="current">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="guide.html">User guide</a></li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Interactive Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Interactive Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docstring.html">API documentation</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Studies</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<ul class="current">
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="definitions.html">Definitions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ceiling.html">The divergence spread and ceiling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tracking.html">Tracking a source</a></li>
@@ -226,7 +226,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="_sources/examples.rst.txt" title="View this page">
+  <a class="muted-link" href="_sources/introduction.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -244,41 +244,62 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="interactive-examples">
-<h1>Interactive Examples<a class="headerlink" href="#interactive-examples" title="Link to this heading">¶</a></h1>
-<div class="table-wrapper colwidths-given docutils container">
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 30.0%" />
-<col style="width: 70.0%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference external" href="marimo/interactive_display/index.html">Divergent pointing</a></p></td>
-<td><p>Introduction to the divergent pointing mode, with a single array. Drag the
-divergence parameter and see how the hyper field of view and mean
-multiplicity trade off.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference external" href="marimo/two_sites/index.html">CTAO sites</a></p></td>
-<td><p>CTAO is two arrays: North at La Palma, 4 LSTs and 9 MSTs, and South
-at Paranal, 14 MSTs and 37 SSTs with no LSTs at all. Loads both, and
-compares what their size and camera mix buy in hyper FoV and
-multiplicity.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference external" href="marimo/observing_a_source/index.html">Observing a real source</a></p></td>
-<td><p>Pick a source and a night. When is it up, when is the sun down, and what
-happens to the array’s coverage as it tracks a source across the sky.
-Uses <a class="reference internal" href="docstring.html#divtel.observation.Observation" title="divtel.observation.Observation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Observation</span></code></a>.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference external" href="marimo/choosing_div/index.html">Choosing div</a></p></td>
-<td><p>The question the guide leaves open. Decide what field of view you want
-and what multiplicity you can live with, and those two fix <code class="docutils literal notranslate"><span class="pre">div</span></code> –
-which turns out to move as the source does.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>Each is a marimo notebook under <code class="docutils literal notranslate"><span class="pre">examples/marimo/</span></code>, editable locally with
-<code class="docutils literal notranslate"><span class="pre">marimo</span> <span class="pre">edit</span> <span class="pre">examples/marimo/&lt;name&gt;.py</span></code>.</p>
+          <section id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h1>
+<p>An imaging atmospheric Cherenkov telescope sees a few degrees of sky. Point
+every telescope in an array the same way and their fields of view land on
+top of one another, so the array sees what its widest camera sees and no
+more: CTAO-North’s widest camera has an angular radius of 3.8°, giving the
+array 46 deg²; CTAO-South’s is 4.4°, giving 61 deg². Fifty-one telescopes do
+not watch fifty-one times more sky than one of them — pointed conventionally,
+adding telescopes buys sensitivity, not sky.</p>
+<p>Several observing programmes CTAO plans need more sky than that at one
+instant. The Extragalactic Survey proposes to cover a quarter of the sky in
+a fixed time budget set by how much sky one pointing covers. A
+gravitational-wave alert arrives with a 90% credible region anywhere from
+ten to a thousand square degrees, and these regions are rarely compact: the
+first sky map circulated for GW170817 covered 187 deg², but its containment
+radius, the angular radius of the smallest cone enclosing it, was 62.1° —
+against a camera radius of about 4°, the shortfall is in reach, not in
+collecting area.</p>
+<p>There are three ways to close that gap. <strong>Tiling</strong> keeps the telescopes
+together and visits the region in pieces, spending time instead of sky.
+<strong>Divergent pointing</strong> tilts the telescopes apart so their fields of view
+overlap only partially, widening the instantaneous footprint at the cost of
+the number of telescopes seeing any given direction. <strong>Splitting the array</strong>
+points independent groups at different parts of the region at once. All
+three are geometric decisions, and all three are constrained by the same
+fact: a shower must be recorded by at least two telescopes to be
+reconstructed stereoscopically, so sky seen once is not sky observed.</p>
+<p>A large part of that trade-off does not need a shower simulation to
+evaluate. Given a layout and a set of pointings, whether a sky direction
+falls inside a camera is a geometric fact. The number of telescopes
+containing a given direction — the <strong>multiplicity</strong> — is therefore exact,
+and so is everything built from it: the combined field of view, the part
+of it that is stereoscopic, and the divergence at which stereoscopic
+coverage stops improving. What geometry cannot supply is the map from
+multiplicity to sensitivity, which is a separate measurement, not an
+assumption this package makes.</p>
+<p><code class="docutils literal notranslate"><span class="pre">divtel</span></code> is the open-source package that computes these geometric
+quantities for an arbitrary array under arbitrary per-telescope pointing.
+This section of the documentation follows the structure of the paper that
+introduces it, T. Vuillaume, <em>Planning divergent and non-traditional
+pointing for imaging atmospheric Cherenkov telescope arrays with divtel</em>,
+as far as the divergence ceiling:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="definitions.html"><span class="doc">Definitions</span></a> sets out the quantities <code class="docutils literal notranslate"><span class="pre">divtel</span></code> computes — the
+hyper field of view, the multiplicity, and the mean multiplicity — since
+everything that follows is written in them, and shows what an array and
+its coverage look like.</p></li>
+<li><p><span class="xref std std-doc">capabilities</span> points at a real source and tracks it across a
+night, interactively.</p></li>
+<li><p><a class="reference internal" href="ceiling.html"><span class="doc">The divergence spread and ceiling</span></a> answers the question the rest of this section builds
+towards: how far an array can usefully be spread, and what that is worth
+for CTAO-North and CTAO-South.</p></li>
+</ul>
+<p>The paper’s later sections — tiling against divergence, shaped pointing
+that follows a sky map, and matching a configuration to a science case —
+are not covered here yet.</p>
 </section>
 
         </article>
@@ -286,23 +307,23 @@ which turns out to move as the source does.</p></td>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="docstring.html">
+          <a class="next-page" href="definitions.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">API documentation</div>
+                <div class="title">Definitions</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="guide.html">
+          <a class="prev-page" href="docstring.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">User guide</div>
+                <div class="title">API documentation</div>
                 
               </div>
             </a>

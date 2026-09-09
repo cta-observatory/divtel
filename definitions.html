@@ -3,10 +3,10 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="API documentation" href="docstring.html"><link rel="prev" title="User guide" href="guide.html">
+<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="The divergence spread and ceiling" href="ceiling.html"><link rel="prev" title="Introduction" href="introduction.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>Interactive Examples - divtel 1.1.1.dev3+g956316cc6 documentation</title>
+        <title>Definitions - divtel 1.1.1.dev3+g956316cc6 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -173,7 +173,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
       </label>
     </div>
@@ -191,15 +191,15 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
-<ul class="current">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="guide.html">User guide</a></li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Interactive Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Interactive Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docstring.html">API documentation</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Studies</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="definitions.html">Definitions</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Definitions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ceiling.html">The divergence spread and ceiling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tracking.html">Tracking a source</a></li>
 </ul>
@@ -226,7 +226,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="_sources/examples.rst.txt" title="View this page">
+  <a class="muted-link" href="_sources/definitions.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -239,46 +239,130 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="interactive-examples">
-<h1>Interactive Examples<a class="headerlink" href="#interactive-examples" title="Link to this heading">¶</a></h1>
-<div class="table-wrapper colwidths-given docutils container">
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 30.0%" />
-<col style="width: 70.0%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference external" href="marimo/interactive_display/index.html">Divergent pointing</a></p></td>
-<td><p>Introduction to the divergent pointing mode, with a single array. Drag the
-divergence parameter and see how the hyper field of view and mean
-multiplicity trade off.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference external" href="marimo/two_sites/index.html">CTAO sites</a></p></td>
-<td><p>CTAO is two arrays: North at La Palma, 4 LSTs and 9 MSTs, and South
-at Paranal, 14 MSTs and 37 SSTs with no LSTs at all. Loads both, and
-compares what their size and camera mix buy in hyper FoV and
-multiplicity.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference external" href="marimo/observing_a_source/index.html">Observing a real source</a></p></td>
-<td><p>Pick a source and a night. When is it up, when is the sun down, and what
-happens to the array’s coverage as it tracks a source across the sky.
-Uses <a class="reference internal" href="docstring.html#divtel.observation.Observation" title="divtel.observation.Observation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Observation</span></code></a>.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference external" href="marimo/choosing_div/index.html">Choosing div</a></p></td>
-<td><p>The question the guide leaves open. Decide what field of view you want
-and what multiplicity you can live with, and those two fix <code class="docutils literal notranslate"><span class="pre">div</span></code> –
-which turns out to move as the source does.</p></td>
-</tr>
-</tbody>
-</table>
+          <section id="definitions">
+<h1>Definitions<a class="headerlink" href="#definitions" title="Link to this heading">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">divtel</span></code> works entirely in geometry and solid angle. It contains no
+shower physics, no effective area, no night-sky background and no energy
+threshold — see <span class="xref std std-doc">capabilities</span> for where that stops and a shower
+simulation has to take over. This page sets out the quantities it
+computes, since the rest of this section is written in them. For the
+package’s actual interface, see the <a class="reference internal" href="guide.html"><span class="doc">User guide</span></a>.</p>
+<section id="pointing">
+<h2>Pointing<a class="headerlink" href="#pointing" title="Link to this heading">¶</a></h2>
+<p>A telescope is a ground position, a focal length <span class="math notranslate nohighlight">\(f\)</span> and a camera
+radius <span class="math notranslate nohighlight">\(r\)</span>. The two camera numbers enter only through their ratio: a
+camera of radius <span class="math notranslate nohighlight">\(r\)</span> at the focus subtends a disc of angular radius
+<span class="math notranslate nohighlight">\(\rho = \arctan(r/f)\)</span> on the sky. Arrays are read from files giving
+these per telescope, and the official CTAO prod6 Alpha layouts ship with
+the package, so every number in this section can be reproduced without
+assembling an array by hand.</p>
+<p>Each telescope carries its own direction, and any telescope can be aimed
+anywhere in the sky. Four ways of setting the directions cover everything
+used here:</p>
+<ul class="simple">
+<li><p><strong>Parallel</strong> — every telescope aimed at one sky position, conventional
+pointing.</p></li>
+<li><p><strong>Divergent</strong> — every telescope spread by a single parameter, <code class="docutils literal notranslate"><span class="pre">div</span></code>
+(<a class="reference internal" href="#how-divergent-pointing-is-built">How divergent pointing is built</a> shows the construction).</p></li>
+<li><p><strong>Sub-arrays</strong> — telescopes grouped, each group pointed independently.
+Not covered in this section yet.</p></li>
+<li><p><strong>Per-telescope</strong> — a direction given for each telescope from a table,
+which turns the package from a divergence calculator into a general
+planning tool. Not covered in this section yet.</p></li>
+</ul>
+<p>A telescope can also be aimed at a named object or a sky coordinate rather
+than an alt-azimuth direction: <span class="xref std std-doc">capabilities</span> covers tracking a real
+source across a night.</p>
+</section>
+<section id="what-the-array-sees">
+<h2>What the array sees<a class="headerlink" href="#what-the-array-sees" title="Link to this heading">¶</a></h2>
+<p>Each telescope sees a disc of angular radius <span class="math notranslate nohighlight">\(\rho\)</span> centred on its
+pointing. Pointed in parallel these discs coincide and the array sees one
+disc. Pointed apart, the discs separate and their boundaries cut the union
+into patches, every point of which is seen by the same number of
+telescopes. That number is the <strong>multiplicity</strong> <span class="math notranslate nohighlight">\(m\)</span>, and the field
+<span class="math notranslate nohighlight">\(m(\hat{n})\)</span> over the sky is the primary output of the package. From
+it,</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[A(m_{\min}) = \sum_{i \,:\, m_i \ge m_{\min}} A_i\]</div>
 </div>
-<p>Each is a marimo notebook under <code class="docutils literal notranslate"><span class="pre">examples/marimo/</span></code>, editable locally with
-<code class="docutils literal notranslate"><span class="pre">marimo</span> <span class="pre">edit</span> <span class="pre">examples/marimo/&lt;name&gt;.py</span></code>.</p>
+<p>is the <strong>hyper field of view</strong>: the total solid angle seen by at least
+<span class="math notranslate nohighlight">\(m_{\min}\)</span> telescopes. <span class="math notranslate nohighlight">\(A(1)\)</span> is the sky the array watches.
+<span class="math notranslate nohighlight">\(A(2)\)</span> is the sky it can <em>use</em>, because a shower recorded by a
+single telescope yields no stereoscopic direction or impact point. Sky
+seen once is not sky observed, so quoting <span class="math notranslate nohighlight">\(A(1)\)</span> for a divergent
+array overstates what it delivers — every coverage figure in this
+documentation is <span class="math notranslate nohighlight">\(A(2)\)</span> unless stated otherwise.</p>
+<p>The second summary is the area-weighted mean multiplicity. Each camera
+contributes its own solid angle to every patch it covers, so</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\langle m \rangle = \frac{\sum_i m_i A_i}{\sum_i A_i} = \frac{\Omega}{A(1)},
+\qquad \Omega = \sum_{\mathrm{telescopes}} \pi \rho^2,\]</div>
+</div>
+<p>with <span class="math notranslate nohighlight">\(\Omega\)</span> the array’s total camera solid angle. This equation is
+a conservation law: no pointing arrangement creates camera area, it only
+redistributes a fixed <span class="math notranslate nohighlight">\(\Omega\)</span> over whatever sky the array chooses to
+watch, and <span class="math notranslate nohighlight">\(\langle m \rangle\)</span> falls as that sky grows. Every
+trade-off in <a class="reference internal" href="ceiling.html"><span class="doc">The divergence spread and ceiling</span></a> follows from it. The variance of <span class="math notranslate nohighlight">\(m\)</span>
+over the same patches measures how <em>evenly</em> the coverage is spread, and it
+is not a detail — see <a class="reference internal" href="ceiling.html"><span class="doc">The divergence spread and ceiling</span></a> for why.</p>
+<p>Both quantities are computed on a Lambert azimuthal equal-area projection
+centred on the array’s mean pointing, so patch areas are true solid angles
+and there is no coordinate singularity at the zenith. <a class="reference internal" href="#the-array-and-the-sky-it-sees">The array and the
+sky it sees</a> below shows the two views the package draws from this: the
+array on the ground with its pointing directions, and the sky it covers
+shaded by multiplicity.</p>
+</section>
+<section id="the-array-and-the-sky-it-sees">
+<h2>The array and the sky it sees<a class="headerlink" href="#the-array-and-the-sky-it-sees" title="Link to this heading">¶</a></h2>
+<p>CTAO-North at <code class="docutils literal notranslate"><span class="pre">div</span></code> = 0.03, 70° altitude: four LSTs inside nine MSTs, each
+with its own camera size.</p>
+<a class="reference internal image-reference" href="_static/studies/array_and_sky.png"><img alt="CTAO-North on the ground and the sky it covers, shaded by multiplicity" src="_static/studies/array_and_sky.png" style="width: 100%;" />
+</a>
+<p>Left, the array on the ground, with each telescope’s pointing direction as
+an arrow and the two camera sizes distinguished. Right, the sky the array
+covers, shaded by multiplicity. The array watches <span class="math notranslate nohighlight">\(A(1) = 178\)</span> deg²,
+of which <span class="math notranslate nohighlight">\(A(2) = 117\)</span> deg² is stereoscopic, at a mean multiplicity of
+2.66. The outer ring seen by a single telescope is already visible at this
+modest <code class="docutils literal notranslate"><span class="pre">div</span></code> — <a class="reference internal" href="ceiling.html"><span class="doc">The divergence spread and ceiling</span></a> is about how far it can be pushed before
+that ring is most of what is left.</p>
+</section>
+<section id="how-divergent-pointing-is-built">
+<h2>How divergent pointing is built<a class="headerlink" href="#how-divergent-pointing-is-built" title="Link to this heading">¶</a></h2>
+<p>Divergent pointing aims every telescope along the line joining it to a
+point <span class="math notranslate nohighlight">\(G\)</span> placed behind the array, so telescopes on opposite sides
+tilt in opposite directions and the array fans out like an umbrella.
+<span class="math notranslate nohighlight">\(G\)</span> sits on the mean pointing direction, a distance <span class="math notranslate nohighlight">\(|BG|\)</span>
+behind the barycentre <span class="math notranslate nohighlight">\(B\)</span>, set by one dimensionless parameter
+<code class="docutils literal notranslate"><span class="pre">div</span></code>:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[|BG| = \frac{D}{\tan(\arcsin(\mathrm{div}))}, \qquad D = 100\,\mathrm{m},\]</div>
+</div>
+<p>equivalent to <span class="math notranslate nohighlight">\(\mathrm{div} = \sin\theta_D\)</span>, with <span class="math notranslate nohighlight">\(\theta_D\)</span>
+the divergence acquired by a telescope at perpendicular offset <span class="math notranslate nohighlight">\(D\)</span>
+from the barycentre. At <code class="docutils literal notranslate"><span class="pre">div</span></code> = 0, <span class="math notranslate nohighlight">\(G\)</span> recedes to infinity and the
+array points in parallel; at <code class="docutils literal notranslate"><span class="pre">div</span></code> = 1 it sits at the barycentre and the
+telescopes point radially outward.</p>
+<a class="reference internal image-reference" href="_static/studies/div_schema.png"><img alt="Schematic of the divergent pointing construction, telescopes aiming away from a point G behind the array" src="_static/studies/div_schema.png" style="width: 70%;" />
+</a>
+<p>Telescopes sit on the ground line through the barycentre <span class="math notranslate nohighlight">\(B\)</span>; each
+aims along the line from its own position through the aim point <span class="math notranslate nohighlight">\(G\)</span>.
+A telescope at perpendicular offset <span class="math notranslate nohighlight">\(D\)</span> from <span class="math notranslate nohighlight">\(B\)</span> acquires
+divergence <span class="math notranslate nohighlight">\(\theta_D\)</span>. Moving <span class="math notranslate nohighlight">\(G\)</span> closer to <span class="math notranslate nohighlight">\(B\)</span> steepens
+every angle at once; moving it to infinity brings every telescope back to
+parallel. This is a schematic in the plane containing the array and the
+mean pointing direction, at an exaggerated <code class="docutils literal notranslate"><span class="pre">div</span></code> = 0.12 for clarity; a
+real array spreads in three dimensions and <a class="reference internal" href="docstring.html#divtel.telescope.Array.divergent_pointing" title="divtel.telescope.Array.divergent_pointing"><code class="xref py py-meth docutils literal notranslate"><span class="pre">divergent_pointing()</span></code></a>
+handles that directly.</p>
+</section>
 </section>
 
         </article>
@@ -286,23 +370,23 @@ which turns out to move as the source does.</p></td>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="docstring.html">
+          <a class="next-page" href="ceiling.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">API documentation</div>
+                <div class="title">The divergence spread and ceiling</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="guide.html">
+          <a class="prev-page" href="introduction.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">User guide</div>
+                <div class="title">Introduction</div>
                 
               </div>
             </a>
@@ -324,8 +408,30 @@ which turns out to move as the source does.</p></td>
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Definitions</a><ul>
+<li><a class="reference internal" href="#pointing">Pointing</a></li>
+<li><a class="reference internal" href="#what-the-array-sees">What the array sees</a></li>
+<li><a class="reference internal" href="#the-array-and-the-sky-it-sees">The array and the sky it sees</a></li>
+<li><a class="reference internal" href="#how-divergent-pointing-is-built">How divergent pointing is built</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
@@ -334,5 +440,6 @@ which turns out to move as the source does.</p></td>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     </body>
 </html>

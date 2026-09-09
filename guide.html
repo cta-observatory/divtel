@@ -3,10 +3,10 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="Examples" href="examples.html"><link rel="prev" title="divtel" href="index.html">
+<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="Interactive Examples" href="examples.html"><link rel="prev" title="divtel" href="index.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>User guide - divtel 1.1.0 documentation</title>
+        <title>User guide - divtel 1.1.1.dev3+g956316cc6 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">divtel 1.1.0 documentation</div></a>
+      <a href="index.html"><div class="brand">divtel 1.1.1.dev3+g956316cc6 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,8 +193,15 @@
   <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">User guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Interactive Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docstring.html">API documentation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Studies</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="definitions.html">Definitions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ceiling.html">The divergence spread and ceiling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tracking.html">Tracking a source</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Project</span></p>
 <ul>
@@ -243,7 +250,7 @@
 array. Place telescopes on the ground, point them in parallel or
 divergently, and measure the sky they see.</p>
 <p>For full signatures, see the <a class="reference internal" href="docstring.html"><span class="doc">API docs</span></a>. For something to
-play with in the browser, see <a class="reference internal" href="examples.html"><span class="doc">Examples</span></a>.</p>
+play with in the browser, see <a class="reference internal" href="examples.html"><span class="doc">Interactive Examples</span></a>.</p>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h2>
 <p>divtel is on <a class="reference external" href="https://pypi.org/project/divtel/">PyPI</a>:</p>
@@ -314,7 +321,7 @@ plain text with a small header naming each column and its unit:</p>
 things on, and <code class="docutils literal notranslate"><span class="pre">cta-north-lapalma-alpha-prod6.ecsv</span></code>, the official CTAO
 North layout at La Palma, 4 LSTs and 9 MSTs (Prod6, Alpha configuration).
 There’s a South counterpart too, <code class="docutils literal notranslate"><span class="pre">cta-south-paranal-alpha-prod6.ecsv</span></code>, 14
-MSTs and 37 SSTs at Paranal, no LSTs; see <a class="reference internal" href="examples.html"><span class="doc">Examples</span></a> for a tutorial that
+MSTs and 37 SSTs at Paranal, no LSTs; see <a class="reference internal" href="examples.html"><span class="doc">Interactive Examples</span></a> for a tutorial that
 loads both. A layout file needs the columns <code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code>, <code class="docutils literal notranslate"><span class="pre">z</span></code>, <code class="docutils literal notranslate"><span class="pre">focal</span></code> and
 <code class="docutils literal notranslate"><span class="pre">camera_radius</span></code>, and may carry an <code class="docutils literal notranslate"><span class="pre">id</span></code> column:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span># %ECSV 1.0
@@ -753,7 +760,10 @@ angle instead of altitude, and its azimuth runs the other way.
 <section id="where-to-go-next">
 <h2>Where to go next<a class="headerlink" href="#where-to-go-next" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="examples.html"><span class="doc">Examples</span></a>: the same model with sliders, running in your browser.</p></li>
+<li><p><a class="reference internal" href="examples.html"><span class="doc">Interactive Examples</span></a>: the same model with sliders, running in your browser.</p></li>
+<li><p><a class="reference internal" href="introduction.html"><span class="doc">Introduction</span></a>: the Studies section, the paper this package comes
+from written up as documentation, as far as how far divergence can
+usefully spread an array.</p></li>
 <li><p><a class="reference internal" href="docstring.html"><span class="doc">API documentation</span></a>: the full API.</p></li>
 <li><p><a class="reference external" href="https://github.com/cta-observatory/divtel">Source and issue tracker</a>.</p></li>
 </ul>
@@ -770,7 +780,7 @@ angle instead of altitude, and its azimuth runs the other way.
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Examples</div>
+                <div class="title">Interactive Examples</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -848,7 +858,7 @@ angle instead of altitude, and its azimuth runs the other way.
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=fc837d61"></script>
+</div><script src="_static/documentation_options.js?v=c0fcf57f"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>
