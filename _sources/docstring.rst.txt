@@ -31,6 +31,30 @@ without ambiguity.
    :undoc-members:
    :show-inheritance:
 
+``divtel.region``
+=================
+
+A target that is not a point: a set of sky directions with a weight on each.
+Everything in :mod:`divtel.strategy` works on one, and building one from a
+published sky map is the only step that needs anything beyond divtel itself.
+
+.. automodule:: divtel.region
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+``divtel.strategy``
+===================
+
+Covering a weighted region: sequential tiling, simultaneous sub-arrays, and
+shaped pointing that makes the array's depth follow the weight. :doc:`gw170817`
+runs all of them against a real gravitational-wave localization.
+
+.. automodule:: divtel.strategy
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 ``divtel.pointing``
 ===================
 
@@ -52,6 +76,23 @@ the ground-frame geometry to real sources at real times. Nothing in
 :mod:`divtel.telescope` depends on it.
 
 .. automodule:: divtel.observation
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+``divtel.skymap``
+=================
+
+Reading a published HEALPix localization and cutting credible regions out of
+it. The one part of divtel with a dependency of its own, so it lives behind an
+extra::
+
+    pip install divtel[skymap]
+
+Precomputed GW170817 regions ship in ``divtel/data/gw170817``, so a study that
+only wants those needs neither this module nor the extra.
+
+.. automodule:: divtel.skymap
    :members:
    :undoc-members:
    :show-inheritance:

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="./favicon.ico" />
+    <!-- Preload is necessary because we show these images when we disconnect from the server,
+    but at that point we cannot load these images from the server -->
+    <link rel="preload" href="./assets/gradient-yHQUC_QB.png" as="image" />
+    <link rel="preload" href="./assets/noise-60BoTA8O.png" as="image" />
+    <!-- Preload the fonts -->
+    <link rel="preload" href="./assets/Lora-VariableFont_wght-CZceb_kH.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href="./assets/PTSans-Regular-Bam3NpBI.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href="./assets/PTSans-Bold-C_DwAp7Z.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href="./assets/FiraMono-Regular-CEsLFVD9.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href="./assets/FiraMono-Medium-D5MAsWEG.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href="./assets/FiraMono-Bold-C6PDArdf.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="a marimo app" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+    <link rel="manifest" href="./manifest.json" />
+
+    <script data-marimo="true">
+      function __resizeIframe(obj) {
+        const scrollbarHeight = 20; // Max between windows, mac, and linux
+
+        function setHeight() {
+          // Guard against race condition where iframe isn't ready
+          if (!obj.contentWindow?.document?.documentElement) {
+            return;
+          }
+          const element = obj.contentWindow.document.documentElement;
+          // If there is no vertical scrollbar, we don't need to resize the iframe
+          if (element.scrollHeight === element.clientHeight) {
+            return;
+          }
+
+          // Create a new height that includes the scrollbar height if it's visible
+          const hasHorizontalScrollbar = element.scrollWidth > element.clientWidth;
+          const newHeight = element.scrollHeight + (hasHorizontalScrollbar ? scrollbarHeight : 0);
+
+          // Only update the height if it's different from the current height
+          if (obj.style.height !== `${newHeight}px`) {
+            obj.style.height = `${newHeight}px`;
+          }
+        }
+
+        // Resize the iframe to the height of the content and bottom scrollbar height
+        setHeight();
+
+        // Resize the iframe when the content changes
+        const resizeObserver = new ResizeObserver((_entries) => {
+          setHeight();
+        });
+        // Only observe if iframe content is ready
+        if (obj.contentWindow?.document?.body) {
+          resizeObserver.observe(obj.contentWindow.document.body);
+        }
+      }
+    </script>
+    <marimo-filename hidden>notebook.py</marimo-filename>
+    <!-- TODO(Trevor): Legacy, required by VS Code plugin. Remove when plugin is updated (see marimo/server/_templates/template.py) -->
+    <marimo-version data-version="{{ version }}" hidden></marimo-version>
+    <marimo-user-config data-config="{{ user_config }}" hidden></marimo-user-config>
+    <marimo-server-token data-token="{{ server_token }}" hidden></marimo-server-token>
+    <!-- /TODO -->
+    <title>gw170817 strategies</title>
+    <script type="module" crossorigin src="./assets/index-C5WESBbZ.js"></script>
+    <link rel="modulepreload" crossorigin href="./assets/preload-helper-BPPi7vOr.js">
+    <link rel="modulepreload" crossorigin href="./assets/objects-CrbstYTV.js">
+    <link rel="modulepreload" crossorigin href="./assets/chunk-C4rtOYze.js">
+    <link rel="modulepreload" crossorigin href="./assets/react-C60yClUi.js">
+    <link rel="modulepreload" crossorigin href="./assets/compiler-runtime-DnimoHo0.js">
+    <link rel="modulepreload" crossorigin href="./assets/jsx-runtime-3wZU7vFS.js">
+    <link rel="modulepreload" crossorigin href="./assets/useEventListener-DpNnLPuE.js">
+    <link rel="modulepreload" crossorigin href="./assets/defaultLocale-CGJY8D9C.js">
+    <link rel="modulepreload" crossorigin href="./assets/precisionRound-DQz5N1zm.js">
+    <link rel="modulepreload" crossorigin href="./assets/defaultLocale-DzliDDTm.js">
+    <link rel="modulepreload" crossorigin href="./assets/vega-loader.browser-DLY285WP.js">
+    <link rel="modulepreload" crossorigin href="./assets/tooltip-BUmTS76K.js">
+    <link rel="modulepreload" crossorigin href="./assets/clsx-Dz_KRrWq.js">
+    <link rel="modulepreload" crossorigin href="./assets/cn-DCUzRj2J.js">
+    <link rel="modulepreload" crossorigin href="./assets/badge-D28DMr4y.js">
+    <link rel="modulepreload" crossorigin href="./assets/button-W__YVea9.js">
+    <link rel="modulepreload" crossorigin href="./assets/react-dom-Ba2zmJWD.js">
+    <link rel="modulepreload" crossorigin href="./assets/fullscreen-CrevbcR_.js">
+    <link rel="modulepreload" crossorigin href="./assets/menu-items-B8lIBnFI.js">
+    <link rel="modulepreload" crossorigin href="./assets/dist-CFnrytEJ.js">
+    <link rel="modulepreload" crossorigin href="./assets/createLucideIcon-B8oVfJNp.js">
+    <link rel="modulepreload" crossorigin href="./assets/check-CyyJPf_5.js">
+    <link rel="modulepreload" crossorigin href="./assets/x-4y-nyVDU.js">
+    <link rel="modulepreload" crossorigin href="./assets/select-CPo-KTTe.js">
+    <link rel="modulepreload" crossorigin href="./assets/tooltip-C9LWGQ7Y.js">
+    <link rel="modulepreload" crossorigin href="./assets/use-toast-DjpWVza6.js">
+    <link rel="modulepreload" crossorigin href="./assets/useEvent-GCVIknuR.js">
+    <link rel="modulepreload" crossorigin href="./assets/invariant-BUdrueMv.js">
+    <link rel="modulepreload" crossorigin href="./assets/isObject-DvLSfCY5.js">
+    <link rel="modulepreload" crossorigin href="./assets/isArrayLikeObject-Dqg6_6m7.js">
+    <link rel="modulepreload" crossorigin href="./assets/_initCloneObject-7OOScFCJ.js">
+    <link rel="modulepreload" crossorigin href="./assets/merge-BK1opWhR.js">
+    <link rel="modulepreload" crossorigin href="./assets/zod-BIDX-mZr.js">
+    <link rel="modulepreload" crossorigin href="./assets/utils-C8Yt16Y7.js">
+    <link rel="modulepreload" crossorigin href="./assets/constants-DifUxsbZ.js">
+    <link rel="modulepreload" crossorigin href="./assets/session-D-SddyN0.js">
+    <link rel="modulepreload" crossorigin href="./assets/Deferred-CP7vq682.js">
+    <link rel="modulepreload" crossorigin href="./assets/config-EoJoeZuK.js">
+    <link rel="modulepreload" crossorigin href="./assets/uuid-e9lSomwA.js">
+    <link rel="modulepreload" crossorigin href="./assets/DeferredRequestRegistry-6TRSC3VZ.js">
+    <link rel="modulepreload" crossorigin href="./assets/requests-B9zEd_sW.js">
+    <link rel="modulepreload" crossorigin href="./assets/useLifecycle-DDwuYzlC.js">
+    <link rel="modulepreload" crossorigin href="./assets/useNonce-C2dwX-sI.js">
+    <link rel="modulepreload" crossorigin href="./assets/useTheme-CwCyrmDf.js">
+    <link rel="modulepreload" crossorigin href="./assets/arrays-UzzAzxsG.js">
+    <link rel="modulepreload" crossorigin href="./assets/strings-DmKKoXrM.js">
+    <link rel="modulepreload" crossorigin href="./assets/once-DNBWPkeJ.js">
+    <link rel="modulepreload" crossorigin href="./assets/capabilities-CHeZxy51.js">
+    <link rel="modulepreload" crossorigin href="./assets/createReducer-C1MhlItJ.js">
+    <link rel="modulepreload" crossorigin href="./assets/paths-D5zczhUD.js">
+    <link rel="modulepreload" crossorigin href="./assets/dist-CeF1Em5L.js">
+    <link rel="modulepreload" crossorigin href="./assets/dist-Di6rD-vJ.js">
+    <link rel="modulepreload" crossorigin href="./assets/dist-DanVWUek.js">
+    <link rel="modulepreload" crossorigin href="./assets/dist-BVNaV53g.js">
+    <link rel="modulepreload" crossorigin href="./assets/dist-BrqkjqDe.js">
+    <link rel="modulepreload" crossorigin href="./assets/dist-5bwTcyKs.js">
+    <link rel="modulepreload" crossorigin href="./assets/dist-BPoMypmC.js">
+    <link rel="modulepreload" crossorigin href="./assets/dist-Bm9PT5P9.js">
+    <link rel="modulepreload" crossorigin href="./assets/dist-BbqPy6oS.js">
+    <link rel="modulepreload" crossorigin href="./assets/stex-BGrE-q7N.js">
+    <link rel="modulepreload" crossorigin href="./assets/toDate-QOk09NqD.js">
+    <link rel="modulepreload" crossorigin href="./assets/purify.es-Bwm8T4QC.js">
+    <link rel="modulepreload" crossorigin href="./assets/cjs-DCKmcMBz.js">
+    <link rel="modulepreload" crossorigin href="./assets/isSymbol-BT6B8Bon.js">
+    <link rel="modulepreload" crossorigin href="./assets/now-CsYTPAhW.js">
+    <link rel="modulepreload" crossorigin href="./assets/debounce-DhnxH9Rh.js">
+    <link rel="modulepreload" crossorigin href="./assets/database-zap-n8PGHE18.js">
+    <link rel="modulepreload" crossorigin href="./assets/cells-DTFqEQb0.js">
+    <link rel="modulepreload" crossorigin href="./assets/kbd-PEowR7op.js">
+    <link rel="modulepreload" crossorigin href="./assets/useInstallPackage-D58nBaNf.js">
+    <link rel="modulepreload" crossorigin href="./assets/alert-dialog-D_kB5FIu.js">
+    <link rel="modulepreload" crossorigin href="./assets/dialog-WU4x2UpK.js">
+    <link rel="modulepreload" crossorigin href="./assets/useDebounce-BlgD22u_.js">
+    <link rel="modulepreload" crossorigin href="./assets/numbers-DtSpUdpO.js">
+    <link rel="modulepreload" crossorigin href="./assets/SSRProvider-CouFQxI2.js">
+    <link rel="modulepreload" crossorigin href="./assets/context-BJMN4ll3.js">
+    <link rel="modulepreload" crossorigin href="./assets/useNumberFormatter-xxZlcf11.js">
+    <link rel="modulepreload" crossorigin href="./assets/usePress-Bl6X9B5M.js">
+    <link rel="modulepreload" crossorigin href="./assets/input-BN98e517.js">
+    <link rel="modulepreload" crossorigin href="./assets/ImperativeModal-Dxj31V4A.js">
+    <link rel="modulepreload" crossorigin href="./assets/cell-link-D26WjdN1.js">
+    <link rel="modulepreload" crossorigin href="./assets/config-DjP9S1hr.js">
+    <link rel="modulepreload" crossorigin href="./assets/alert-CHWQT4zh.js">
+    <link rel="modulepreload" crossorigin href="./assets/chevron-right-C9ZBG6Lx.js">
+    <link rel="modulepreload" crossorigin href="./assets/dropdown-menu-DWGvf_Bw.js">
+    <link rel="modulepreload" crossorigin href="./assets/links-BeU4kHTI.js">
+    <link rel="modulepreload" crossorigin href="./assets/useRunCells-BpZ_0Xuz.js">
+    <link rel="modulepreload" crossorigin href="./assets/copy-HCSOwOwk.js">
+    <link rel="modulepreload" crossorigin href="./assets/copy-DlR5UiIE.js">
+    <link rel="modulepreload" crossorigin href="./assets/copy-icon-Cn8LzPNx.js">
+    <link rel="modulepreload" crossorigin href="./assets/RenderHTML-X9kskQZ0.js">
+    <link rel="modulepreload" crossorigin href="./assets/datasource-DZgUyqAK.js">
+    <link rel="modulepreload" crossorigin href="./assets/state-ByxLiTvP.js">
+    <link rel="modulepreload" crossorigin href="./assets/hat-glasses-xLTnAC_n.js">
+    <link rel="modulepreload" crossorigin href="./assets/package-ROei-DG7.js">
+    <link rel="modulepreload" crossorigin href="./assets/sparkles-DwqcWrJl.js">
+    <link rel="modulepreload" crossorigin href="./assets/MarimoErrorOutput-BVdFtnJz.js">
+    <link rel="modulepreload" crossorigin href="./assets/ErrorBoundary-B392qglD.js">
+    <link rel="modulepreload" crossorigin href="./assets/eye-off-DfXRjba3.js">
+    <link rel="modulepreload" crossorigin href="./assets/refresh-cw-DPUCy0Ep.js">
+    <link rel="modulepreload" crossorigin href="./assets/tree-actions-DUAdNn1i.js">
+    <link rel="modulepreload" crossorigin href="./assets/spinner-Cj3eM5bt.js">
+    <link rel="modulepreload" crossorigin href="./assets/html-to-image-BsXiWo0v.js">
+    <link rel="modulepreload" crossorigin href="./assets/focus-BTlyH5K_.js">
+    <link rel="modulepreload" crossorigin href="./assets/useAsyncData-BcvSvTUt.js">
+    <link rel="modulepreload" crossorigin href="./assets/LazyAnyLanguageCodeMirror-DUvRReKp.js">
+    <link rel="modulepreload" crossorigin href="./assets/micromark-factory-space-D4wN6pqE.js">
+    <link rel="modulepreload" crossorigin href="./assets/chunk-5FQGJX7Z-B4N_BMo6.js">
+    <link rel="modulepreload" crossorigin href="./assets/markdown-renderer-BjuEVUOa.js">
+    <link rel="modulepreload" crossorigin href="./assets/command-D5LtSvbN.js">
+    <link rel="modulepreload" crossorigin href="./assets/field-BPfggvql.js">
+    <link rel="modulepreload" crossorigin href="./assets/popover-B96fOqfH.js">
+    <link rel="modulepreload" crossorigin href="./assets/errors-D93OkQw8.js">
+    <link rel="modulepreload" crossorigin href="./assets/download-_oAlkvj6.js">
+    <link rel="modulepreload" crossorigin href="./assets/table-xPvP31p3.js">
+    <link rel="modulepreload" crossorigin href="./assets/useIframeCapabilities-DBacdN1t.js">
+    <link rel="modulepreload" crossorigin href="./assets/error-banner-d0-XOKtd.js">
+    <link rel="modulepreload" crossorigin href="./assets/formats-CydJsDOc.js">
+    <link rel="modulepreload" crossorigin href="./assets/utils-Y4n-X10o.js">
+    <link rel="modulepreload" crossorigin href="./assets/en-US-orJ4dPbF.js">
+    <link rel="modulepreload" crossorigin href="./assets/isValid-BmtlFqSa.js">
+    <link rel="modulepreload" crossorigin href="./assets/dates-CZTDC2tF.js">
+    <link rel="modulepreload" crossorigin href="./assets/extends-BiFDv3jB.js">
+    <link rel="modulepreload" crossorigin href="./assets/emotion-is-prop-valid.esm-C59xfSYt.js">
+    <link rel="modulepreload" crossorigin href="./assets/useDateFormatter-Cxnn3tJh.js">
+    <link rel="modulepreload" crossorigin href="./assets/react-icons.esm-CsgEZOQ_.js">
+    <link rel="modulepreload" crossorigin href="./assets/RSPContexts-oeZyXDWd.js">
+    <link rel="modulepreload" crossorigin href="./assets/table-FVnUU4--.js">
+    <link rel="modulepreload" crossorigin href="./assets/ellipsis-CUbXmdb-.js">
+    <link rel="modulepreload" crossorigin href="./assets/external-link-C8y9rFms.js">
+    <link rel="modulepreload" crossorigin href="./assets/message-circle-DJwyqZtq.js">
+    <link rel="modulepreload" crossorigin href="./assets/plus-r1QITpsJ.js">
+    <link rel="modulepreload" crossorigin href="./assets/trash-2-BLxp8uxj.js">
+    <link rel="modulepreload" crossorigin href="./assets/react-resizable-panels.browser.esm-CLaR27oP.js">
+    <link rel="modulepreload" crossorigin href="./assets/JsonOutput-DnrBQBRT.js">
+    <link rel="modulepreload" crossorigin href="./assets/chart-no-axes-column-eb23KpAk.js">
+    <link rel="modulepreload" crossorigin href="./assets/square-function-ypIvDL4C.js">
+    <link rel="modulepreload" crossorigin href="./assets/spec-NeCHOv2Z.js">
+    <link rel="modulepreload" crossorigin href="./assets/column-preview-BLap3eAk.js">
+    <link rel="modulepreload" crossorigin href="./assets/icons-BwSNDWAP.js">
+    <link rel="modulepreload" crossorigin href="./assets/radio-group-5KDs5aO1.js">
+    <link rel="modulepreload" crossorigin href="./assets/floating-outline-Vqr5D17R.js">
+    <link rel="modulepreload" crossorigin href="./assets/switch-CDT2KH2g.js">
+    <link rel="modulepreload" crossorigin href="./assets/objectWithoutPropertiesLoose-DfWeGRFv.js">
+    <link rel="modulepreload" crossorigin href="./assets/esm-RBKN8Dn2.js">
+    <link rel="modulepreload" crossorigin href="./assets/readonly-python-code-BV8otm7e.js">
+    <link rel="modulepreload" crossorigin href="./assets/file-headphone-BjKz3ZV1.js">
+    <link rel="modulepreload" crossorigin href="./assets/file-BjlLTeSV.js">
+    <link rel="modulepreload" crossorigin href="./assets/image-Dvcyi0uu.js">
+    <link rel="modulepreload" crossorigin href="./assets/file-icons-V3puz20c.js">
+    <link rel="modulepreload" crossorigin href="./assets/events-CPoJAfgx.js">
+    <link rel="modulepreload" crossorigin href="./assets/share-c5Zh8BM8.js">
+    <link rel="modulepreload" crossorigin href="./assets/blob-BKW9TqBu.js">
+    <link rel="modulepreload" crossorigin href="./assets/get-DuxuLRGI.js">
+    <link rel="modulepreload" crossorigin href="./assets/_baseSet-DehVzRp6.js">
+    <link rel="modulepreload" crossorigin href="./assets/state-Ci7n55A9.js">
+    <link rel="modulepreload" crossorigin href="./assets/label-BOFHwHn7.js">
+    <link rel="modulepreload" crossorigin href="./assets/form-Bb1JVuzT.js">
+    <link rel="modulepreload" crossorigin href="./assets/textarea-Bn1AMfsk.js">
+    <link rel="modulepreload" crossorigin href="./assets/refresh-ccw-neWzNbg7.js">
+    <link rel="modulepreload" crossorigin href="./assets/form-CRSnWxLR.js">
+    <link rel="modulepreload" crossorigin href="./assets/renderShortcut-C6HKXhBl.js">
+    <link rel="modulepreload" crossorigin href="./assets/useBoolean-CgN_4RAl.js">
+    <link rel="modulepreload" crossorigin href="./assets/markdown-export-D-ZHIs71.js">
+    <link rel="modulepreload" crossorigin href="./assets/useDeepCompareMemoize-CbFVGT0j.js">
+    <link rel="modulepreload" crossorigin href="./assets/types-D0D7HkQV.js">
+    <link rel="modulepreload" crossorigin href="./assets/semaphore-X3ApuO41.js">
+    <link rel="modulepreload" crossorigin href="./assets/fileToBase64-CBP8Y0AP.js">
+    <link rel="modulepreload" crossorigin href="./assets/pathUtils-BCwK34YQ.js">
+    <link rel="modulepreload" crossorigin href="./assets/prop-types-BH1URye0.js">
+    <link rel="modulepreload" crossorigin href="./assets/es-dmMPFhRH.js">
+    <link rel="modulepreload" crossorigin href="./assets/_hasPath-D0QK37mF.js">
+    <link rel="modulepreload" crossorigin href="./assets/hasIn-DrYqVooW.js">
+    <link rel="modulepreload" crossorigin href="./assets/pick-Q2hMHnmn.js">
+    <link rel="modulepreload" crossorigin href="./assets/code-xml-COekUbUT.js">
+    <link rel="modulepreload" crossorigin href="./assets/globe-C2tUp3NL.js">
+    <link rel="modulepreload" crossorigin href="./assets/square-DVd8Y612.js">
+    <link rel="modulepreload" crossorigin href="./assets/triangle-alert-DGiOSARf.js">
+    <link rel="modulepreload" crossorigin href="./assets/bundle.esm-DTvm8QXy.js">
+    <link rel="stylesheet" crossorigin href="./assets/cells-BE1kpmPF.css">
+    <link rel="stylesheet" crossorigin href="./assets/markdown-renderer-DdDKmWlR.css">
+    <link rel="stylesheet" crossorigin href="./assets/JsonOutput-BQtz7-np.css">
+    <link rel="stylesheet" crossorigin href="./assets/index-WoaGtlKd.css">
+  <marimo-wasm hidden=""></marimo-wasm>
+    <script>
+        if (window.location.protocol === 'file:') {
+            alert('Warning: This file must be served by an HTTP server to function correctly.');
+        }
+    </script>
+    
+    <style>
+        #save-button {
+            display: none !important;
+        }
+        #filename-input {
+            display: none !important;
+        }
+    </style>
+    
+<script data-marimo="true">
+    Object.defineProperty(window, "__MARIMO_EXPORT_CONTEXT__", {
+        value: Object.freeze({
+            trusted: true,
+            notebookCode: "import marimo\n\n__generated_with = \"0.24.0\"\napp = marimo.App(width=\"full\")\n\n\n@app.cell(hide_code=True)\nasync def _():\n    import sys\n\n    # WASM has no site-packages, so divtel has to come from a wheel.\n    if sys.platform == \"emscripten\":\n        import json\n\n        import micropip\n        from pyodide.http import pyfetch\n\n        # Pyodide runs from a worker under assets/, so step up one level\n        # to reach the site root where the wheel is published.\n        base = \"../pypi/\"\n        # The wheel's filename carries a version, so read it from a\n        # manifest instead of hardcoding it.\n        response = await pyfetch(base + \"manifest.json\")\n        if response.status != 200:\n            raise RuntimeError(\n                f\"could not fetch {base}manifest.json (HTTP {response.status}). \"\n                \"The divtel wheel is missing from the published site.\"\n            )\n        manifest = json.loads(await response.string())\n        await micropip.install(base + manifest[\"divtel\"])\n    return\n\n\n@app.cell(hide_code=True)\ndef _():\n    from importlib.resources import files\n\n    import astropy.units as u\n    import marimo as mo\n    import matplotlib.pyplot as plt\n    import numpy as np\n\n    from divtel import strategy, visualization\n    from divtel.layout import load_array\n    from divtel.pointing import best_pointing\n    from divtel.region import SkyRegion\n\n    # SVG scales to its container; marimo's PNG path stamps a fixed pixel\n    # width that overflows a frame narrower than the figure.\n    plt.rcParams[\"savefig.format\"] = \"svg\"\n    plt.rcParams[\"font.size\"] = 9\n\n    DATA = files(\"divtel\") / \"data\"\n    return (\n        DATA,\n        SkyRegion,\n        best_pointing,\n        load_array,\n        mo,\n        np,\n        plt,\n        strategy,\n        u,\n        visualization,\n    )\n\n\n@app.cell(hide_code=True)\ndef _(mo):\n    mo.Html(\"\"\"\u003Cstyle\u003E img, svg { max-width: 100%; height: auto; } \u003C/style\u003E\"\"\")\n    return\n\n\n@app.cell(hide_code=True)\ndef _(mo):\n    mo.md(r\"\"\"\n    # Covering GW170817\n\n    A gravitational-wave localization is a probability distribution, not a\n    point, and the early ones are **arcs**: long, thin, and lumpy. There are\n    four ways to put an array on one, and they are not equally good.\n\n    Pick a map, a site and a strategy, and watch the array's *multiplicity* \u2014\n    how many cameras have each direction in frame \u2014 change shape. Two or more\n    telescopes can reconstruct a shower; one cannot, so grey is blind and the\n    palest blue is nearly so.\n    \"\"\")\n    return\n\n\n@app.cell(hide_code=True)\ndef _(mo):\n    MAPS = {\n        \"BAYESTAR H+L \u2014 the first alert, +0.7 h\": \"bayestar_hl\",\n        \"BAYESTAR H+L+V \u2014 with Virgo, +5.2 h\": \"bayestar_hlv\",\n        \"LALInference (preliminary), +16.3 h\": \"lalinference_prelim\",\n    }\n\n    which_map = mo.ui.dropdown(MAPS, value=list(MAPS)[0], label=\"localization\")\n    level = mo.ui.dropdown({\"50 %\": 50, \"90 %\": 90, \"95 %\": 95}, value=\"90 %\",\n                           label=\"credible level\")\n    site = mo.ui.dropdown({\"CTAO-South (14 MST + 37 SST)\": \"south\",\n                           \"CTAO-North (4 LST + 9 MST)\": \"north\"},\n                          value=\"CTAO-South (14 MST + 37 SST)\", label=\"array\")\n    altitude = mo.ui.slider(20, 85, value=60, step=5, label=\"placed at altitude\",\n                            show_value=True)\n\n    mo.hstack([which_map, level, site, altitude], justify=\"start\", gap=1.5)\n    return altitude, level, site, which_map\n\n\n@app.cell(hide_code=True)\ndef _(DATA, SkyRegion, altitude, level, load_array, site, u, which_map):\n    LAYOUTS = {\"north\": \"cta-north-lapalma-alpha-prod6.ecsv\",\n               \"south\": \"cta-south-paranal-alpha-prod6.ecsv\"}\n\n    array = load_array(DATA / LAYOUTS[site.value])\n\n    # The region is rotated rigidly to the chosen altitude, then cut at the\n    # horizon: an arc a hundred degrees long can run underground, and an\n    # optimiser handed that will aim telescopes there and report the coverage.\n    _whole = SkyRegion.from_table(\n        DATA / \"gw170817\" / f\"{which_map.value}_{level.value}.ecsv.gz\")\n    region, underground = _whole.place(altitude.value * u.deg, 180 * u.deg).visible_part()\n    return array, region, underground\n\n\n@app.cell(hide_code=True)\ndef _(mo):\n    STRATEGIES = {\n        \"parallel \u2014 everything on one spot\": \"parallel\",\n        \"divergent \u2014 one number, fanned out\": \"divergent\",\n        \"tiling \u2014 one array, moved in steps\": \"tiling\",\n        \"sub-arrays \u2014 split it, point the pieces\": \"subarrays\",\n        \"sub-arrays, sized by probability\": \"weighted\",\n        \"shaped \u2014 every telescope on its own\": \"shaped\",\n    }\n\n    how = mo.ui.dropdown(STRATEGIES, value=list(STRATEGIES)[3],\n                         label=\"pointing strategy\")\n    div = mo.ui.slider(0.0, 0.30, value=0.03, step=0.005, label=\"divergence d\",\n                       show_value=True)\n    groups = mo.ui.slider(2, 17, value=8, step=1,\n                          label=\"tiles, or sub-arrays\", show_value=True)\n    beta = mo.ui.slider(0.0, 2.0, value=1.0, step=0.25,\n                        label=\"\u03b2 \u2014 how hard to track the probability\",\n                        show_value=True)\n\n    mo.hstack([how, div, groups, beta], justify=\"start\", gap=1.5)\n    return beta, div, groups, how\n\n\n@app.cell(hide_code=True)\ndef _(how, mo):\n    # Shaped pointing is a coordinate ascent over every telescope at once. In a\n    # browser that is seconds rather than milliseconds, so it does not run on a\n    # slider drag -- and the settings below are cut down from the ones the\n    # study page's figures were computed with.\n    solve = mo.ui.run_button(label=\"solve the shaped pointing\")\n    solve if how.value == \"shaped\" else mo.md(\"\")\n    return (solve,)\n\n\n@app.cell\ndef _(array, best_pointing, beta, div, groups, how, region, solve, strategy):\n    exposures, note = 1, \"\"\n\n    if how.value == \"parallel\":\n        aim = best_pointing(array, region, 0.0)\n        note = f\"aimed at alt {aim['alt']:.1f}, az {aim['az']:.1f}\"\n\n    elif how.value == \"divergent\":\n        best_pointing(array, region, div.value)\n\n    elif how.value == \"tiling\":\n        tiles = strategy.tile_region(array, region, pointings=groups.value)\n        # The picture shows one tile; the coverage below is what the whole\n        # sequence reaches, which costs one exposure per tile.\n        array.divergent_pointing(0.0, tiles[0][\"alt\"], tiles[0][\"az\"])\n        exposures = len(tiles)\n        note = (f\"{100 * tiles[-1]['cumulative']:.0f} % after all \"\n                f\"{len(tiles)} tiles; the panel shows the first\")\n\n    elif how.value == \"subarrays\":\n        summary = strategy.point_subarrays(array, region, groups.value)\n        note = f\"group sizes {summary['sizes']}\"\n\n    elif how.value == \"weighted\":\n        summary = strategy.weighted_split(array, region, groups.value)\n        note = f\"group sizes {summary['sizes']}\"\n\n    elif how.value == \"shaped\":\n        if solve.value:\n            # Cut down for the browser: fewer candidate pointings, fewer scored\n            # directions, fewer sweeps and one warm start instead of seven.\n            strategy.shaped_pointing(array, region, beta=beta.value,\n                                     candidates=400, search_pixels=600,\n                                     sweeps=4, rounds=1, warm_starts=(6,))\n            note = \"cut-down solve; the study page uses the full budget\"\n        else:\n            best_pointing(array, region, 0.0)\n            note = \"press the button to solve\"\n\n    scored = strategy.describe(array, region, m_cut=2)\n    profile = strategy.multiplicity_by_probability(array, region)\n\n    # Every strategy above re-points `array` in place, and marimo re-runs a cell\n    # when a variable it reads is *redefined* -- mutation is invisible to it. So\n    # hand the pointed array on under a new name, or the figures below go stale\n    # while the numbers beside them update.\n    pointed = array\n    return exposures, note, pointed, profile, scored\n\n\n@app.cell(hide_code=True)\ndef _(exposures, mo, np, pointed, region, scored, u, underground):\n    # How many telescopes have any part of the region in frame. It is the\n    # number that separates the strategies most sharply: divergence spreads\n    # the array so wide that a third of it ends up staring at empty sky.\n    _cos_radii = np.cos([t.fov_radius.to_value(u.rad)\n                         for t in pointed.telescopes])\n    _on_target = int(((region.directions @ pointed.pointing_vectors.T)\n                      \u003E= _cos_radii).any(axis=0).sum())\n\n    mo.hstack([\n        mo.stat(label=\"covered in stereo\",\n                value=f\"{100 * scored['covered_stereo']:.0f} %\",\n                caption=f\"of the region above the horizon \"\n                        f\"({100 * underground:.0f} % of the map is not)\"),\n        mo.stat(label=\"telescopes per shower\",\n                value=f\"{scored['mean_covered']:.1f}\",\n                caption=\"averaged over the part covered\"),\n        mo.stat(label=\"telescopes on target\",\n                value=f\"{_on_target} of {len(pointed.telescopes)}\",\n                caption=\"the rest are pointed at empty sky\"),\n        mo.stat(label=\"exposures\", value=str(exposures),\n                caption=\"the window is divided between them\"),\n    ], justify=\"start\", gap=2)\n    return\n\n\n@app.cell(hide_code=True)\ndef _(mo, note):\n    mo.md(f\"*{note}*\") if note else mo.md(\"\")\n    return\n\n\n@app.cell(hide_code=True)\ndef _(plt, pointed, region, visualization):\n    # Where the cameras actually are, over the probability they are covering.\n    # The panel below shades the result; this one shows the cause.\n    _frame = visualization.projection_frame(region)\n    _figure, _ax = plt.subplots(figsize=(11.0, 4.0))\n\n    visualization.probability_over_region(region, ax=_ax, frame=_frame, size=3.0)\n    _rims = visualization.camera_rims(pointed, ax=_ax, frame=_frame,\n                                      colors=\"type\",\n                                      type_names=(\"SST\", \"MST\"))\n    visualization.frame_on(\n        _ax, _rims, visualization.region_extent(region, frame=_frame))\n\n    _legend = _ax.legend(frameon=False, fontsize=8, loc=\"upper left\", ncol=2)\n    for _handle in _legend.legend_handles:\n        if hasattr(_handle, \"set_sizes\"):\n            _handle.set_sizes([26])\n    _ax.set_title(\"the cameras, over the probability they cover\", loc=\"left\")\n    _figure.tight_layout()\n    _figure\n    return\n\n\n@app.cell(hide_code=True)\ndef _(plt, pointed, region, visualization):\n    # Its own figure, so the equal-aspect panel can take the full width rather\n    # than sharing it with a bar chart that wants a different shape.\n    _figure, _ax = plt.subplots(\n        figsize=(11.0, 1.6 + 11.0 * visualization.region_span(region)))\n    visualization.multiplicity_over_region(pointed, region, ax=_ax, size=6.0)\n    _ax.set_title(\"what that delivers: telescopes per direction\", loc=\"left\")\n    _figure.tight_layout()\n    _figure\n    return\n\n\n@app.cell(hide_code=True)\ndef _(plt, profile, visualization):\n    _figure, _ax = plt.subplots(figsize=(11.0, 3.0))\n    visualization.multiplicity_by_probability({\"this configuration\": profile},\n                                              ax=_ax)\n    _figure.tight_layout()\n    _figure\n    return\n\n\n@app.cell(hide_code=True)\ndef _(mo, profile, scored):\n    mo.md(\n        f\"\"\"\n    **Reading the three panels.** The first draws every telescope's field of\n    view over the localization, shaded darkest where the source most likely is.\n    Rims are coloured by camera size, so you can watch free pointing send the\n    narrow cameras where the map is sharp \u2014 something neither divergence nor an\n    even split can do. All three panels are equal-area, so a wide patch of\n    shallow coverage looks as big as it is.\n\n    The second shades the map by how many cameras land on each direction; grey\n    is sky no camera reaches. The third cuts the map into fifths of\n    *probability* \u2014 the last fifth is the small bright core, the first is the\n    wide faint skirt \u2014 and asks how deeply each is watched.\n\n    A flat profile is an array spread evenly over the region, which is only the\n    right answer if the map is flat. This one runs\n    **{profile[0]:.1f} \u2192 {profile[-1]:.1f}**, and its mismatch against the\n    probability is **{scored['mismatch']:.3f}** (zero would be depth exactly\n    proportional to probability over the part that clears the stereo cut).\n\n    Read that number beside the coverage and never alone: an array that\n    abandons everything but the core matches the shape of what it kept,\n    perfectly, and is useless.\n    \"\"\"\n    )\n    return\n\n\n@app.cell(hide_code=True)\ndef _(mo):\n    mo.md(r\"\"\"\n    ---\n\n    Everything here is geometry: where cameras point and what they cover. There\n    is no effective area, no energy threshold and no background, so none of\n    these percentages is a sensitivity. Coverage is necessary for a detection\n    and nowhere near sufficient.\n\n    The full argument, with the numbers, is in\n    [the study page](../../gw170817.html).\n    \"\"\")\n    return\n\n\nif __name__ == \"__main__\":\n    app.run()\n",
+        }),
+        writable: false,
+        configurable: false,
+    });
+</script>
+<marimo-code hidden="">import%20marimo%0A%0A__generated_with%20%3D%20%220.24.0%22%0Aapp%20%3D%20marimo.App(width%3D%22full%22)%0A%0A%0A%40app.cell(hide_code%3DTrue)%0Aasync%20def%20_()%3A%0A%20%20%20%20import%20sys%0A%0A%20%20%20%20%23%20WASM%20has%20no%20site-packages%2C%20so%20divtel%20has%20to%20come%20from%20a%20wheel.%0A%20%20%20%20if%20sys.platform%20%3D%3D%20%22emscripten%22%3A%0A%20%20%20%20%20%20%20%20import%20json%0A%0A%20%20%20%20%20%20%20%20import%20micropip%0A%20%20%20%20%20%20%20%20from%20pyodide.http%20import%20pyfetch%0A%0A%20%20%20%20%20%20%20%20%23%20Pyodide%20runs%20from%20a%20worker%20under%20assets%2F%2C%20so%20step%20up%20one%20level%0A%20%20%20%20%20%20%20%20%23%20to%20reach%20the%20site%20root%20where%20the%20wheel%20is%20published.%0A%20%20%20%20%20%20%20%20base%20%3D%20%22..%2Fpypi%2F%22%0A%20%20%20%20%20%20%20%20%23%20The%20wheel's%20filename%20carries%20a%20version%2C%20so%20read%20it%20from%20a%0A%20%20%20%20%20%20%20%20%23%20manifest%20instead%20of%20hardcoding%20it.%0A%20%20%20%20%20%20%20%20response%20%3D%20await%20pyfetch(base%20%2B%20%22manifest.json%22)%0A%20%20%20%20%20%20%20%20if%20response.status%20!%3D%20200%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20raise%20RuntimeError(%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20f%22could%20not%20fetch%20%7Bbase%7Dmanifest.json%20(HTTP%20%7Bresponse.status%7D).%20%22%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%22The%20divtel%20wheel%20is%20missing%20from%20the%20published%20site.%22%0A%20%20%20%20%20%20%20%20%20%20%20%20)%0A%20%20%20%20%20%20%20%20manifest%20%3D%20json.loads(await%20response.string())%0A%20%20%20%20%20%20%20%20await%20micropip.install(base%20%2B%20manifest%5B%22divtel%22%5D)%0A%20%20%20%20return%0A%0A%0A%40app.cell(hide_code%3DTrue)%0Adef%20_()%3A%0A%20%20%20%20from%20importlib.resources%20import%20files%0A%0A%20%20%20%20import%20astropy.units%20as%20u%0A%20%20%20%20import%20marimo%20as%20mo%0A%20%20%20%20import%20matplotlib.pyplot%20as%20plt%0A%20%20%20%20import%20numpy%20as%20np%0A%0A%20%20%20%20from%20divtel%20import%20strategy%2C%20visualization%0A%20%20%20%20from%20divtel.layout%20import%20load_array%0A%20%20%20%20from%20divtel.pointing%20import%20best_pointing%0A%20%20%20%20from%20divtel.region%20import%20SkyRegion%0A%0A%20%20%20%20%23%20SVG%20scales%20to%20its%20container%3B%20marimo's%20PNG%20path%20stamps%20a%20fixed%20pixel%0A%20%20%20%20%23%20width%20that%20overflows%20a%20frame%20narrower%20than%20the%20figure.%0A%20%20%20%20plt.rcParams%5B%22savefig.format%22%5D%20%3D%20%22svg%22%0A%20%20%20%20plt.rcParams%5B%22font.size%22%5D%20%3D%209%0A%0A%20%20%20%20DATA%20%3D%20files(%22divtel%22)%20%2F%20%22data%22%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%20%20DATA%2C%0A%20%20%20%20%20%20%20%20SkyRegion%2C%0A%20%20%20%20%20%20%20%20best_pointing%2C%0A%20%20%20%20%20%20%20%20load_array%2C%0A%20%20%20%20%20%20%20%20mo%2C%0A%20%20%20%20%20%20%20%20np%2C%0A%20%20%20%20%20%20%20%20plt%2C%0A%20%20%20%20%20%20%20%20strategy%2C%0A%20%20%20%20%20%20%20%20u%2C%0A%20%20%20%20%20%20%20%20visualization%2C%0A%20%20%20%20)%0A%0A%0A%40app.cell(hide_code%3DTrue)%0Adef%20_(mo)%3A%0A%20%20%20%20mo.Html(%22%22%22%3Cstyle%3E%20img%2C%20svg%20%7B%20max-width%3A%20100%25%3B%20height%3A%20auto%3B%20%7D%20%3C%2Fstyle%3E%22%22%22)%0A%20%20%20%20return%0A%0A%0A%40app.cell(hide_code%3DTrue)%0Adef%20_(mo)%3A%0A%20%20%20%20mo.md(r%22%22%22%0A%20%20%20%20%23%20Covering%20GW170817%0A%0A%20%20%20%20A%20gravitational-wave%20localization%20is%20a%20probability%20distribution%2C%20not%20a%0A%20%20%20%20point%2C%20and%20the%20early%20ones%20are%20**arcs**%3A%20long%2C%20thin%2C%20and%20lumpy.%20There%20are%0A%20%20%20%20four%20ways%20to%20put%20an%20array%20on%20one%2C%20and%20they%20are%20not%20equally%20good.%0A%0A%20%20%20%20Pick%20a%20map%2C%20a%20site%20and%20a%20strategy%2C%20and%20watch%20the%20array's%20*multiplicity*%20%E2%80%94%0A%20%20%20%20how%20many%20cameras%20have%20each%20direction%20in%20frame%20%E2%80%94%20change%20shape.%20Two%20or%20more%0A%20%20%20%20telescopes%20can%20reconstruct%20a%20shower%3B%20one%20cannot%2C%20so%20grey%20is%20blind%20and%20the%0A%20%20%20%20palest%20blue%20is%20nearly%20so.%0A%20%20%20%20%22%22%22)%0A%20%20%20%20return%0A%0A%0A%40app.cell(hide_code%3DTrue)%0Adef%20_(mo)%3A%0A%20%20%20%20MAPS%20%3D%20%7B%0A%20%20%20%20%20%20%20%20%22BAYESTAR%20H%2BL%20%E2%80%94%20the%20first%20alert%2C%20%2B0.7%20h%22%3A%20%22bayestar_hl%22%2C%0A%20%20%20%20%20%20%20%20%22BAYESTAR%20H%2BL%2BV%20%E2%80%94%20with%20Virgo%2C%20%2B5.2%20h%22%3A%20%22bayestar_hlv%22%2C%0A%20%20%20%20%20%20%20%20%22LALInference%20(preliminary)%2C%20%2B16.3%20h%22%3A%20%22lalinference_prelim%22%2C%0A%20%20%20%20%7D%0A%0A%20%20%20%20which_map%20%3D%20mo.ui.dropdown(MAPS%2C%20value%3Dlist(MAPS)%5B0%5D%2C%20label%3D%22localization%22)%0A%20%20%20%20level%20%3D%20mo.ui.dropdown(%7B%2250%20%25%22%3A%2050%2C%20%2290%20%25%22%3A%2090%2C%20%2295%20%25%22%3A%2095%7D%2C%20value%3D%2290%20%25%22%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20label%3D%22credible%20level%22)%0A%20%20%20%20site%20%3D%20mo.ui.dropdown(%7B%22CTAO-South%20(14%20MST%20%2B%2037%20SST)%22%3A%20%22south%22%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%22CTAO-North%20(4%20LST%20%2B%209%20MST)%22%3A%20%22north%22%7D%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20value%3D%22CTAO-South%20(14%20MST%20%2B%2037%20SST)%22%2C%20label%3D%22array%22)%0A%20%20%20%20altitude%20%3D%20mo.ui.slider(20%2C%2085%2C%20value%3D60%2C%20step%3D5%2C%20label%3D%22placed%20at%20altitude%22%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20show_value%3DTrue)%0A%0A%20%20%20%20mo.hstack(%5Bwhich_map%2C%20level%2C%20site%2C%20altitude%5D%2C%20justify%3D%22start%22%2C%20gap%3D1.5)%0A%20%20%20%20return%20altitude%2C%20level%2C%20site%2C%20which_map%0A%0A%0A%40app.cell(hide_code%3DTrue)%0Adef%20_(DATA%2C%20SkyRegion%2C%20altitude%2C%20level%2C%20load_array%2C%20site%2C%20u%2C%20which_map)%3A%0A%20%20%20%20LAYOUTS%20%3D%20%7B%22north%22%3A%20%22cta-north-lapalma-alpha-prod6.ecsv%22%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%22south%22%3A%20%22cta-south-paranal-alpha-prod6.ecsv%22%7D%0A%0A%20%20%20%20array%20%3D%20load_array(DATA%20%2F%20LAYOUTS%5Bsite.value%5D)%0A%0A%20%20%20%20%23%20The%20region%20is%20rotated%20rigidly%20to%20the%20chosen%20altitude%2C%20then%20cut%20at%20the%0A%20%20%20%20%23%20horizon%3A%20an%20arc%20a%20hundred%20degrees%20long%20can%20run%20underground%2C%20and%20an%0A%20%20%20%20%23%20optimiser%20handed%20that%20will%20aim%20telescopes%20there%20and%20report%20the%20coverage.%0A%20%20%20%20_whole%20%3D%20SkyRegion.from_table(%0A%20%20%20%20%20%20%20%20DATA%20%2F%20%22gw170817%22%20%2F%20f%22%7Bwhich_map.value%7D_%7Blevel.value%7D.ecsv.gz%22)%0A%20%20%20%20region%2C%20underground%20%3D%20_whole.place(altitude.value%20*%20u.deg%2C%20180%20*%20u.deg).visible_part()%0A%20%20%20%20return%20array%2C%20region%2C%20underground%0A%0A%0A%40app.cell(hide_code%3DTrue)%0Adef%20_(mo)%3A%0A%20%20%20%20STRATEGIES%20%3D%20%7B%0A%20%20%20%20%20%20%20%20%22parallel%20%E2%80%94%20everything%20on%20one%20spot%22%3A%20%22parallel%22%2C%0A%20%20%20%20%20%20%20%20%22divergent%20%E2%80%94%20one%20number%2C%20fanned%20out%22%3A%20%22divergent%22%2C%0A%20%20%20%20%20%20%20%20%22tiling%20%E2%80%94%20one%20array%2C%20moved%20in%20steps%22%3A%20%22tiling%22%2C%0A%20%20%20%20%20%20%20%20%22sub-arrays%20%E2%80%94%20split%20it%2C%20point%20the%20pieces%22%3A%20%22subarrays%22%2C%0A%20%20%20%20%20%20%20%20%22sub-arrays%2C%20sized%20by%20probability%22%3A%20%22weighted%22%2C%0A%20%20%20%20%20%20%20%20%22shaped%20%E2%80%94%20every%20telescope%20on%20its%20own%22%3A%20%22shaped%22%2C%0A%20%20%20%20%7D%0A%0A%20%20%20%20how%20%3D%20mo.ui.dropdown(STRATEGIES%2C%20value%3Dlist(STRATEGIES)%5B3%5D%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20label%3D%22pointing%20strategy%22)%0A%20%20%20%20div%20%3D%20mo.ui.slider(0.0%2C%200.30%2C%20value%3D0.03%2C%20step%3D0.005%2C%20label%3D%22divergence%20d%22%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20show_value%3DTrue)%0A%20%20%20%20groups%20%3D%20mo.ui.slider(2%2C%2017%2C%20value%3D8%2C%20step%3D1%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20label%3D%22tiles%2C%20or%20sub-arrays%22%2C%20show_value%3DTrue)%0A%20%20%20%20beta%20%3D%20mo.ui.slider(0.0%2C%202.0%2C%20value%3D1.0%2C%20step%3D0.25%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20label%3D%22%CE%B2%20%E2%80%94%20how%20hard%20to%20track%20the%20probability%22%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20show_value%3DTrue)%0A%0A%20%20%20%20mo.hstack(%5Bhow%2C%20div%2C%20groups%2C%20beta%5D%2C%20justify%3D%22start%22%2C%20gap%3D1.5)%0A%20%20%20%20return%20beta%2C%20div%2C%20groups%2C%20how%0A%0A%0A%40app.cell(hide_code%3DTrue)%0Adef%20_(how%2C%20mo)%3A%0A%20%20%20%20%23%20Shaped%20pointing%20is%20a%20coordinate%20ascent%20over%20every%20telescope%20at%20once.%20In%20a%0A%20%20%20%20%23%20browser%20that%20is%20seconds%20rather%20than%20milliseconds%2C%20so%20it%20does%20not%20run%20on%20a%0A%20%20%20%20%23%20slider%20drag%20--%20and%20the%20settings%20below%20are%20cut%20down%20from%20the%20ones%20the%0A%20%20%20%20%23%20study%20page's%20figures%20were%20computed%20with.%0A%20%20%20%20solve%20%3D%20mo.ui.run_button(label%3D%22solve%20the%20shaped%20pointing%22)%0A%20%20%20%20solve%20if%20how.value%20%3D%3D%20%22shaped%22%20else%20mo.md(%22%22)%0A%20%20%20%20return%20(solve%2C)%0A%0A%0A%40app.cell%0Adef%20_(array%2C%20best_pointing%2C%20beta%2C%20div%2C%20groups%2C%20how%2C%20region%2C%20solve%2C%20strategy)%3A%0A%20%20%20%20exposures%2C%20note%20%3D%201%2C%20%22%22%0A%0A%20%20%20%20if%20how.value%20%3D%3D%20%22parallel%22%3A%0A%20%20%20%20%20%20%20%20aim%20%3D%20best_pointing(array%2C%20region%2C%200.0)%0A%20%20%20%20%20%20%20%20note%20%3D%20f%22aimed%20at%20alt%20%7Baim%5B'alt'%5D%3A.1f%7D%2C%20az%20%7Baim%5B'az'%5D%3A.1f%7D%22%0A%0A%20%20%20%20elif%20how.value%20%3D%3D%20%22divergent%22%3A%0A%20%20%20%20%20%20%20%20best_pointing(array%2C%20region%2C%20div.value)%0A%0A%20%20%20%20elif%20how.value%20%3D%3D%20%22tiling%22%3A%0A%20%20%20%20%20%20%20%20tiles%20%3D%20strategy.tile_region(array%2C%20region%2C%20pointings%3Dgroups.value)%0A%20%20%20%20%20%20%20%20%23%20The%20picture%20shows%20one%20tile%3B%20the%20coverage%20below%20is%20what%20the%20whole%0A%20%20%20%20%20%20%20%20%23%20sequence%20reaches%2C%20which%20costs%20one%20exposure%20per%20tile.%0A%20%20%20%20%20%20%20%20array.divergent_pointing(0.0%2C%20tiles%5B0%5D%5B%22alt%22%5D%2C%20tiles%5B0%5D%5B%22az%22%5D)%0A%20%20%20%20%20%20%20%20exposures%20%3D%20len(tiles)%0A%20%20%20%20%20%20%20%20note%20%3D%20(f%22%7B100%20*%20tiles%5B-1%5D%5B'cumulative'%5D%3A.0f%7D%20%25%20after%20all%20%22%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20f%22%7Blen(tiles)%7D%20tiles%3B%20the%20panel%20shows%20the%20first%22)%0A%0A%20%20%20%20elif%20how.value%20%3D%3D%20%22subarrays%22%3A%0A%20%20%20%20%20%20%20%20summary%20%3D%20strategy.point_subarrays(array%2C%20region%2C%20groups.value)%0A%20%20%20%20%20%20%20%20note%20%3D%20f%22group%20sizes%20%7Bsummary%5B'sizes'%5D%7D%22%0A%0A%20%20%20%20elif%20how.value%20%3D%3D%20%22weighted%22%3A%0A%20%20%20%20%20%20%20%20summary%20%3D%20strategy.weighted_split(array%2C%20region%2C%20groups.value)%0A%20%20%20%20%20%20%20%20note%20%3D%20f%22group%20sizes%20%7Bsummary%5B'sizes'%5D%7D%22%0A%0A%20%20%20%20elif%20how.value%20%3D%3D%20%22shaped%22%3A%0A%20%20%20%20%20%20%20%20if%20solve.value%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20%23%20Cut%20down%20for%20the%20browser%3A%20fewer%20candidate%20pointings%2C%20fewer%20scored%0A%20%20%20%20%20%20%20%20%20%20%20%20%23%20directions%2C%20fewer%20sweeps%20and%20one%20warm%20start%20instead%20of%20seven.%0A%20%20%20%20%20%20%20%20%20%20%20%20strategy.shaped_pointing(array%2C%20region%2C%20beta%3Dbeta.value%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20candidates%3D400%2C%20search_pixels%3D600%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20sweeps%3D4%2C%20rounds%3D1%2C%20warm_starts%3D(6%2C))%0A%20%20%20%20%20%20%20%20%20%20%20%20note%20%3D%20%22cut-down%20solve%3B%20the%20study%20page%20uses%20the%20full%20budget%22%0A%20%20%20%20%20%20%20%20else%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20best_pointing(array%2C%20region%2C%200.0)%0A%20%20%20%20%20%20%20%20%20%20%20%20note%20%3D%20%22press%20the%20button%20to%20solve%22%0A%0A%20%20%20%20scored%20%3D%20strategy.describe(array%2C%20region%2C%20m_cut%3D2)%0A%20%20%20%20profile%20%3D%20strategy.multiplicity_by_probability(array%2C%20region)%0A%0A%20%20%20%20%23%20Every%20strategy%20above%20re-points%20%60array%60%20in%20place%2C%20and%20marimo%20re-runs%20a%20cell%0A%20%20%20%20%23%20when%20a%20variable%20it%20reads%20is%20*redefined*%20--%20mutation%20is%20invisible%20to%20it.%20So%0A%20%20%20%20%23%20hand%20the%20pointed%20array%20on%20under%20a%20new%20name%2C%20or%20the%20figures%20below%20go%20stale%0A%20%20%20%20%23%20while%20the%20numbers%20beside%20them%20update.%0A%20%20%20%20pointed%20%3D%20array%0A%20%20%20%20return%20exposures%2C%20note%2C%20pointed%2C%20profile%2C%20scored%0A%0A%0A%40app.cell(hide_code%3DTrue)%0Adef%20_(exposures%2C%20mo%2C%20np%2C%20pointed%2C%20region%2C%20scored%2C%20u%2C%20underground)%3A%0A%20%20%20%20%23%20How%20many%20telescopes%20have%20any%20part%20of%20the%20region%20in%20frame.%20It%20is%20the%0A%20%20%20%20%23%20number%20that%20separates%20the%20strategies%20most%20sharply%3A%20divergence%20spreads%0A%20%20%20%20%23%20the%20array%20so%20wide%20that%20a%20third%20of%20it%20ends%20up%20staring%20at%20empty%20sky.%0A%20%20%20%20_cos_radii%20%3D%20np.cos(%5Bt.fov_radius.to_value(u.rad)%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20for%20t%20in%20pointed.telescopes%5D)%0A%20%20%20%20_on_target%20%3D%20int(((region.directions%20%40%20pointed.pointing_vectors.T)%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3E%3D%20_cos_radii).any(axis%3D0).sum())%0A%0A%20%20%20%20mo.hstack(%5B%0A%20%20%20%20%20%20%20%20mo.stat(label%3D%22covered%20in%20stereo%22%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20value%3Df%22%7B100%20*%20scored%5B'covered_stereo'%5D%3A.0f%7D%20%25%22%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20caption%3Df%22of%20the%20region%20above%20the%20horizon%20%22%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20f%22(%7B100%20*%20underground%3A.0f%7D%20%25%20of%20the%20map%20is%20not)%22)%2C%0A%20%20%20%20%20%20%20%20mo.stat(label%3D%22telescopes%20per%20shower%22%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20value%3Df%22%7Bscored%5B'mean_covered'%5D%3A.1f%7D%22%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20caption%3D%22averaged%20over%20the%20part%20covered%22)%2C%0A%20%20%20%20%20%20%20%20mo.stat(label%3D%22telescopes%20on%20target%22%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20value%3Df%22%7B_on_target%7D%20of%20%7Blen(pointed.telescopes)%7D%22%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20caption%3D%22the%20rest%20are%20pointed%20at%20empty%20sky%22)%2C%0A%20%20%20%20%20%20%20%20mo.stat(label%3D%22exposures%22%2C%20value%3Dstr(exposures)%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20caption%3D%22the%20window%20is%20divided%20between%20them%22)%2C%0A%20%20%20%20%5D%2C%20justify%3D%22start%22%2C%20gap%3D2)%0A%20%20%20%20return%0A%0A%0A%40app.cell(hide_code%3DTrue)%0Adef%20_(mo%2C%20note)%3A%0A%20%20%20%20mo.md(f%22*%7Bnote%7D*%22)%20if%20note%20else%20mo.md(%22%22)%0A%20%20%20%20return%0A%0A%0A%40app.cell(hide_code%3DTrue)%0Adef%20_(plt%2C%20pointed%2C%20region%2C%20visualization)%3A%0A%20%20%20%20%23%20Where%20the%20cameras%20actually%20are%2C%20over%20the%20probability%20they%20are%20covering.%0A%20%20%20%20%23%20The%20panel%20below%20shades%20the%20result%3B%20this%20one%20shows%20the%20cause.%0A%20%20%20%20_frame%20%3D%20visualization.projection_frame(region)%0A%20%20%20%20_figure%2C%20_ax%20%3D%20plt.subplots(figsize%3D(11.0%2C%204.0))%0A%0A%20%20%20%20visualization.probability_over_region(region%2C%20ax%3D_ax%2C%20frame%3D_frame%2C%20size%3D3.0)%0A%20%20%20%20_rims%20%3D%20visualization.camera_rims(pointed%2C%20ax%3D_ax%2C%20frame%3D_frame%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20colors%3D%22type%22%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20type_names%3D(%22SST%22%2C%20%22MST%22))%0A%20%20%20%20visualization.frame_on(%0A%20%20%20%20%20%20%20%20_ax%2C%20_rims%2C%20visualization.region_extent(region%2C%20frame%3D_frame))%0A%0A%20%20%20%20_legend%20%3D%20_ax.legend(frameon%3DFalse%2C%20fontsize%3D8%2C%20loc%3D%22upper%20left%22%2C%20ncol%3D2)%0A%20%20%20%20for%20_handle%20in%20_legend.legend_handles%3A%0A%20%20%20%20%20%20%20%20if%20hasattr(_handle%2C%20%22set_sizes%22)%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20_handle.set_sizes(%5B26%5D)%0A%20%20%20%20_ax.set_title(%22the%20cameras%2C%20over%20the%20probability%20they%20cover%22%2C%20loc%3D%22left%22)%0A%20%20%20%20_figure.tight_layout()%0A%20%20%20%20_figure%0A%20%20%20%20return%0A%0A%0A%40app.cell(hide_code%3DTrue)%0Adef%20_(plt%2C%20pointed%2C%20region%2C%20visualization)%3A%0A%20%20%20%20%23%20Its%20own%20figure%2C%20so%20the%20equal-aspect%20panel%20can%20take%20the%20full%20width%20rather%0A%20%20%20%20%23%20than%20sharing%20it%20with%20a%20bar%20chart%20that%20wants%20a%20different%20shape.%0A%20%20%20%20_figure%2C%20_ax%20%3D%20plt.subplots(%0A%20%20%20%20%20%20%20%20figsize%3D(11.0%2C%201.6%20%2B%2011.0%20*%20visualization.region_span(region)))%0A%20%20%20%20visualization.multiplicity_over_region(pointed%2C%20region%2C%20ax%3D_ax%2C%20size%3D6.0)%0A%20%20%20%20_ax.set_title(%22what%20that%20delivers%3A%20telescopes%20per%20direction%22%2C%20loc%3D%22left%22)%0A%20%20%20%20_figure.tight_layout()%0A%20%20%20%20_figure%0A%20%20%20%20return%0A%0A%0A%40app.cell(hide_code%3DTrue)%0Adef%20_(plt%2C%20profile%2C%20visualization)%3A%0A%20%20%20%20_figure%2C%20_ax%20%3D%20plt.subplots(figsize%3D(11.0%2C%203.0))%0A%20%20%20%20visualization.multiplicity_by_probability(%7B%22this%20configuration%22%3A%20profile%7D%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20ax%3D_ax)%0A%20%20%20%20_figure.tight_layout()%0A%20%20%20%20_figure%0A%20%20%20%20return%0A%0A%0A%40app.cell(hide_code%3DTrue)%0Adef%20_(mo%2C%20profile%2C%20scored)%3A%0A%20%20%20%20mo.md(%0A%20%20%20%20%20%20%20%20f%22%22%22%0A%20%20%20%20**Reading%20the%20three%20panels.**%20The%20first%20draws%20every%20telescope's%20field%20of%0A%20%20%20%20view%20over%20the%20localization%2C%20shaded%20darkest%20where%20the%20source%20most%20likely%20is.%0A%20%20%20%20Rims%20are%20coloured%20by%20camera%20size%2C%20so%20you%20can%20watch%20free%20pointing%20send%20the%0A%20%20%20%20narrow%20cameras%20where%20the%20map%20is%20sharp%20%E2%80%94%20something%20neither%20divergence%20nor%20an%0A%20%20%20%20even%20split%20can%20do.%20All%20three%20panels%20are%20equal-area%2C%20so%20a%20wide%20patch%20of%0A%20%20%20%20shallow%20coverage%20looks%20as%20big%20as%20it%20is.%0A%0A%20%20%20%20The%20second%20shades%20the%20map%20by%20how%20many%20cameras%20land%20on%20each%20direction%3B%20grey%0A%20%20%20%20is%20sky%20no%20camera%20reaches.%20The%20third%20cuts%20the%20map%20into%20fifths%20of%0A%20%20%20%20*probability*%20%E2%80%94%20the%20last%20fifth%20is%20the%20small%20bright%20core%2C%20the%20first%20is%20the%0A%20%20%20%20wide%20faint%20skirt%20%E2%80%94%20and%20asks%20how%20deeply%20each%20is%20watched.%0A%0A%20%20%20%20A%20flat%20profile%20is%20an%20array%20spread%20evenly%20over%20the%20region%2C%20which%20is%20only%20the%0A%20%20%20%20right%20answer%20if%20the%20map%20is%20flat.%20This%20one%20runs%0A%20%20%20%20**%7Bprofile%5B0%5D%3A.1f%7D%20%E2%86%92%20%7Bprofile%5B-1%5D%3A.1f%7D**%2C%20and%20its%20mismatch%20against%20the%0A%20%20%20%20probability%20is%20**%7Bscored%5B'mismatch'%5D%3A.3f%7D**%20(zero%20would%20be%20depth%20exactly%0A%20%20%20%20proportional%20to%20probability%20over%20the%20part%20that%20clears%20the%20stereo%20cut).%0A%0A%20%20%20%20Read%20that%20number%20beside%20the%20coverage%20and%20never%20alone%3A%20an%20array%20that%0A%20%20%20%20abandons%20everything%20but%20the%20core%20matches%20the%20shape%20of%20what%20it%20kept%2C%0A%20%20%20%20perfectly%2C%20and%20is%20useless.%0A%20%20%20%20%22%22%22%0A%20%20%20%20)%0A%20%20%20%20return%0A%0A%0A%40app.cell(hide_code%3DTrue)%0Adef%20_(mo)%3A%0A%20%20%20%20mo.md(r%22%22%22%0A%20%20%20%20---%0A%0A%20%20%20%20Everything%20here%20is%20geometry%3A%20where%20cameras%20point%20and%20what%20they%20cover.%20There%0A%20%20%20%20is%20no%20effective%20area%2C%20no%20energy%20threshold%20and%20no%20background%2C%20so%20none%20of%0A%20%20%20%20these%20percentages%20is%20a%20sensitivity.%20Coverage%20is%20necessary%20for%20a%20detection%0A%20%20%20%20and%20nowhere%20near%20sufficient.%0A%0A%20%20%20%20The%20full%20argument%2C%20with%20the%20numbers%2C%20is%20in%0A%20%20%20%20%5Bthe%20study%20page%5D(..%2F..%2Fgw170817.html).%0A%20%20%20%20%22%22%22)%0A%20%20%20%20return%0A%0A%0Aif%20__name__%20%3D%3D%20%22__main__%22%3A%0A%20%20%20%20app.run()%0A</marimo-code></head>
+  <body>
+    <div id="root"></div>
+    <script data-marimo="true">
+      Object.defineProperty(window, "__MARIMO_MOUNT_CONFIG__", {
+        value: Object.freeze({
+            "filename": "notebook.py",
+            "cwd": "",
+            "lspWorkspace": null,
+            "mode": "read",
+            "version": "0.24.0",
+            "serverToken": "unused",
+            "config": {"ai": {"custom_providers": {}, "enabled": true, "models": {"custom_models": [], "displayed_models": []}}, "completion": {"activate_on_typing": true, "auto_close_pairs": true, "copilot": false, "signature_hint_on_typing": false}, "diagnostics": {"sql_linter": true}, "display": {"cell_output": "below", "code_editor_font_size": 14, "code_lens": true, "dataframes": "rich", "default_table_max_columns": 50, "default_table_page_size": 10, "default_width": "medium", "reference_highlighting": true, "theme": "light"}, "formatting": {"line_length": 79}, "keymap": {"overrides": {}, "preset": "default"}, "language_servers": {"pylsp": {"enable_flake8": false, "enable_mypy": true, "enable_pydocstyle": false, "enable_pyflakes": false, "enable_pylint": false, "enable_ruff": true, "enabled": false}}, "mcp": {"mcpServers": {}, "presets": []}, "package_management": {"manager": "pip"}, "runtime": {"auto_instantiate": false, "auto_reload": "off", "default_csv_encoding": "utf-8", "default_sql_output": "auto", "on_cell_change": "autorun", "output_max_bytes": 8000000, "reactive_tests": true, "show_tracebacks": false, "std_stream_max_bytes": 1000000, "watcher_on_save": "lazy"}, "save": {"autosave": "off", "autosave_delay": 1000, "format_on_save": false}, "server": {"browser": "default", "follow_symlink": false}, "snippets": {"custom_paths": [], "include_default_snippets": true}},
+            "configOverrides": {},
+            "appConfig": {"sql_output": "auto", "width": "full"},
+            "view": {"showAppCode": false},
+            "notebook": null,
+            "session": null,
+            "runtimeConfig": null,
+        }),
+        writable: false,
+        configurable: false,
+      });
+    </script>
+  </body>
+</html>

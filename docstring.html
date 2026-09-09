@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="Introduction" href="introduction.html"><link rel="prev" title="Interactive Examples" href="examples.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>API documentation - divtel 1.1.1.dev3+g956316cc6 documentation</title>
+        <title>API documentation - divtel 1.1.1.dev5+gb6ce429db documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">divtel 1.1.1.dev3+g956316cc6 documentation</div></a>
+      <a href="index.html"><div class="brand">divtel 1.1.1.dev5+gb6ce429db documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -202,6 +202,7 @@
 <li class="toctree-l1"><a class="reference internal" href="definitions.html">Definitions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ceiling.html">The divergence spread and ceiling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tracking.html">Tracking a source</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gw170817.html">GW alerts follow-up: divergence is not the way</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Project</span></p>
 <ul>
@@ -400,9 +401,19 @@ cameras, different fields of view, and their own barycenters. Grouping
 lets each be looked at on its own.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>groups</strong> (<em>dict</em><em> or </em><em>str</em>) – either a mapping of group name to the telescope ids in it, e.g.
-<code class="docutils literal notranslate"><span class="pre">{&quot;LST&quot;:</span> <span class="pre">[1,</span> <span class="pre">2,</span> <span class="pre">3,</span> <span class="pre">4],</span> <span class="pre">&quot;MST&quot;:</span> <span class="pre">range(5,</span> <span class="pre">20)}</span></code>, or the string
-<code class="docutils literal notranslate"><span class="pre">&quot;camera_radius&quot;</span></code> to group telescopes by the camera they carry.</p>
+<dd class="field-odd"><p><strong>groups</strong> (<em>dict</em><em> or </em><em>str</em>) – <p>a mapping of group name to the telescope ids in it, e.g.
+<code class="docutils literal notranslate"><span class="pre">{&quot;LST&quot;:</span> <span class="pre">[1,</span> <span class="pre">2,</span> <span class="pre">3,</span> <span class="pre">4],</span> <span class="pre">&quot;MST&quot;:</span> <span class="pre">range(5,</span> <span class="pre">20)}</span></code>, or one of two
+strings that find the groups without being told them:
+<code class="docutils literal notranslate"><span class="pre">&quot;camera_radius&quot;</span></code> groups by the camera a telescope carries, and
+<code class="docutils literal notranslate"><span class="pre">&quot;fov_radius&quot;</span></code> by the angular radius that camera subtends.</p>
+<p>The two agree on the CTAO layouts shipped here and need not agree
+in general: what a telescope sees off-axis is set by camera radius
+<em>over</em> focal length, so two designs with different cameras can share
+an angular radius and two with the same camera can differ. The angle
+is what the geometry uses – <cite>divtel.strategy</cite> treats it as a
+telescope’s type throughout – so prefer <code class="docutils literal notranslate"><span class="pre">&quot;fov_radius&quot;</span></code> when the
+question is about reach rather than about hardware.</p>
+</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>one sub-array per group, in the order the groups were given</p>
@@ -826,6 +837,1088 @@ file order.</p>
 </dd></dl>
 
 </section>
+<section id="divtel-region">
+<h2><code class="docutils literal notranslate"><span class="pre">divtel.region</span></code><a class="headerlink" href="#divtel-region" title="Link to this heading">¶</a></h2>
+<p>A target that is not a point: a set of sky directions with a weight on each.
+Everything in <a class="reference internal" href="#module-divtel.strategy" title="divtel.strategy"><code class="xref py py-mod docutils literal notranslate"><span class="pre">divtel.strategy</span></code></a> works on one, and building one from a
+published sky map is the only step that needs anything beyond divtel itself.</p>
+<p id="module-divtel.region">A weighted region of sky, and what an array sees of it.</p>
+<p>A pointing strategy needs a target, and for anything but a point source the
+target is a <em>region</em> with structure: a gravitational-wave localization is a
+probability distribution over the sky, a survey field is a patch with edges, a
+galaxy catalogue is a list of directions with weights on them. <cite>SkyRegion</cite> is
+that target reduced to the only two things the geometry needs – a set of unit
+vectors and a weight on each – and everything in <cite>divtel.strategy</cite> works on it.</p>
+<p>Reducing it that far is what keeps this module free of any sky-map format.
+Building a region from a published HEALPix localization needs a HEALPix reader
+and lives in <cite>divtel.skymap</cite>, behind an optional dependency; once built, nothing
+downstream knows or cares where the directions came from.</p>
+<section id="frames">
+<h3>Frames<a class="headerlink" href="#frames" title="Link to this heading">¶</a></h3>
+<p>The vectors are unit vectors in whatever frame they were built in, and two
+frames are used here for two different questions.</p>
+<p><cite>from_coords</cite> transforms sky coordinates into the array’s horizontal frame at a
+given time, which answers “what could the array have done that night”. The
+region sits where the sky actually put it.</p>
+<p><cite>from_table</cite> and <cite>from_lonlat</cite> keep the region in its own celestial frame, and
+<cite>place</cite> then rotates it rigidly to a chosen altitude and azimuth, which answers
+“what can an array do with a region of this shape”. The elevation has to be
+controllable for that question, because an array looking near the horizon is
+foreshortened and the same divergence buys a different spread at 20 degrees
+than at 70.</p>
+</section>
+<section id="sizes">
+<h3>Sizes<a class="headerlink" href="#sizes" title="Link to this heading">¶</a></h3>
+<p>“How big is it” has three answers and the gap between them is the point. A
+two-detector localization is a long thin arc, so its area and its length say
+completely different things: <cite>equivalent_radius</cite> treats it as a disc,
+<cite>containment_radius</cite> gives the cone an array’s fields of view have to span, and
+<cite>max_separation</cite> gives the region’s length. For GW170817’s first alert map those
+are 7.7, 62.1 and 124.3 degrees.</p>
+</section>
+<dl class="py class">
+<dt class="sig sig-object py" id="divtel.region.SkyRegion">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">divtel.region.</span></span><span class="sig-name descname"><span class="pre">SkyRegion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pixel_area</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Quantity</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.region.SkyRegion" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A set of sky directions with a weight on each.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>directions</strong> (<cite>numpy.ndarray</cite>) – shape (n, 3), unit vectors. See the module docstring on which frame.</p></li>
+<li><p><strong>weights</strong> (<cite>numpy.ndarray</cite>) – shape (n,), the weight of each direction – a probability, for a
+localization. Not normalised: <cite>visible_part</cite> cuts directions away and
+leaves the survivors’ weights alone, so that coverage measured
+afterwards stays a fraction of the whole original region rather than
+silently renormalising the abandoned part out of existence.</p></li>
+<li><p><strong>pixel_area</strong> (<cite>astropy.Quantity</cite> or None) – solid angle each direction stands for, if the region came from a
+pixelization. Without it <cite>area</cite> and <cite>equivalent_radius</cite> are unavailable.</p></li>
+<li><p><strong>meta</strong> (<em>dict</em>) – provenance – which map, which credible level, which circular carried it</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="divtel.region.SkyRegion.area">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">area</span></span><a class="headerlink" href="#divtel.region.SkyRegion.area" title="Link to this definition">¶</a></dt>
+<dd><p>Solid angle of the region.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>in deg**2</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><cite>astropy.Quantity</cite></p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – if the region carries no pixel area to sum</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="divtel.region.SkyRegion.centroid">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">centroid</span></span><a class="headerlink" href="#divtel.region.SkyRegion.centroid" title="Link to this definition">¶</a></dt>
+<dd><p>The weight-weighted centre of the region, as a unit vector.</p>
+<p>The mean of the direction vectors, renormalized – the direction the
+region sits in, treated as a whole. For an arc this lands off the arc
+itself, inside the sphere’s chord, which is correct: it is a centre of
+direction, not a point of the region.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="divtel.region.SkyRegion.containment_radius">
+<span class="sig-name descname"><span class="pre">containment_radius</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.region.SkyRegion.containment_radius" title="Link to this definition">¶</a></dt>
+<dd><p>The smallest cone that contains the whole region.</p>
+<p>This is the number an array has to match: point the array at the cone’s
+axis, and every telescope has to reach <cite>containment_radius</cite> off-axis for
+the array to see the whole region at once. Twice it is the angular width
+a divergent configuration must span.</p>
+<p>Found by moving a trial axis repeatedly a shrinking step towards
+whichever direction is currently farthest from it – the standard
+incremental construction for a minimum enclosing ball, run on the unit
+vectors. It converges from above onto the true minimum, and it needs no
+derivatives and no scipy. The weighted centroid is a good enough
+starting point that a couple of thousand steps settle it to well under a
+hundredth of a degree.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>iterations</strong> (<em>int</em>) – steps of the search; more is tighter and slower</p></li>
+<li><p><strong>axis</strong> (<em>bool</em>) – also return the cone’s axis, as a unit vector</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the cone’s angular radius, in degrees</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>astropy.Quantity</cite>, or (<cite>astropy.Quantity</cite>, <cite>numpy.ndarray</cite>)</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>A region can be more than a hemisphere across, and then no cone smaller
+than the whole sky contains it. The radius simply comes out above 90
+degrees, and the caller should read that as “no single pointing reaches
+this”.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="divtel.region.SkyRegion.coord">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">coord</span></span><a class="headerlink" href="#divtel.region.SkyRegion.coord" title="Link to this definition">¶</a></dt>
+<dd><p>The region’s directions as an <cite>astropy.coordinates.SkyCoord</cite>, in ICRS.</p>
+<p>Only meaningful for a region still in celestial coordinates; a placed
+region’s vectors are directions over the array, and reading them as
+right ascension and declination is nonsense.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="divtel.region.SkyRegion.covered">
+<span class="sig-name descname"><span class="pre">covered</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_cut</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.region.SkyRegion.covered" title="Link to this definition">¶</a></dt>
+<dd><p>The weight of the region seen by at least <cite>m_cut</cite> telescopes.</p>
+<p>The <cite>m_cut</cite> is the whole reason spreading an array is a trade rather
+than a free win. A shower seen by one telescope cannot be reconstructed
+stereoscopically, so <code class="docutils literal notranslate"><span class="pre">m_cut=2</span></code> is what a real analysis needs, and it
+is exactly what spreading eats into.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<cite>divtel.telescope.Array</cite>) – already pointed</p></li>
+<li><p><strong>m_cut</strong> (<em>int</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>as a fraction of the region’s total weight</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="divtel.region.SkyRegion.describe_extent">
+<span class="sig-name descname"><span class="pre">describe_extent</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#divtel.region.SkyRegion.describe_extent" title="Link to this definition">¶</a></dt>
+<dd><p>Every size measure at once.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">area</span></code>, <code class="docutils literal notranslate"><span class="pre">equivalent_radius</span></code>, <code class="docutils literal notranslate"><span class="pre">containment_radius</span></code>,
+<code class="docutils literal notranslate"><span class="pre">max_separation</span></code> and <code class="docutils literal notranslate"><span class="pre">elongation</span></code> – the last being the
+containment radius in units of the equivalent radius, so 1 is a disc
+and anything much above it is a stretched region that costs more to
+cover than its area suggests.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="divtel.region.SkyRegion.directions">
+<span class="sig-name descname"><span class="pre">directions</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></span><a class="headerlink" href="#divtel.region.SkyRegion.directions" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="divtel.region.SkyRegion.equivalent_radius">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">equivalent_radius</span></span><a class="headerlink" href="#divtel.region.SkyRegion.equivalent_radius" title="Link to this definition">¶</a></dt>
+<dd><p>The radius the region would have if it were a disc.</p>
+<p>The naive size, quoted for contrast with <cite>containment_radius</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>in degrees</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><cite>astropy.Quantity</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="divtel.region.SkyRegion.from_coords">
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">from_coords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">observation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pixel_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.region.SkyRegion.from_coords" title="Link to this definition">¶</a></dt>
+<dd><p>A region from sky coordinates, optionally put over the array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>coords</strong> (<cite>astropy.coordinates.SkyCoord</cite>)</p></li>
+<li><p><strong>weights</strong> (<em>array-like</em>)</p></li>
+<li><p><strong>observation</strong> (<cite>divtel.observation.Observation</cite>, optional) – place and time. Given one, the directions come out in the array’s
+horizontal frame, which is where the region really was that night.
+Without one they stay in the coordinates’ own frame, ready for
+<cite>place</cite> to set them down wherever the question wants them.</p></li>
+<li><p><strong>pixel_area</strong> (<cite>astropy.Quantity</cite>, optional)</p></li>
+<li><p><strong>meta</strong> (<em>dict</em><em>, </em><em>optional</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><cite>SkyRegion</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="divtel.region.SkyRegion.from_lonlat">
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">from_lonlat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pixel_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.region.SkyRegion.from_lonlat" title="Link to this definition">¶</a></dt>
+<dd><p>A region from longitudes and latitudes on a sphere.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lon</strong> (<cite>astropy.Quantity</cite>) – angles, one per direction</p></li>
+<li><p><strong>lat</strong> (<cite>astropy.Quantity</cite>) – angles, one per direction</p></li>
+<li><p><strong>weights</strong> (<em>array-like</em>)</p></li>
+<li><p><strong>pixel_area</strong> (<cite>astropy.Quantity</cite>, optional)</p></li>
+<li><p><strong>meta</strong> (<em>dict</em><em>, </em><em>optional</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><cite>SkyRegion</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="divtel.region.SkyRegion.from_table">
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">from_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.region.SkyRegion.from_table" title="Link to this definition">¶</a></dt>
+<dd><p>A region read back from an ECSV table of <code class="docutils literal notranslate"><span class="pre">ra</span></code>, <code class="docutils literal notranslate"><span class="pre">dec</span></code> and <code class="docutils literal notranslate"><span class="pre">prob</span></code>.</p>
+<p>The format <cite>divtel.data.gw170817</cite> ships its precomputed credible regions
+in, so a study – or a notebook running in a browser, where no HEALPix
+reader is available – can start from a real localization without the
+sky map it was cut from.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> (str or <cite>pathlib.Path</cite>)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>in the table’s own celestial frame; call <cite>place</cite> to set it down</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>SkyRegion</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="divtel.region.SkyRegion.max_separation">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">max_separation</span></span><a class="headerlink" href="#divtel.region.SkyRegion.max_separation" title="Link to this definition">¶</a></dt>
+<dd><p>The greatest angular distance between two directions of the region.</p>
+<p>The region’s length, as opposed to its width. For the arc-shaped maps an
+early two-detector alert produces this runs several times the equivalent
+radius, and that gap is the whole reason non-parallel pointing is worth
+considering.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>in degrees</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><cite>astropy.Quantity</cite></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Exact up to twenty thousand directions; above that an evenly-spaced
+subsample stands in, which can only underestimate, and by less than the
+spacing between directions.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="divtel.region.SkyRegion.meta">
+<span class="sig-name descname"><span class="pre">meta</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></span><a class="headerlink" href="#divtel.region.SkyRegion.meta" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="divtel.region.SkyRegion.multiplicity">
+<span class="sig-name descname"><span class="pre">multiplicity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.region.SkyRegion.multiplicity" title="Link to this definition">¶</a></dt>
+<dd><p>How many of the array’s cameras cover each direction.</p>
+<p>A direction is seen by a telescope when it lies within that telescope’s
+field-of-view radius of where the telescope points. This is the quantity
+every strategy in <cite>divtel.strategy</cite> is spending: a shower seen once
+cannot be reconstructed stereoscopically, so multiplicity and not
+coverage is what an array actually delivers at a direction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>array</strong> (<cite>divtel.telescope.Array</cite>) – already pointed</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>one entry per direction</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>numpy.ndarray</cite> of int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="divtel.region.SkyRegion.pixel_area">
+<span class="sig-name descname"><span class="pre">pixel_area</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#divtel.region.SkyRegion.pixel_area" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="divtel.region.SkyRegion.place">
+<span class="sig-name descname"><span class="pre">place</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">az</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.region.SkyRegion.place" title="Link to this definition">¶</a></dt>
+<dd><p>The region set down at a chosen place over the array, shape intact.</p>
+<p>For a strategy question a localization supplies a <em>shape</em>: how elongated
+it is, how its probability is distributed along the arc. Where it
+happened to be on some night is an accident nobody is planning around.
+This rotates the region rigidly so its centroid sits at the given
+altitude and azimuth, leaving every internal angle unchanged.</p>
+<p>Controlling the elevation is not cosmetic. An array is foreshortened
+when it looks near the horizon, so the same divergence produces a
+different spread and a different multiplicity at 20 degrees than at 70.
+Comparing regions evaluated at whatever elevation each happened to fall
+at would mix that in with the effect being measured.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alt</strong> (<cite>astropy.Quantity</cite>) – where to put the centroid</p></li>
+<li><p><strong>az</strong> (<cite>astropy.Quantity</cite>) – where to put the centroid</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>in the array’s ground frame</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>SkyRegion</cite></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The rotation is the shortest one carrying the centroid to the target, so
+the region is not spun about its own axis beyond what that implies. For
+an elongated region the position angle it lands at is therefore
+arbitrary, which is honest, since the position angle of a future alert
+is too.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="divtel.region.SkyRegion.placement_rotation">
+<span class="sig-name descname"><span class="pre">placement_rotation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">az</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.region.SkyRegion.placement_rotation" title="Link to this definition">¶</a></dt>
+<dd><p>The rotation that would carry this region’s centroid to a pointing.</p>
+<p>Separate from <cite>place</cite> so that several regions cut from the same map can
+be moved together. Drawing a picture needs exactly that: the 50, 90 and
+99 per cent bands have different centroids, and rotating each by its own
+would slide them apart instead of nesting them.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alt</strong> (<cite>astropy.Quantity</cite>)</p></li>
+<li><p><strong>az</strong> (<cite>astropy.Quantity</cite>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a 3 by 3 rotation matrix</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>numpy.ndarray</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="divtel.region.SkyRegion.rotate">
+<span class="sig-name descname"><span class="pre">rotate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rotation</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.region.SkyRegion.rotate" title="Link to this definition">¶</a></dt>
+<dd><p>The same region turned by a rotation matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>rotation</strong> (<cite>numpy.ndarray</cite>) – 3 by 3, as <cite>placement_rotation</cite> returns</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><cite>SkyRegion</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="divtel.region.SkyRegion.to_table">
+<span class="sig-name descname"><span class="pre">to_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.region.SkyRegion.to_table" title="Link to this definition">¶</a></dt>
+<dd><p>The region as an ECSV table, the format <cite>from_table</cite> reads.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> (str or <cite>pathlib.Path</cite>, optional) – write it here as well as returning it</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><cite>astropy.table.Table</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="divtel.region.SkyRegion.visible_fraction">
+<span class="sig-name descname"><span class="pre">visible_fraction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_altitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;Quantity</span> <span class="pre">0.</span> <span class="pre">deg&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.region.SkyRegion.visible_fraction" title="Link to this definition">¶</a></dt>
+<dd><p>How much of the region’s weight is above the horizon at a given time.</p>
+<p>For a region in celestial coordinates, not a placed one. A localization
+tens of degrees across sets over an hour or more, so for part of the
+night the array can only reach part of it however it points. This is the
+ceiling on what any pointing can cover.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>observation</strong> (<cite>divtel.observation.Observation</cite>)</p></li>
+<li><p><strong>min_altitude</strong> (<cite>astropy.Quantity</cite>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>between 0 and 1</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="divtel.region.SkyRegion.visible_part">
+<span class="sig-name descname"><span class="pre">visible_part</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alt_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;Quantity</span> <span class="pre">0.</span> <span class="pre">deg&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.region.SkyRegion.visible_part" title="Link to this definition">¶</a></dt>
+<dd><p>The part of a placed region a telescope could actually point at.</p>
+<p><cite>place</cite> rotates a localization so its <em>centroid</em> sits at a chosen
+altitude, which says nothing about its ends. GW170817’s first alert map
+is an arc 124 degrees long; put its centroid at 60 degrees elevation and
+a sixth of its probability is below the horizon. An optimiser handed
+that region will cheerfully aim telescopes underground and report the
+coverage, and every strategy compared against it inherits the fiction.</p>
+<p>Cutting the region down first is the fix, and it has to happen before
+the strategies rather than after: what is left is a different shape, not
+just a smaller one, and the right pointing for it is different too.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>alt_min</strong> (<cite>astropy.Quantity</cite>) – lowest altitude a telescope may point at. Zero is the horizon and
+pure geometry; a real observation stops well above it, both because
+the drives do and because a shower seen through fifteen atmospheres
+is not worth pointing at.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>region</strong> (<cite>SkyRegion</cite>) – the directions above <cite>alt_min</cite>, with their weights unchanged – so
+they still sum to the whole region’s weight, and coverage measured
+against them stays a fraction of the whole</p></li>
+<li><p><strong>dropped</strong> (<em>float</em>) – the weight cut away, as a fraction of the region</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="divtel.region.SkyRegion.weights">
+<span class="sig-name descname"><span class="pre">weights</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></span><a class="headerlink" href="#divtel.region.SkyRegion.weights" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="divtel.region.as_altaz">
+<span class="sig-prename descclassname"><span class="pre">divtel.region.</span></span><span class="sig-name descname"><span class="pre">as_altaz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vector</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.region.as_altaz" title="Link to this definition">¶</a></dt>
+<dd><p>A unit pointing vector back as an (alt, az) pair.</p>
+<p>The inverse of <cite>alt_az_to_vector</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>vector</strong> (<cite>numpy.ndarray</cite>) – [x, y, z], unit length</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>(alt, az)</strong></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple of <cite>astropy.Quantity</cite>, in degrees</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="divtel.region.rotation_between">
+<span class="sig-prename descclassname"><span class="pre">divtel.region.</span></span><span class="sig-name descname"><span class="pre">rotation_between</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.region.rotation_between" title="Link to this definition">¶</a></dt>
+<dd><p>The shortest rotation carrying one direction onto another.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source</strong> (<cite>numpy.ndarray</cite>) – unit vectors</p></li>
+<li><p><strong>target</strong> (<cite>numpy.ndarray</cite>) – unit vectors</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a 3 by 3 rotation matrix, to apply as <code class="docutils literal notranslate"><span class="pre">vectors</span> <span class="pre">&#64;</span> <span class="pre">rotation.T</span></code></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>numpy.ndarray</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="divtel-strategy">
+<h2><code class="docutils literal notranslate"><span class="pre">divtel.strategy</span></code><a class="headerlink" href="#divtel-strategy" title="Link to this heading">¶</a></h2>
+<p>Covering a weighted region: sequential tiling, simultaneous sub-arrays, and
+shaped pointing that makes the array’s depth follow the weight. <a class="reference internal" href="gw170817.html"><span class="doc">GW alerts follow-up: divergence is not the way</span></a>
+runs all of them against a real gravitational-wave localization.</p>
+<p id="module-divtel.strategy">Covering a weighted region of sky: tiling, sub-arrays, and shaped pointing.</p>
+<p>Divergent pointing spreads an array with one number, and one number buys a
+symmetric configuration – a disc, or a ring of discs. Real targets are neither.
+A two-detector gravitational-wave localization is an arc a hundred degrees long
+and a few degrees wide with the probability piled unevenly along it, and no
+value of <code class="docutils literal notranslate"><span class="pre">div</span></code> makes fifty telescopes look like that. This module holds the
+alternatives, all of them working on a <cite>divtel.region.SkyRegion</cite>.</p>
+<dl class="simple">
+<dt><cite>tile_region</cite></dt><dd><p>Keep the array together and visit the region in pieces. Nothing is wasted
+and every shower is seen by every telescope; what is spent is time, since
+the window has to be divided between the pointings.</p>
+</dd>
+<dt><cite>point_subarrays</cite>, <cite>point_subarrays_by_type</cite></dt><dd><p>Split the array into groups and point each group conventionally at a
+different part of the region, all at once. Every telescope is on target,
+nothing waits its turn, and each group is an ordinary small array.</p>
+</dd>
+<dt><cite>shaped_pointing</cite>, <cite>shaped_pointing_by_type</cite></dt><dd><p>Throw the groups away too and point every telescope on its own, so that the
+array’s depth follows the weight rather than merely covering it.</p>
+</dd>
+<dt><cite>weighted_split</cite></dt><dd><p>The middle road: keep the sub-array framework but deal the <em>sizes</em> in
+proportion to the weight each group catches. Most of shaped pointing’s
+gradient, without a solver and without a table of fifty directions.</p>
+</dd>
+</dl>
+<section id="the-rule-behind-shaped-pointing">
+<h3>The rule behind shaped pointing<a class="headerlink" href="#the-rule-behind-shaped-pointing" title="Link to this heading">¶</a></h3>
+<p>Coverage is not the objective. What the array delivers at a direction is its
+<em>multiplicity</em> there – how many cameras have it in frame – and that is a
+continuous resource which can be spent unevenly. Two demands:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>see all of the region, not part of it</p></li>
+<li><p>look hardest where the weight is</p></li>
+</ol>
+</div></blockquote>
+<p>Both fall out of one choice. Maximise</p>
+<blockquote>
+<div><p>J = sum_k  w_k  log( max(m_k - m_cut + 1, 0) + eps )</p>
+</div></blockquote>
+<p>over the pointings, where <cite>w</cite> is the weight of direction <cite>k</cite> and <cite>m</cite> its
+multiplicity. The logarithm is what makes this work, and it is not a fudge:</p>
+<ul class="simple">
+<li><p>Its optimum under a fixed budget is <strong>m proportional to w</strong>. Maximising
+<cite>sum w log m</cite> subject to <cite>sum m = B</cite> gives <cite>m_k = B w_k</cite> and nothing else.
+Demand 2 is not imposed, it is what a logarithm returns.</p></li>
+<li><p>It diverges downward at zero, so leaving any weight unseen costs infinitely
+much and demand 1 comes free. <cite>eps</cite> is the finite stand-in, and turning it up
+is how you buy depth on the core at the price of the tails.</p></li>
+<li><p>Subtracting <cite>m_cut - 1</cite> inside means a direction seen by one telescope is
+worth exactly what an unseen one is worth. A shower nobody triangulates is not
+a detection, and an optimiser told otherwise will spread the array into a thin
+single-telescope sheet that scores beautifully and reconstructs nothing. This
+is the term that stops it – the same degenerate optimum divergence falls into
+past its multiplicity ceiling, reached from the other side.</p></li>
+</ul>
+</section>
+<section id="where-the-budget-runs-out">
+<h3>Where the budget runs out<a class="headerlink" href="#where-the-budget-runs-out" title="Link to this heading">¶</a></h3>
+<p>Demand 1 is not always satisfiable. The array has a fixed amount of camera to
+spend – <cite>reach</cite> measures it, as the multiplicity the array could hold over the
+region if none of its field of view spilled off the edge – and when that is
+below <cite>m_cut</cite> no arrangement covers the whole region stereoscopically. Then the
+right answer is to give part of it up, and to give up the <em>least</em> weighted part.
+<cite>target_field</cite> does that explicitly, by water-filling.</p>
+<p>That zero is a decision an observer has to make anyway. Writing it down beats
+discovering it afterwards in a configuration that covered everything once.</p>
+</section>
+<section id="what-it-costs">
+<h3>What it costs<a class="headerlink" href="#what-it-costs" title="Link to this heading">¶</a></h3>
+<p>The configuration is no longer one number. It is a table of alt/az, one row per
+telescope, which is what <cite>divtel.telescope.Array.export_cfg</cite> writes. And the
+pointings are optimised against one weight map at one moment, so a map that is
+superseded – as gravitational-wave maps always are – invalidates them in a way
+a divergence value does not.</p>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="divtel.strategy.camera_blur">
+<span class="sig-prename descclassname"><span class="pre">divtel.strategy.</span></span><span class="sig-name descname"><span class="pre">camera_blur</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4096</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.strategy.camera_blur" title="Link to this definition">¶</a></dt>
+<dd><p>How far the weight map moves when one camera is smeared over it.</p>
+<p>A yardstick for the <code class="docutils literal notranslate"><span class="pre">mismatch</span></code> in <cite>describe</cite>, in the same units. It is not
+a bound and arrangements do beat it – what it measures is the scale of the
+problem.</p>
+<p>Multiplicity is a sum of camera discs laid on the sky, so as a field it is
+the density of pointings smeared by a disc. Structure finer than a camera is
+therefore not reproducible, and a two-detector arc a few degrees wide against
+a several-degree camera has plenty of it. Blurring the map with one average
+camera and measuring how far the result has moved says how much of the
+mismatch is that limit rather than a failure of the pointing.</p>
+<p>A real array beats the single-blur number when it has a mix of cameras – the
+narrow ones can go where the map is sharp – so treat this as the scale at
+which matching the map stops being about where the telescopes point and
+starts being about how big their cameras are.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<cite>divtel.telescope.Array</cite>) – used for its camera sizes only; it is not re-pointed</p></li>
+<li><p><strong>region</strong> (<cite>divtel.region.SkyRegion</cite>)</p></li>
+<li><p><strong>chunk</strong> (<em>int</em>) – directions smoothed at a time, so the pairwise comparison never has to
+exist all at once</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>divergence from the map to its blurred self, comparable with
+<cite>describe</cite>’s <code class="docutils literal notranslate"><span class="pre">mismatch</span></code></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="divtel.strategy.describe">
+<span class="sig-prename descclassname"><span class="pre">divtel.strategy.</span></span><span class="sig-name descname"><span class="pre">describe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_cut</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.strategy.describe" title="Link to this definition">¶</a></dt>
+<dd><p>What an arrangement delivers over a region.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<cite>divtel.telescope.Array</cite>) – already pointed, by anything – this measures a divergent configuration,
+a set of sub-arrays or a shaped one alike</p></li>
+<li><p><strong>region</strong> (<cite>divtel.region.SkyRegion</cite>)</p></li>
+<li><p><strong>m_cut</strong> (<em>int</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p><code class="docutils literal notranslate"><span class="pre">covered</span></code> and <code class="docutils literal notranslate"><span class="pre">covered_stereo</span></code>, the weight seen by one camera and by
+<cite>m_cut</cite>; <code class="docutils literal notranslate"><span class="pre">blind</span></code>, the weight no camera sees; <code class="docutils literal notranslate"><span class="pre">mean</span></code>, the
+weight-weighted mean multiplicity over the whole region; <code class="docutils literal notranslate"><span class="pre">mean_covered</span></code>,
+the same average taken over the covered part alone; <code class="docutils literal notranslate"><span class="pre">max</span></code>; and
+<code class="docutils literal notranslate"><span class="pre">mismatch</span></code>.</p>
+<p>The two means differ only when coverage is incomplete, and then by a lot:
+an array covering 96 per cent of a region at depth 8.5 has a whole-region
+mean of 8.2, because the 4 per cent it abandoned enters as zero. Quote
+<code class="docutils literal notranslate"><span class="pre">mean_covered</span></code> beside <code class="docutils literal notranslate"><span class="pre">covered_stereo</span></code> and neither can flatter the
+other.</p>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p><code class="docutils literal notranslate"><span class="pre">mismatch</span></code> is the Kullback-Leibler divergence from the weight to the
+normalised multiplicity, over the part of the region that clears <cite>m_cut</cite>. It
+is zero when multiplicity is exactly proportional to weight there, and it is
+the number <cite>shaped_pointing</cite> is trying to make small. Read it beside
+<code class="docutils literal notranslate"><span class="pre">covered_stereo</span></code> and never alone: an array that abandons everything but the
+peak matches the shape of what it kept, perfectly, and is useless.</p>
+<p>It does not reach zero in practice. Multiplicity is a sum of camera discs, so
+as a field on the sky it cannot be sharper than one camera, and a region with
+structure finer than that – which a two-detector arc has, across its width
+– cannot be matched however the telescopes are placed. <cite>camera_blur</cite>
+measures that scale, so read the mismatch against it: the camera is the
+resolution limit of this whole idea.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="divtel.strategy.multiplicity_by_probability">
+<span class="sig-prename descclassname"><span class="pre">divtel.strategy.</span></span><span class="sig-name descname"><span class="pre">multiplicity_by_probability</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.strategy.multiplicity_by_probability" title="Link to this definition">¶</a></dt>
+<dd><p>Mean multiplicity in each fifth of the weight, least likely first.</p>
+<p>The plain reading of whether the array is looking hardest where the source
+probably is. Directions are ordered by weight and cut into bins holding equal
+<em>total weight</em>, not equal area, so the last bin is the small bright core and
+the first is the wide faint skirt. A flat list is an array spread evenly over
+the region; a rising one is the point of <cite>shaped_pointing</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<cite>divtel.telescope.Array</cite>) – already pointed</p></li>
+<li><p><strong>region</strong> (<cite>divtel.region.SkyRegion</cite>)</p></li>
+<li><p><strong>bins</strong> (<em>int</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>mean multiplicity per bin, in order of increasing weight</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="divtel.strategy.point_subarrays">
+<span class="sig-prename descclassname"><span class="pre">divtel.strategy.</span></span><span class="sig-name descname"><span class="pre">point_subarrays</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_cut</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">candidates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.strategy.point_subarrays" title="Link to this definition">¶</a></dt>
+<dd><p>Split the array and aim each piece at a different part of the region.</p>
+<p>The configuration an observer would actually reach for. Divergent pointing
+spreads one array thin over a patch that is mostly empty sky; tiling covers
+the region properly but only one piece at a time. Sub-arrays do both at once:
+each piece is a small ordinary array staring at one part of the region, all
+of them at the same time, for the whole window.</p>
+<p>What it costs is telescopes per shower. Three sub-arrays of seventeen see
+every shower seventeen times instead of fifty-one, which is still far above
+the two a stereoscopic reconstruction needs.</p>
+<p>Sub-arrays are placed greedily, the one with the widest reach first, each
+going where it catches the most weight not already covered. Reach is computed
+per sub-array rather than assumed: dealt thinly enough, a sub-array runs out
+of wide cameras and its reach collapses to a narrow one, which is a real
+limit on how far this can be pushed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<cite>divtel.telescope.Array</cite>)</p></li>
+<li><p><strong>region</strong> (<cite>divtel.region.SkyRegion</cite>) – placed over the array</p></li>
+<li><p><strong>count</strong> (<em>int</em>) – how many sub-arrays to make</p></li>
+<li><p><strong>m_cut</strong> (<em>int</em>) – telescopes within one sub-array that must see a direction</p></li>
+<li><p><strong>candidates</strong> (<em>int</em>) – pointings considered, drawn from the region’s own directions</p></li>
+<li><p><strong>seed</strong> (<em>int</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">covered</span></code> (fraction of the region seen by <cite>m_cut</cite> telescopes or more,
+counting the whole array), <code class="docutils literal notranslate"><span class="pre">multiplicity</span></code> (weighted mean over the
+covered part), <code class="docutils literal notranslate"><span class="pre">on_target</span></code> (telescopes with the region in frame),
+<code class="docutils literal notranslate"><span class="pre">sizes</span></code> and <code class="docutils literal notranslate"><span class="pre">pointings</span></code>. The array is left pointed.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="divtel.strategy.point_subarrays_by_type">
+<span class="sig-prename descclassname"><span class="pre">divtel.strategy.</span></span><span class="sig-name descname"><span class="pre">point_subarrays_by_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_cut</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">candidates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.strategy.point_subarrays_by_type" title="Link to this definition">¶</a></dt>
+<dd><p>Split each telescope type on its own, and let each cover the region by itself.</p>
+<p><cite>point_subarrays</cite> deals telescopes into balanced sub-arrays precisely to stop
+a mixed sub-array reaching only as far as its narrowest telescope. The
+alternative is not to balance the mix but to drop it: two telescope types are
+different instruments, and there is no reason the number of pieces that suits
+one has to suit the other. Fourteen MSTs might split three ways to reach the
+region; thirty-seven SSTs, ten times the camera, might need only two. Solving
+that as one array with one sub-array count forces a compromise neither type
+asked for.</p>
+<p>So each type is handed the whole problem separately: split by field-of-view
+radius, and within each type scan sub-array counts from one upward until
+<cite>target</cite> coverage is reached or the type runs out of telescopes to add. A
+type with fewer than <cite>m_cut</cite> telescopes cannot see anything stereoscopically
+on its own and is left pointed nowhere in particular.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<cite>divtel.telescope.Array</cite>)</p></li>
+<li><p><strong>region</strong> (<cite>divtel.region.SkyRegion</cite>)</p></li>
+<li><p><strong>target</strong> (<em>float</em>) – coverage each type’s scan aims for before it stops adding sub-arrays</p></li>
+<li><p><strong>m_cut</strong> (<em>int</em>)</p></li>
+<li><p><strong>candidates</strong> (<em>int</em>)</p></li>
+<li><p><strong>seed</strong> (<em>int</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">types</span></code>, one entry per field-of-view radius holding that type’s chosen
+<cite>point_subarrays</cite> result (or <code class="docutils literal notranslate"><span class="pre">None</span></code> if the type has fewer than <cite>m_cut</cite>
+telescopes); <code class="docutils literal notranslate"><span class="pre">covered</span></code> and <code class="docutils literal notranslate"><span class="pre">multiplicity</span></code>, measured on the whole
+array once every type is pointed, so a direction two types both reach
+counts once at its true combined multiplicity rather than twice.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="divtel.strategy.reach">
+<span class="sig-prename descclassname"><span class="pre">divtel.strategy.</span></span><span class="sig-name descname"><span class="pre">reach</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region_area</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.strategy.reach" title="Link to this definition">¶</a></dt>
+<dd><p>The multiplicity the array could hold over a region, if nothing spilled.</p>
+<p>Total camera solid angle divided by the region’s, so it is the mean
+multiplicity of a perfect arrangement: every camera entirely on the region
+and the overlaps distributed exactly as asked. Nothing reaches it – a disc
+laid on the edge of a region hangs over the side, and the loss grows with
+the camera – but it is an upper bound that costs one division to compute,
+and it is the number to look at before anything else.</p>
+<p>Below 1 the region cannot be covered at all. Below <cite>m_cut</cite> it cannot be
+covered stereoscopically, and part of it has to be abandoned whatever the
+strategy. <cite>shaped_pointing</cite> reports the fraction actually achieved as
+<code class="docutils literal notranslate"><span class="pre">efficiency</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<cite>divtel.telescope.Array</cite>)</p></li>
+<li><p><strong>region_area</strong> (<cite>astropy.Quantity</cite>) – solid angle of the region, as <cite>divtel.region.SkyRegion.area</cite> gives it</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>mean multiplicity available, dimensionless</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="divtel.strategy.shaped_pointing">
+<span class="sig-prename descclassname"><span class="pre">divtel.strategy.</span></span><span class="sig-name descname"><span class="pre">shaped_pointing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_cut</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">candidates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1500</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_pixels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2500</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sweeps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warm_starts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(2,</span> <span class="pre">3,</span> <span class="pre">4,</span> <span class="pre">6,</span> <span class="pre">8,</span> <span class="pre">10,</span> <span class="pre">14)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.strategy.shaped_pointing" title="Link to this definition">¶</a></dt>
+<dd><p>Point each telescope where it does the most good, and leave it there.</p>
+<p>The solver behind the rule in this module’s docstring. It maximises
+<code class="docutils literal notranslate"><span class="pre">sum</span> <span class="pre">w</span> <span class="pre">log(max(m</span> <span class="pre">-</span> <span class="pre">m_cut</span> <span class="pre">+</span> <span class="pre">1,</span> <span class="pre">0)</span> <span class="pre">+</span> <span class="pre">eps)</span></code> over the pointings by coordinate
+ascent: take one telescope out of the arrangement, work out what the sky
+looks like without it, and put it back wherever it now helps most. Sweep
+until nothing wants to move.</p>
+<p>That inner step is one matrix-vector product. Precompute which directions
+each candidate pointing would cover – there are only two camera sizes at
+either CTAO site, so two matrices – and the marginal gain of every candidate
+for one telescope is that matrix against the per-direction value of one more
+telescope. Fifty telescopes times a dozen sweeps is a few thousand of them.</p>
+<p>Every move is scored on the exact objective and only taken if it improves, so
+the sweeps climb monotonically and stop. Where they stop depends on where
+they started, which is why several starts are tried: a greedy build, and the
+sub-array configurations from <cite>point_subarrays</cite>, which are good arrangements
+arrived at by a different argument and hard for a local search to find on its
+own.</p>
+<p>The budget is not known in advance. <cite>reach</cite> assumes no camera hangs off the
+edge of the region and every real arrangement loses something that way, by a
+factor of two on a compact region and rather more on a thin arc. Trusting the
+geometric value asks for a floor the array cannot hold, and the answer is a
+region covered once over rather than half of it covered properly. So the
+budget is calibrated: solve, measure the multiplicity that actually landed,
+rebuild the target from that, solve again.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<cite>divtel.telescope.Array</cite>) – left pointed at the answer</p></li>
+<li><p><strong>region</strong> (<cite>divtel.region.SkyRegion</cite>) – placed over the array</p></li>
+<li><p><strong>region_area</strong> (<cite>astropy.Quantity</cite>, optional) – solid angle of that region, for the initial budget. Taken from the
+region itself when it knows its own pixel area.</p></li>
+<li><p><strong>beta</strong> (<em>float</em>) – how hard to follow the weight; see <cite>target_field</cite></p></li>
+<li><p><strong>m_cut</strong> (<em>int</em>) – telescopes that must see a direction for it to be worth anything</p></li>
+<li><p><strong>eps</strong> (<em>float</em>) – value of an unseen direction, as <code class="docutils literal notranslate"><span class="pre">log(eps)</span></code>. Small insists on covering
+the tails before deepening the core; large trades the tails away. The
+default sits nearer the coverage end.</p></li>
+<li><p><strong>candidates</strong> (<em>int</em>) – pointings considered per telescope, drawn from the region’s own
+directions. The candidate set is the resolution limit on where a
+telescope can be put, and at HEALPix nside 256 the pixels are 0.2 degrees
+apart against cameras of several degrees, so this is not the binding
+approximation.</p></li>
+<li><p><strong>search_pixels</strong> (<em>int</em>) – directions the sweeps score against. The result is rescored against the
+whole region before it is returned, so the numbers that come back are
+exact whatever this is.</p></li>
+<li><p><strong>sweeps</strong> (<em>int</em>) – most passes over the telescopes per start</p></li>
+<li><p><strong>rounds</strong> (<em>int</em>) – budget calibrations</p></li>
+<li><p><strong>warm_starts</strong> (<em>tuple</em><em> of </em><em>int</em>) – sub-array counts to try as starting arrangements, alongside the greedy
+build. Cheap and worth having: a split array is a good arrangement
+arrived at by a different argument, and in the budget-limited case –
+where there is not enough camera to cover the region twice over and the
+answer is a patchwork rather than a gradient – it is the start the
+sweeps most often end up improving on. Empty to skip them, which is
+faster and sometimes worse.</p></li>
+<li><p><strong>seed</strong> (<em>int</em>) – for the subsamples, so a rerun gives the same answer</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">budget</span></code> (mean multiplicity the arrangement puts on the region, the
+calibrated figure), <code class="docutils literal notranslate"><span class="pre">reach</span></code> (the geometric bound), <code class="docutils literal notranslate"><span class="pre">efficiency</span></code>
+(their ratio), <code class="docutils literal notranslate"><span class="pre">pointings</span></code> (list of alt/az, one per telescope, in array
+order) and <code class="docutils literal notranslate"><span class="pre">objective</span></code>. The metrics live in <cite>describe</cite>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="divtel.strategy.shaped_pointing_by_type">
+<span class="sig-prename descclassname"><span class="pre">divtel.strategy.</span></span><span class="sig-name descname"><span class="pre">shaped_pointing_by_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_cut</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.strategy.shaped_pointing_by_type" title="Link to this definition">¶</a></dt>
+<dd><p>Shape each telescope type’s own coverage, rather than the array’s as one.</p>
+<p><cite>shaped_pointing</cite> puts every telescope into one coordinate ascent with one
+shared objective, which lets a narrow-camera telescope and a wide one trade
+places freely – and an SST and an MST are not fungible that way, any more
+than a sub-array is well served by mixing them. This solves the same
+objective once per telescope type instead, each with only its own cameras to
+place.</p>
+<p><cite>region_area</cite> is passed unscaled to every type’s solve. <cite>reach</cite> is camera
+solid angle divided by region area, so it is already per-type once each
+type’s own camera radii go in; dividing the region between the types first
+would be answering a different question, since it is the same region every
+type is being asked to cover, not a slice of it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<cite>divtel.telescope.Array</cite>) – left pointed at the combined answer</p></li>
+<li><p><strong>region</strong> (<cite>divtel.region.SkyRegion</cite>)</p></li>
+<li><p><strong>region_area</strong> (<cite>astropy.Quantity</cite>, optional)</p></li>
+<li><p><strong>beta</strong> (as <cite>shaped_pointing</cite>)</p></li>
+<li><p><strong>m_cut</strong> (as <cite>shaped_pointing</cite>)</p></li>
+<li><p><strong>**kwargs</strong> – passed through to <cite>shaped_pointing</cite> for every type</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">types</span></code>, one entry per field-of-view radius holding that type’s own
+<cite>shaped_pointing</cite> result; everything <cite>describe</cite> reports, measured on the
+whole array once every type is pointed.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="divtel.strategy.split_into_subarrays">
+<span class="sig-prename descclassname"><span class="pre">divtel.strategy.</span></span><span class="sig-name descname"><span class="pre">split_into_subarrays</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.strategy.split_into_subarrays" title="Link to this definition">¶</a></dt>
+<dd><p>Deal an array into sub-arrays of even size and even reach.</p>
+<p>Called on one telescope type at a time by <cite>point_subarrays_by_type</cite>, which
+is the normal path: an MST and an SST are different instruments with
+different fields of view, and mixing them in one sub-array was the earlier
+version of this idea. A sub-array that happened to collect only the narrower
+type reached less far than one that collected the wider, and the sub-array
+with the narrowest reach set what the whole plan could do.</p>
+<p>Nothing here actually requires a single type, though. Telescopes are sorted
+by field-of-view radius and dealt round-robin, the way cards are dealt, so
+every sub-array ends up the same size and the same mix of whatever radii went
+in. Feed it a mixed array and that mix balances the reach; feed it one type
+and the sorting has nothing left to do.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<cite>divtel.telescope.Array</cite>)</p></li>
+<li><p><strong>count</strong> (<em>int</em>) – how many sub-arrays to make</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>named <code class="docutils literal notranslate"><span class="pre">&quot;1&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;2&quot;</span></code> and so on. The sub-arrays hold the same
+<cite>Telescope</cite> objects as the parent, so pointing one points the parent’s
+telescopes too, and multiplicity can be measured on the whole array.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict of str to <cite>divtel.telescope.Array</cite></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – if there are not enough telescopes to fill every sub-array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="divtel.strategy.stereo_radius">
+<span class="sig-prename descclassname"><span class="pre">divtel.strategy.</span></span><span class="sig-name descname"><span class="pre">stereo_radius</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_cut</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.strategy.stereo_radius" title="Link to this definition">¶</a></dt>
+<dd><p>The angular radius a normally-pointed array covers deeply enough to use.</p>
+<p>Pointed normally every telescope looks the same way, so a direction is seen
+by whichever cameras are wide enough to reach it. Sorting the cameras by
+radius, a direction is seen by <cite>m_cut</cite> or more of them exactly when it lies
+within the <cite>m_cut</cite>-th widest.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<cite>divtel.telescope.Array</cite>)</p></li>
+<li><p><strong>m_cut</strong> (<em>int</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>angular radius</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>astropy.Quantity</cite></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – if the array has fewer than <cite>m_cut</cite> telescopes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="divtel.strategy.target_field">
+<span class="sig-prename descclassname"><span class="pre">divtel.strategy.</span></span><span class="sig-name descname"><span class="pre">target_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">budget</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_cut</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.strategy.target_field" title="Link to this definition">¶</a></dt>
+<dd><p>The multiplicity the strategy asks for at each direction.</p>
+<p>Water-filling. The most weighted directions are served first, each at
+<cite>m_cut</cite>, until the budget is spent; whatever remains is poured on top in
+proportion to weight. Directions never reached are written as zero, and that
+zero is the strategy saying which part of the region it is giving up on.</p>
+<p>With a generous budget the floor is a rounding detail and the field is
+essentially <cite>budget * weights</cite>: the proportional allocation the logarithmic
+objective wants. With a tight one the floor is everything and the field is
+flat over whatever fraction can be seen in stereo at all.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>weights</strong> (<cite>numpy.ndarray</cite>) – weight per direction; need not be normalised</p></li>
+<li><p><strong>budget</strong> (<em>float</em>) – total multiplicity to spend, in per-direction units – <cite>reach</cite> times the
+number of directions. <cite>shaped_pointing</cite> re-estimates this from what it
+achieves rather than trusting the geometric value.</p></li>
+<li><p><strong>beta</strong> (<em>float</em>) – how sharply to follow the weight once the floor is paid. 1 tracks it,
+which is the point of this module. 0 spreads the surplus evenly and asks
+only for coverage. Above 1 concentrates harder on the core than the
+weight warrants, which is the right call only if sensitivity rises faster
+than linearly with multiplicity.</p></li>
+<li><p><strong>m_cut</strong> (<em>int</em>) – multiplicity below which a direction is worth nothing</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>target multiplicity per direction, summing to <cite>budget</cite> unless the floor
+alone exhausts it</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>numpy.ndarray</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="divtel.strategy.tile_region">
+<span class="sig-prename descclassname"><span class="pre">divtel.strategy.</span></span><span class="sig-name descname"><span class="pre">tile_region</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pointings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_cut</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">candidates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.strategy.tile_region" title="Link to this definition">¶</a></dt>
+<dd><p>Cover a region with a sequence of ordinary pointings.</p>
+<p>The alternative to spreading the array: leave it pointed normally and move
+it, taking the region in pieces. Each pointing puts every telescope on the
+same patch, so nothing is wasted on empty sky and the multiplicity stays at
+its maximum. What is spent instead is time, since the observing window has
+to be divided between the pointings.</p>
+<p>Tiles are chosen greedily. The first goes where it catches the most weight,
+and each one after it where it catches the most of what is still uncovered.
+Greedy disc covering is not optimal, but it is within a small constant factor
+of optimal and it matches how an observer would actually work down a region.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<cite>divtel.telescope.Array</cite>) – used only for its camera sizes; it is not re-pointed</p></li>
+<li><p><strong>region</strong> (<cite>divtel.region.SkyRegion</cite>) – placed over the array</p></li>
+<li><p><strong>pointings</strong> (<em>int</em>) – how many tiles to plan</p></li>
+<li><p><strong>m_cut</strong> (<em>int</em>) – telescopes that must see a direction for it to count</p></li>
+<li><p><strong>candidates</strong> (<em>int</em>) – tile centres considered, drawn from the region’s own directions</p></li>
+<li><p><strong>seed</strong> (<em>int</em>) – for the subsample, so a rerun gives the same tiling</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>one per tile in order, with <code class="docutils literal notranslate"><span class="pre">alt</span></code>, <code class="docutils literal notranslate"><span class="pre">az</span></code>, <code class="docutils literal notranslate"><span class="pre">new</span></code> (weight this tile
+adds, as a fraction of the region) and <code class="docutils literal notranslate"><span class="pre">cumulative</span></code></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="divtel.strategy.weighted_split">
+<span class="sig-prename descclassname"><span class="pre">divtel.strategy.</span></span><span class="sig-name descname"><span class="pre">weighted_split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_cut</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">candidates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.strategy.weighted_split" title="Link to this definition">¶</a></dt>
+<dd><p>Sub-arrays whose <em>sizes</em> follow the weight each of them catches.</p>
+<p><cite>split_into_subarrays</cite> deals round-robin, so every group holds the same
+number of telescopes; the multiplicity inside a group’s footprint is that
+number, and the depth profile is therefore flat by construction rather than
+by any property of tiling. A gradient needs unequal groups.</p>
+<p>This builds one. An even split is placed first, to fix where the groups go
+and how much weight each catches; the telescopes are then re-dealt so that
+each group’s size is proportional to its catch, subject to every group
+keeping at least <cite>m_cut</cite>; and the groups are re-pointed at the same places.</p>
+<p>Holding the placement fixed means the answer is a lower bound on what unequal
+splits can do – a joint optimisation over placement and size would do at
+least as well. Even so it recovers most of <cite>shaped_pointing</cite>’s gradient
+without a solver and without leaving the sub-array framework, which is a
+change to a scheduling heuristic rather than a new method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<cite>divtel.telescope.Array</cite>)</p></li>
+<li><p><strong>region</strong> (<cite>divtel.region.SkyRegion</cite>)</p></li>
+<li><p><strong>count</strong> (<em>int</em>) – how many sub-arrays to make</p></li>
+<li><p><strong>m_cut</strong> (<em>int</em>)</p></li>
+<li><p><strong>candidates</strong> (<em>int</em>)</p></li>
+<li><p><strong>seed</strong> (<em>int</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>as <cite>point_subarrays</cite>, with <code class="docutils literal notranslate"><span class="pre">sizes</span></code> now unequal</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – if the array cannot give every group its <cite>m_cut</cite> floor</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
 <section id="divtel-pointing">
 <h2><code class="docutils literal notranslate"><span class="pre">divtel.pointing</span></code><a class="headerlink" href="#divtel-pointing" title="Link to this heading">¶</a></h2>
 <p>The pointing geometry underneath
@@ -859,6 +1952,217 @@ conversion in between.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><cite>numpy.array</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="divtel.pointing.as_altaz">
+<span class="sig-prename descclassname"><span class="pre">divtel.pointing.</span></span><span class="sig-name descname"><span class="pre">as_altaz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vector</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.pointing.as_altaz" title="Link to this definition">¶</a></dt>
+<dd><p>A unit pointing vector back as an (alt, az) pair.</p>
+<p>The inverse of <cite>alt_az_to_vector</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>vector</strong> (<cite>numpy.ndarray</cite>) – [x, y, z], unit length</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>(alt, az)</strong></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple of <cite>astropy.Quantity</cite>, in degrees</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="divtel.pointing.best_pointing">
+<span class="sig-prename descclassname"><span class="pre">divtel.pointing.</span></span><span class="sig-name descname"><span class="pre">best_pointing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">div</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_cut</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spokes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refine</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_pixels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.pointing.best_pointing" title="Link to this definition">¶</a></dt>
+<dd><p>Where to point, at a given divergence, to cover as much weight as possible.</p>
+<p>An array cannot always contain a region, and when it cannot, where it points
+decides how much it gets – so the pointing is searched rather than assumed.
+Neither obvious guess survives contact with a real alert: for GW170817’s
+first map the weighted centroid of the arc lies off the arc, and the axis of
+the smallest enclosing cone lies 37 degrees from the source.</p>
+<p>The candidates are a polar grid on the sky around the region’s centroid,
+reaching out to the region’s own extent plus one field of view. That bound is
+deliberate and it is not a performance compromise. Left unbounded, the search
+stops answering the question: a widely diverged array covers a ring rather
+than a disc, so aiming it sixty degrees off the region can land part of that
+ring squarely on it and score full marks, while every telescope not on the
+ring stares at empty sky. That configuration maximises the number this
+function returns and is worthless – it is a handful of telescopes on the
+target and forty pointed nowhere, which is not divergent pointing but a badly
+chosen sub-array. Confining the aim to the region keeps “covered weight” a
+measure of how well the array is used, not of how cleverly it can be
+positioned to game a metric.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<cite>divtel.telescope.Array</cite>)</p></li>
+<li><p><strong>region</strong> (<cite>divtel.region.SkyRegion</cite>) – placed over the array</p></li>
+<li><p><strong>div</strong> (<em>float</em>) – divergence to search at; the answer depends on it, since a widely spread
+configuration wants aiming differently from a tight one</p></li>
+<li><p><strong>m_cut</strong> (<em>int</em>)</p></li>
+<li><p><strong>rings</strong> (<em>int</em>) – the polar grid: <cite>rings</cite> distances out to the array’s reach, <cite>spokes</cite>
+directions around each</p></li>
+<li><p><strong>spokes</strong> (<em>int</em>) – the polar grid: <cite>rings</cite> distances out to the array’s reach, <cite>spokes</cite>
+directions around each</p></li>
+<li><p><strong>refine</strong> (<em>int</em>) – rounds of local search after the grid, each halving the step</p></li>
+<li><p><strong>search_pixels</strong> (<em>int</em>) – directions the search itself scores against. The grid is swept hundreds
+of times over, and ranking candidates does not need every one – the
+winner is rescored against the whole region before being returned, so the
+number that comes back is exact whatever this is.</p></li>
+<li><p><strong>seed</strong> (<em>int</em>) – for the subsample, so a rerun gives the same answer</p></li>
+<li><p><strong>start</strong> ((<cite>astropy.Quantity</cite>, <cite>astropy.Quantity</cite>), optional) – an extra (alt, az) candidate to seed the search with. The best pointing
+moves smoothly with divergence, so handing a scan’s previous answer back
+in costs one evaluation and stops neighbouring points on the curve landing
+in different local optima – which shows up as a curve that jumps about
+rather than as an obviously wrong answer.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">alt</span></code>, <code class="docutils literal notranslate"><span class="pre">az</span></code>, <code class="docutils literal notranslate"><span class="pre">covered</span></code>; the array is left pointed at the best one</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="divtel.pointing.div_for_half_angle">
+<span class="sig-prename descclassname"><span class="pre">divtel.pointing.</span></span><span class="sig-name descname"><span class="pre">div_for_half_angle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">half_angle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">az</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0001</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.pointing.div_for_half_angle" title="Link to this definition">¶</a></dt>
+<dd><p>The divergence that spreads an array’s pointings over a given half-angle.</p>
+<p>The direct answer to “the region is this big, how far do I have to diverge”.
+A divergent pointing puts a point G a distance</p>
+<blockquote>
+<div><p>norm = 100 m / tan(arcsin(div))</p>
+</div></blockquote>
+<p>behind the array along the mean pointing, then aims every telescope along the
+line from G through itself. A telescope lying a perpendicular distance <code class="docutils literal notranslate"><span class="pre">d</span></code>
+from the array’s axis and a distance <code class="docutils literal notranslate"><span class="pre">s</span></code> along it therefore ends up</p>
+<blockquote>
+<div><p>arctan(d / (norm + s))</p>
+</div></blockquote>
+<p>off the mean pointing, and the array’s spread is the largest of those. That
+is monotone decreasing in norm, so the norm putting the widest telescope
+exactly at <cite>half_angle</cite> is found by bisection, and</p>
+<blockquote>
+<div><p>div = sin(arctan(100 m / norm))</p>
+</div></blockquote>
+<p>puts G there.</p>
+<p>Both distances are measured against the pointing direction rather than
+against the ground, so an array seen edge-on at low elevation is correctly
+foreshortened and the same request costs more divergence than it would at the
+zenith. Keeping the along-axis term matters: dropping it, as a small-angle
+treatment does, understates the divergence needed by a third by the time the
+spread reaches 40 degrees, because the telescopes on the far side of the
+barycenter sit closer to G than the perpendicular distance alone suggests.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<cite>divtel.telescope.Array</cite>)</p></li>
+<li><p><strong>half_angle</strong> (<cite>astropy.Quantity</cite>) – angle the outermost telescope should sit at, off the mean pointing</p></li>
+<li><p><strong>alt</strong> (<cite>astropy.Quantity</cite>) – the mean pointing the array will diverge from</p></li>
+<li><p><strong>az</strong> (<cite>astropy.Quantity</cite>) – the mean pointing the array will diverge from</p></li>
+<li><p><strong>tolerance</strong> (<em>float</em>) – convergence on div</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the div parameter, clipped into [0, 1]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Exact for the geometry, but it answers a question about the array’s <em>widest</em>
+telescope, and it measures angles from the requested pointing while
+<cite>pointing_spread</cite> measures them from the mean of the pointings the array ends
+up with – G lies behind the array, so the two differ slightly. Read the
+result back with <cite>pointing_spread</cite>. <cite>solve_div</cite> sidesteps all of this by
+searching on the covered weight itself.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="divtel.pointing.div_for_multiplicity">
+<span class="sig-prename descclassname"><span class="pre">divtel.pointing.</span></span><span class="sig-name descname"><span class="pre">div_for_multiplicity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">az</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">div_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.pointing.div_for_multiplicity" title="Link to this definition">¶</a></dt>
+<dd><p>The most an array can be spread before showers stop being seen twice.</p>
+<p>The ceiling on divergence, and it has nothing to do with the target. Spreading
+trades depth for width, and the trade has a hard floor: a shower seen by one
+telescope cannot be reconstructed stereoscopically, so once the mean
+multiplicity falls to two the array is spent. Past that point further
+divergence covers more sky with telescopes that can no longer do anything
+with what they see.</p>
+<p>This matters most for a small array. Thirteen telescopes asked to span sixty
+degrees end up with a mean multiplicity of one and cover nothing usefully,
+even though the geometry did exactly what was requested – so a strategy that
+sizes divergence from the region alone will happily recommend a configuration
+that returns nothing.</p>
+<p>Mean multiplicity falls monotonically with divergence, so a bisection finds
+the crossing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<cite>divtel.telescope.Array</cite>)</p></li>
+<li><p><strong>alt</strong> (<cite>astropy.Quantity</cite>) – the pointing to evaluate at; the answer is mildly elevation-dependent,
+through the same foreshortening <cite>div_for_half_angle</cite> accounts for</p></li>
+<li><p><strong>az</strong> (<cite>astropy.Quantity</cite>) – the pointing to evaluate at; the answer is mildly elevation-dependent,
+through the same foreshortening <cite>div_for_half_angle</cite> accounts for</p></li>
+<li><p><strong>target</strong> (<em>float</em>) – multiplicity to hold, area-weighted over the sky the array sees. Two is
+the stereoscopic floor.</p></li>
+<li><p><strong>div_max</strong> (<em>float</em>) – largest divergence considered</p></li>
+<li><p><strong>tolerance</strong> (<em>float</em>) – convergence on div</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the divergence at which the mean multiplicity reaches <cite>target</cite>, or
+<cite>div_max</cite> if it never falls that far</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Uses <cite>divtel.telescope.Array.multiplicity_moments</cite>, which averages over the
+sky the array covers rather than over any region – the ceiling is a property
+of the configuration, not of what it happens to be pointed at.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="divtel.pointing.div_scan">
+<span class="sig-prename descclassname"><span class="pre">divtel.pointing.</span></span><span class="sig-name descname"><span class="pre">div_scan</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">divs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">az</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_cuts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(1,</span> <span class="pre">2)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hyper_fov</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimize_pointing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.pointing.div_scan" title="Link to this definition">¶</a></dt>
+<dd><p>Coverage, field of view and multiplicity across a range of divergences.</p>
+<p>The curve the divergence trade turns on: as div grows the array covers more
+of the region, and fewer telescopes see any part of it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<cite>divtel.telescope.Array</cite>)</p></li>
+<li><p><strong>region</strong> (<cite>divtel.region.SkyRegion</cite>) – placed over the array</p></li>
+<li><p><strong>divs</strong> (<em>iterable</em><em> of </em><em>float</em>) – divergences to try</p></li>
+<li><p><strong>alt</strong> (<cite>astropy.Quantity</cite>, optional) – mean pointing to diverge from. Defaults to the region’s centroid, which
+is where an observer with no better idea would point.</p></li>
+<li><p><strong>az</strong> (<cite>astropy.Quantity</cite>, optional) – mean pointing to diverge from. Defaults to the region’s centroid, which
+is where an observer with no better idea would point.</p></li>
+<li><p><strong>m_cuts</strong> (<em>iterable</em><em> of </em><em>int</em>) – multiplicity cuts to report coverage for</p></li>
+<li><p><strong>hyper_fov</strong> (<em>bool</em>) – also compute the array’s total covered solid angle and multiplicity
+moments. Accurate but slow – it is the polygon arrangement in
+<cite>divtel.telescope.Array.hyper_fov</cite> – so it can be turned off for a fine
+scan.</p></li>
+<li><p><strong>optimize_pointing</strong> (<em>bool</em>) – re-choose the pointing at each divergence with <cite>best_pointing</cite>, rather
+than holding <cite>alt</cite> and <cite>az</cite> fixed. What a real observer would do, and it
+matters for a region the array cannot contain: the best place to point a
+tightly-packed array is not the best place to point a spread one.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>one per divergence, with <code class="docutils literal notranslate"><span class="pre">div</span></code>, <code class="docutils literal notranslate"><span class="pre">alt</span></code>, <code class="docutils literal notranslate"><span class="pre">az</span></code>, <code class="docutils literal notranslate"><span class="pre">spread</span></code>,
+<code class="docutils literal notranslate"><span class="pre">covered</span></code> (a dict keyed by m_cut), and when asked <code class="docutils literal notranslate"><span class="pre">hyper_fov_area</span></code>,
+<code class="docutils literal notranslate"><span class="pre">stereo_area</span></code>, <code class="docutils literal notranslate"><span class="pre">multiplicity_mean</span></code> and <code class="docutils literal notranslate"><span class="pre">multiplicity_std</span></code></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of dict</p>
 </dd>
 </dl>
 </dd></dl>
@@ -908,6 +2212,109 @@ azimuth”, whatever the pointing itself is.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><cite>astropy.Quantity</cite> [Gx, Gy, Gz], in metres</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="divtel.pointing.pointing_spread">
+<span class="sig-prename descclassname"><span class="pre">divtel.pointing.</span></span><span class="sig-name descname"><span class="pre">pointing_spread</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.pointing.pointing_spread" title="Link to this definition">¶</a></dt>
+<dd><p>How far off the mean the array’s telescopes are pointing.</p>
+<p>The observable side of the divergence parameter. <cite>div</cite> is a number between 0
+and 1 whose meaning is tied to a hundred metres of baseline; this is the
+angle on the sky it produces for the array actually in hand, which is what
+can be compared against the size of a target region.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>array</strong> (<cite>divtel.telescope.Array</cite>) – already pointed</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">mean</span></code>, <code class="docutils literal notranslate"><span class="pre">max</span></code> and <code class="docutils literal notranslate"><span class="pre">rms</span></code> offset from the mean pointing direction,
+as <cite>astropy.Quantity</cite> angles</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="divtel.pointing.solve_div">
+<span class="sig-prename descclassname"><span class="pre">divtel.pointing.</span></span><span class="sig-name descname"><span class="pre">solve_div</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">az</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_cut</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coarse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">41</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimize_pointing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.pointing.solve_div" title="Link to this definition">¶</a></dt>
+<dd><p>The least divergence that covers a given fraction of the region.</p>
+<p>Searched rather than derived. A coarse sweep of the whole range first, then
+bisection inside the bracket it finds: coverage rises with divergence at
+first and can fall again once the fields of view pull apart and the
+multiplicity cut starts biting, so bisecting from the outset could converge
+onto the wrong side of a maximum.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<cite>divtel.telescope.Array</cite>)</p></li>
+<li><p><strong>region</strong> (<cite>divtel.region.SkyRegion</cite>) – placed over the array</p></li>
+<li><p><strong>alt</strong> (<cite>astropy.Quantity</cite>, optional) – mean pointing to diverge from; the region’s centroid by default</p></li>
+<li><p><strong>az</strong> (<cite>astropy.Quantity</cite>, optional) – mean pointing to diverge from; the region’s centroid by default</p></li>
+<li><p><strong>target</strong> (<em>float</em>) – fraction of the region’s weight to cover</p></li>
+<li><p><strong>m_cut</strong> (<em>int</em>)</p></li>
+<li><p><strong>coarse</strong> (<em>int</em>) – points in the initial sweep of div over [0, 1]</p></li>
+<li><p><strong>tolerance</strong> (<em>float</em>) – stop when the bracket on div is this narrow</p></li>
+<li><p><strong>optimize_pointing</strong> (<em>bool</em>) – re-aim at every divergence with <cite>best_pointing</cite></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">div</span></code> and <code class="docutils literal notranslate"><span class="pre">covered</span></code> at the solution, <code class="docutils literal notranslate"><span class="pre">spread</span></code> there, and
+<code class="docutils literal notranslate"><span class="pre">best_div</span></code>/<code class="docutils literal notranslate"><span class="pre">best_covered</span></code> – the most the array can cover at all.
+<code class="docutils literal notranslate"><span class="pre">div</span></code> is None when the target is out of reach, and then the best
+entries say how close it gets and where.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="divtel.pointing.spread_scan">
+<span class="sig-prename descclassname"><span class="pre">divtel.pointing.</span></span><span class="sig-name descname"><span class="pre">spread_scan</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">divs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">az</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.pointing.spread_scan" title="Link to this definition">¶</a></dt>
+<dd><p>How divergence trades depth for width, with no region involved.</p>
+<p><cite>div_scan</cite> folds a target in at every step, because covered weight is what a
+strategy is chasing. But two of the numbers it reports along the way – mean
+multiplicity and the hyper field of view’s area – do not need a target to
+mean something. They describe the array and the divergence alone.</p>
+<p>The two move in lockstep, and by a fixed amount. Multiplicity is a sum of
+camera discs, so <code class="docutils literal notranslate"><span class="pre">&lt;m&gt;</span> <span class="pre">=</span> <span class="pre">total</span> <span class="pre">camera</span> <span class="pre">solid</span> <span class="pre">angle</span> <span class="pre">/</span> <span class="pre">hyper_fov</span> <span class="pre">area</span></code>
+regardless of how the array is spread – that identity is what
+<cite>Array.multiplicity_moments</cite> computes. Dividing the hyper field of view by
+the array’s mean single-camera area instead of by its raw solid angle turns
+that into <code class="docutils literal notranslate"><span class="pre">&lt;m&gt;</span> <span class="pre">*</span> <span class="pre">n_fov</span> <span class="pre">=</span> <span class="pre">n_telescopes</span></code>, a constant: as the array spreads,
+<code class="docutils literal notranslate"><span class="pre">n_fov</span></code> grows from one camera’s worth of sky towards <cite>n_telescopes</cite>
+cameras’ worth exactly as fast as <cite>&lt;m&gt;</cite> falls from <cite>n_telescopes</cite> towards
+one. Neither curve carries information the other does not; the point of
+plotting both is that “one camera wide, seen fifty times over” and “fifty
+cameras wide, seen once” are the two ends of the same trade, in units an
+observer can picture.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<cite>divtel.telescope.Array</cite>)</p></li>
+<li><p><strong>divs</strong> (<em>iterable</em><em> of </em><em>float</em>) – divergences to try</p></li>
+<li><p><strong>alt</strong> (<cite>astropy.Quantity</cite>) – mean pointing to diverge from; the hyper field of view is mildly
+elevation-dependent through the same foreshortening <cite>div_for_half_angle</cite>
+accounts for, so pick one pointing and hold it for the whole scan</p></li>
+<li><p><strong>az</strong> (<cite>astropy.Quantity</cite>) – mean pointing to diverge from; the hyper field of view is mildly
+elevation-dependent through the same foreshortening <cite>div_for_half_angle</cite>
+accounts for, so pick one pointing and hold it for the whole scan</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>one per divergence, with <code class="docutils literal notranslate"><span class="pre">div</span></code>, <code class="docutils literal notranslate"><span class="pre">spread</span></code>, <code class="docutils literal notranslate"><span class="pre">multiplicity_mean</span></code>,
+<code class="docutils literal notranslate"><span class="pre">multiplicity_std</span></code>, <code class="docutils literal notranslate"><span class="pre">hyper_fov_area</span></code> (<cite>astropy.Quantity</cite>, at
+min_telescopes 1) and <code class="docutils literal notranslate"><span class="pre">n_fov</span></code> – the hyper field of view measured in
+cameras, i.e. <code class="docutils literal notranslate"><span class="pre">hyper_fov_area</span></code> divided by the array’s mean
+single-camera solid angle</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of dict</p>
 </dd>
 </dl>
 </dd></dl>
@@ -972,27 +2379,13 @@ it is used. An <cite>EarthLocation</cite> is taken as it is.</p></li>
 <li><p><strong>time</strong> (str, <cite>astropy.time.Time</cite>, optional) – when the observation happens, UTC. Defaults to now.</p></li>
 </ul>
 </dd>
-</dl>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="divtel.observation.Observation.location">
-<span class="sig-name descname"><span class="pre">location</span></span><a class="headerlink" href="#divtel.observation.Observation.location" title="Link to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><cite>astropy.coordinates.EarthLocation</cite></p>
+<dt class="field-even">Variables<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>location</strong> (<cite>astropy.coordinates.EarthLocation</cite>)</p></li>
+<li><p><strong>time</strong> (<cite>astropy.time.Time</cite>)</p></li>
+</ul>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="divtel.observation.Observation.time">
-<span class="sig-name descname"><span class="pre">time</span></span><a class="headerlink" href="#divtel.observation.Observation.time" title="Link to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><cite>astropy.time.Time</cite></p>
-</dd>
-</dl>
-</dd></dl>
-
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">obs</span> <span class="o">=</span> <span class="n">Observation</span><span class="p">(</span><span class="n">site</span><span class="o">=</span><span class="s2">"north"</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="s2">"2026-03-01T23:00:00"</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">crab</span> <span class="o">=</span> <span class="n">SkyCoord</span><span class="p">(</span><span class="n">ra</span><span class="o">=</span><span class="mf">83.633</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span> <span class="n">dec</span><span class="o">=</span><span class="mf">22.015</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">)</span>
@@ -1114,6 +2507,113 @@ pointed from one cannot quietly fall out of step with it.</p>
 
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="divtel.observation.Window">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">divtel.observation.</span></span><span class="sig-name descname"><span class="pre">Window</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Quantity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alt_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Quantity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alt_start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Quantity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alt_end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Quantity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_best</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Time</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.observation.Window" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A stretch of time when a target is observable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>end</strong> (<a class="reference internal" href="#divtel.observation.Window.start" title="divtel.observation.Window.start"><em>start</em></a><em>,</em>)</p></li>
+<li><p><strong>duration</strong> (<cite>astropy.Quantity</cite>)</p></li>
+<li><p><strong>alt_max</strong> (<cite>astropy.Quantity</cite>) – highest altitude the target reaches inside the window</p></li>
+<li><p><strong>alt_end</strong> (<a class="reference internal" href="#divtel.observation.Window.alt_start" title="divtel.observation.Window.alt_start"><em>alt_start</em></a><em>,</em>)</p></li>
+<li><p><strong>time_best</strong> (<cite>astropy.time.Time</cite>) – when it is highest – the moment to plan the pointing for</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="divtel.observation.Window.alt_end">
+<span class="sig-name descname"><span class="pre">alt_end</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span></span><a class="headerlink" href="#divtel.observation.Window.alt_end" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="divtel.observation.Window.alt_max">
+<span class="sig-name descname"><span class="pre">alt_max</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span></span><a class="headerlink" href="#divtel.observation.Window.alt_max" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="divtel.observation.Window.alt_start">
+<span class="sig-name descname"><span class="pre">alt_start</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span></span><a class="headerlink" href="#divtel.observation.Window.alt_start" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="divtel.observation.Window.duration">
+<span class="sig-name descname"><span class="pre">duration</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span></span><a class="headerlink" href="#divtel.observation.Window.duration" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="divtel.observation.Window.end">
+<span class="sig-name descname"><span class="pre">end</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Time</span></span><a class="headerlink" href="#divtel.observation.Window.end" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="divtel.observation.Window.start">
+<span class="sig-name descname"><span class="pre">start</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Time</span></span><a class="headerlink" href="#divtel.observation.Window.start" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="divtel.observation.Window.time_best">
+<span class="sig-name descname"><span class="pre">time_best</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Time</span></span><a class="headerlink" href="#divtel.observation.Window.time_best" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="divtel.observation.altaz_track">
+<span class="sig-prename descclassname"><span class="pre">divtel.observation.</span></span><span class="sig-name descname"><span class="pre">altaz_track</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">site</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.observation.altaz_track" title="Link to this definition">¶</a></dt>
+<dd><p>Altitude of a target and of the Sun, over a series of times.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<cite>astropy.coordinates.SkyCoord</cite>)</p></li>
+<li><p><strong>site</strong> (str or <cite>astropy.coordinates.EarthLocation</cite>) – as <cite>Observation</cite> takes it, e.g. <code class="docutils literal notranslate"><span class="pre">&quot;south&quot;</span></code></p></li>
+<li><p><strong>times</strong> (<cite>astropy.time.Time</cite>) – an array of times</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>(target_alt, sun_alt)</strong> – in degrees, one entry per time</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple of <cite>astropy.Quantity</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="divtel.observation.observable_windows">
+<span class="sig-prename descclassname"><span class="pre">divtel.observation.</span></span><span class="sig-name descname"><span class="pre">observable_windows</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">site</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;Quantity</span> <span class="pre">5.</span> <span class="pre">min&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_altitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;Quantity</span> <span class="pre">0.</span> <span class="pre">deg&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sun_altitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;Quantity</span> <span class="pre">-18.</span> <span class="pre">deg&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.observation.observable_windows" title="Link to this definition">¶</a></dt>
+<dd><p>Every stretch in which a target is up and the sky is dark.</p>
+<p>A Cherenkov telescope needs a dark sky and a source above the horizon, and a
+transient alert arrives whenever it arrives. Between the two there is often
+no overlap at all: GW170817 merged at 12:41 UTC with its localization already
+low in the western sky, and by the time either CTAO site was dark the region
+was setting. So before any question about pointing, there is a question about
+whether there is anything to point at.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<cite>astropy.coordinates.SkyCoord</cite>)</p></li>
+<li><p><strong>site</strong> (str or <cite>astropy.coordinates.EarthLocation</cite>)</p></li>
+<li><p><strong>start</strong> (str or <cite>astropy.time.Time</cite>) – when to start looking</p></li>
+<li><p><strong>duration</strong> (<cite>astropy.Quantity</cite>) – how far ahead to look, e.g. <code class="docutils literal notranslate"><span class="pre">5</span> <span class="pre">*</span> <span class="pre">u.day</span></code></p></li>
+<li><p><strong>step</strong> (<cite>astropy.Quantity</cite>) – sampling; window edges are resolved to this</p></li>
+<li><p><strong>min_altitude</strong> (<cite>astropy.Quantity</cite>) – lowest altitude counted as observable. Zero is the geometric horizon,
+which is generous – an air shower seen through that much atmosphere is
+far above any useful energy threshold.</p></li>
+<li><p><strong>sun_altitude</strong> (<cite>astropy.Quantity</cite>) – how far the Sun must be below the horizon</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>in time order; empty if the target is never observable</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>[<cite>Window</cite>]</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="divtel.observation.pointing_coord">
 <span class="sig-prename descclassname"><span class="pre">divtel.observation.</span></span><span class="sig-name descname"><span class="pre">pointing_coord</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">observation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">icrs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.observation.pointing_coord" title="Link to this definition">¶</a></dt>
@@ -1148,11 +2648,83 @@ in the horizontal frame</p></li>
 </dd></dl>
 
 </section>
+<section id="divtel-skymap">
+<h2><code class="docutils literal notranslate"><span class="pre">divtel.skymap</span></code><a class="headerlink" href="#divtel-skymap" title="Link to this heading">¶</a></h2>
+<p>Reading a published HEALPix localization and cutting credible regions out of
+it. The one part of divtel with a dependency of its own, so it lives behind an
+extra:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">divtel</span><span class="p">[</span><span class="n">skymap</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Precomputed GW170817 regions ship in <code class="docutils literal notranslate"><span class="pre">divtel/data/gw170817</span></code>, so a study that
+only wants those needs neither this module nor the extra.</p>
+</section>
 <section id="divtel-visualization">
 <h2><code class="docutils literal notranslate"><span class="pre">divtel.visualization</span></code><a class="headerlink" href="#divtel-visualization" title="Link to this heading">¶</a></h2>
 <p>Plotting helpers. Each takes an optional <code class="docutils literal notranslate"><span class="pre">ax</span></code> and returns it, so they compose
 with whatever else you are drawing.</p>
-<dl class="py function" id="module-divtel.visualization">
+<dl class="py class" id="module-divtel.visualization">
+<dt class="sig sig-object py" id="divtel.visualization.Projection">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">divtel.visualization.</span></span><span class="sig-name descname"><span class="pre">Projection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">centre</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">east</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">north</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0.0,</span> <span class="pre">0.0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">turn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.visualization.Projection" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A Lambert azimuthal equal-area frame, centred on a region.</p>
+<p>Areas on the page are true solid angles – the same projection
+<cite>Array.hyper_fov</cite> measures in, chosen for the same reasons: it keeps areas
+true and it has no pole to fall over near the zenith.</p>
+<p>Held as an object rather than recomputed per call so that everything drawn
+on one panel shares it. That matters as soon as more than the region itself
+is drawn: credible bands cut at different levels have different centroids,
+and projecting each in its own frame would slide them apart instead of
+nesting them, while camera footprints in a frame of their own would land
+somewhere other than where they point.</p>
+<p>Build one with <cite>projection_frame</cite> and pass it to <cite>project_region</cite>,
+<cite>project_directions</cite> and <cite>camera_rims</cite>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="divtel.visualization.camera_rims">
+<span class="sig-prename descclassname"><span class="pre">divtel.visualization.</span></span><span class="sig-name descname"><span class="pre">camera_rims</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">129</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linewidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.75</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zorder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.visualization.camera_rims" title="Link to this definition">¶</a></dt>
+<dd><p>The outline of every telescope’s field of view, drawn over a region.</p>
+<p>The picture behind a coverage number: which parts of the sky the cameras
+actually sit on, and which parts they miss. Composes with
+<cite>multiplicity_over_region</cite> and <cite>probability_over_region</cite> – pass the same
+<cite>frame</cite> to all of them and they land on top of each other.</p>
+<p>Each rim is sampled on the sphere and then projected, rather than drawn as
+a circle on the page. Away from the centre of an equal-area projection the
+image of a circle is not one, and it is the true shape that shows a camera
+at the edge of the frame covering what it really covers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<cite>divtel.telescope.Array</cite>) – already pointed, by any strategy</p></li>
+<li><p><strong>region</strong> (<cite>divtel.region.SkyRegion</cite>, optional) – used only to build a frame when none is given</p></li>
+<li><p><strong>ax</strong> (<cite>matplotlib.axes.Axes</cite>, optional)</p></li>
+<li><p><strong>frame</strong> (<cite>Projection</cite>, optional) – the frame to draw in; built from <cite>region</cite> otherwise</p></li>
+<li><p><strong>colors</strong> (list of str or <code class="docutils literal notranslate"><span class="pre">&quot;type&quot;</span></code>, optional) – one colour per telescope, in <code class="docutils literal notranslate"><span class="pre">array.telescopes</span></code> order. <code class="docutils literal notranslate"><span class="pre">&quot;type&quot;</span></code>
+colours by camera radius via <cite>type_colors</cite>, which is usually what is
+wanted. A single neutral ink otherwise.</p></li>
+<li><p><strong>labels</strong> (<em>dict</em><em>, </em><em>optional</em>) – colour to legend label. Filled in by <code class="docutils literal notranslate"><span class="pre">colors=&quot;type&quot;</span></code>.</p></li>
+<li><p><strong>type_names</strong> (<em>sequence</em><em> of </em><em>str</em><em>, </em><em>optional</em>) – passed to <cite>type_colors</cite> when <code class="docutils literal notranslate"><span class="pre">colors=&quot;type&quot;</span></code>, to legend the camera
+types by name (e.g. <code class="docutils literal notranslate"><span class="pre">(&quot;SST&quot;,</span> <span class="pre">&quot;MST&quot;)</span></code>) rather than by radius.</p></li>
+<li><p><strong>points</strong> (<em>int</em>) – samples around each rim</p></li>
+<li><p><strong>linewidth</strong> (<em>float</em>) – passed to the line</p></li>
+<li><p><strong>alpha</strong> (<em>float</em>) – passed to the line</p></li>
+<li><p><strong>zorder</strong> (<em>float</em>) – passed to the line</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>extent</strong> – <code class="docutils literal notranslate"><span class="pre">(x_min,</span> <span class="pre">x_max,</span> <span class="pre">y_min,</span> <span class="pre">y_max)</span></code> of the rims on the page, in degrees.
+Frame the panel on this together with the region’s own extent, or a
+camera hanging off the edge is silently cropped and the picture
+overstates the coverage. <cite>frame_on</cite> does that.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="divtel.visualization.display_groups">
 <span class="sig-prename descclassname"><span class="pre">divtel.visualization.</span></span><span class="sig-name descname"><span class="pre">display_groups</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">groups</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'xy'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'tab10'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.visualization.display_groups" title="Link to this definition">¶</a></dt>
 <dd><p>Display sub-arrays, each in its own colour with its own barycenter.</p>
@@ -1220,6 +2792,106 @@ solid angles – see <cite>Array.hyper_fov</cite>.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="divtel.visualization.frame_on">
+<span class="sig-prename descclassname"><span class="pre">divtel.visualization.</span></span><span class="sig-name descname"><span class="pre">frame_on</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">extents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.04</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.visualization.frame_on" title="Link to this definition">¶</a></dt>
+<dd><p>Set a panel’s limits to hold everything drawn on it.</p>
+<p>A region and the cameras pointed at it need framing together: on the
+region alone a camera at the edge is silently cropped and the picture
+overstates the coverage, and on the cameras alone a strategy that flings
+them wide shrinks the region to a smear.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ax</strong> (<cite>matplotlib.axes.Axes</cite>)</p></li>
+<li><p><strong>*extents</strong> (<em>tuple</em><em> of </em><em>float</em>) – <code class="docutils literal notranslate"><span class="pre">(x_min,</span> <span class="pre">x_max,</span> <span class="pre">y_min,</span> <span class="pre">y_max)</span></code> boxes, as <cite>region_extent</cite> and
+<cite>camera_rims</cite> return them</p></li>
+<li><p><strong>pad</strong> (<em>float</em>) – margin to leave, as a fraction of the box</p></li>
+<li><p><strong>equal</strong> (<em>bool</em>) – keep the aspect equal, so areas on the page stay true areas on the sky</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><cite>matplotlib.axes.Axes</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="divtel.visualization.multiplicity_by_probability">
+<span class="sig-prename descclassname"><span class="pre">divtel.visualization.</span></span><span class="sig-name descname"><span class="pre">multiplicity_by_probability</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">profiles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_cut</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.visualization.multiplicity_by_probability" title="Link to this definition">¶</a></dt>
+<dd><p>Mean multiplicity in each fifth of the weight, least likely first.</p>
+<p>The plain reading of whether an array is looking hardest where the source
+probably is: a flat set of bars is an array spread evenly over the region, a
+rising one is <cite>divtel.strategy.shaped_pointing</cite> doing what it claims.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>profiles</strong> (<em>dict</em><em> of </em><em>str to list</em><em> of </em><em>float</em>) – one entry per strategy, as <cite>divtel.strategy.multiplicity_by_probability</cite>
+returns them</p></li>
+<li><p><strong>ax</strong> (<cite>matplotlib.axes.Axes</cite>, optional)</p></li>
+<li><p><strong>m_cut</strong> (<em>int</em>) – drawn as a floor line – below it a direction is covered but not usable</p></li>
+<li><p><strong>bins</strong> (<em>int</em>) – how many the profiles were cut into, for labelling</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><cite>matplotlib.axes.Axes</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="divtel.visualization.multiplicity_over_region">
+<span class="sig-prename descclassname"><span class="pre">divtel.visualization.</span></span><span class="sig-name descname"><span class="pre">multiplicity_over_region</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colorbar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">align</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Blues'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blind_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0.85'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.visualization.multiplicity_over_region" title="Link to this definition">¶</a></dt>
+<dd><p>A weighted region coloured by how many telescopes see each part of it.</p>
+<p>The figure that separates the pointing strategies. A parallel array paints
+one solid blob and leaves the rest blank; a diverged one paints a wide ring,
+evenly; a shaped one paints the region’s own shape, darkest where the weight
+is. Whether it does is something to look at rather than take on trust from a
+single number.</p>
+<p>Both the region and the colours are in the equal-area projection of
+<cite>project_region</cite>, so a wide patch of low multiplicity looks as big as it is.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<cite>divtel.telescope.Array</cite>) – already pointed, by any strategy</p></li>
+<li><p><strong>region</strong> (<cite>divtel.region.SkyRegion</cite>) – placed over the array</p></li>
+<li><p><strong>ax</strong> (<cite>matplotlib.axes.Axes</cite>, optional)</p></li>
+<li><p><strong>title</strong> (<em>str</em><em>, </em><em>optional</em>)</p></li>
+<li><p><strong>vmax</strong> (<em>int</em><em>, </em><em>optional</em>) – top of the colour scale, above which the colour stops changing. Set it
+by hand across a row of panels, or each is normalised to its own maximum
+and they cannot be compared. A parallel array piles every telescope on
+one spot and its maximum is the whole array, so scaling a row to <em>that</em>
+leaves every other panel a uniform pale wash: pick a high percentile of
+the row instead and let the parallel panel clip.</p></li>
+<li><p><strong>radius</strong> (<cite>astropy.Quantity</cite>, optional) – half-width of the plot; sized to hold the region by default</p></li>
+<li><p><strong>colorbar</strong> (<em>bool</em>) – draw one beside this panel. Turn it off for a row of panels sharing a
+scale and add a single bar for the figure.</p></li>
+<li><p><strong>align</strong> (<em>bool</em>) – turn the region so its long axis lies along the page. A region that runs
+diagonally fills a square panel with empty corners and packs badly beside
+other panels; laid flat the same region is wide and short. The axis
+labels stop being azimuth and altitude when this is on, which is why it
+can be turned off – for a compact region there is nothing to align and
+the true orientation is worth more. Ignored when <cite>frame</cite> is given.</p></li>
+<li><p><strong>size</strong> (<em>float</em>) – marker area for the directions</p></li>
+<li><p><strong>cmap</strong> (<em>str</em>) – one hue, light to dark: multiplicity is a magnitude, not an identity</p></li>
+<li><p><strong>blind_color</strong> (<em>str</em>) – colour for directions no telescope sees</p></li>
+<li><p><strong>frame</strong> (<cite>Projection</cite>, optional) – draw in this frame rather than the region’s own, so this panel lands on
+top of whatever else was drawn in it – <cite>camera_rims</cite>, say</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the drawn points, to hang a shared colour bar on</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>matplotlib.collections.PathCollection</cite></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Directions no telescope sees are drawn in grey rather than left off the page.
+Where an array is blind is most of the point of the picture, and a gap reads
+as “no region here” instead of “no telescopes here”.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="divtel.visualization.multiplicity_plot">
 <span class="sig-prename descclassname"><span class="pre">divtel.visualization.</span></span><span class="sig-name descname"><span class="pre">multiplicity_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_telescopes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'viridis'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.visualization.multiplicity_plot" title="Link to this definition">¶</a></dt>
 <dd><p>Bar chart of how much sky is seen by how many telescopes.</p>
@@ -1252,6 +2924,186 @@ area; pass 1 for the whole covered area.</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="divtel.visualization.probability_over_region">
+<span class="sig-prename descclassname"><span class="pre">divtel.visualization.</span></span><span class="sig-name descname"><span class="pre">probability_over_region</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">region</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bands</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'#2a78d6'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">align</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.visualization.probability_over_region" title="Link to this definition">¶</a></dt>
+<dd><p>A region shaded by where the source probably is.</p>
+<p>The companion to <cite>multiplicity_over_region</cite>: that one shows what the array
+delivers, this one shows what it is being asked to cover. Draw the two side
+by side, or draw <cite>camera_rims</cite> over this one to see which parts of the
+probability the cameras sit on.</p>
+<p>Shaded by credible level, never by raw probability density. Density spans
+orders of magnitude and plots as a thin bright thread with nothing around
+it; the credible level answers the question actually being asked, which is
+where the source is likely to be and how confident that is.</p>
+<p>With no <cite>bands</cite> the level is computed from the region’s own weights, the
+same greedy construction that cut it: take the most probable direction,
+then the next, and shade each by the probability accumulated when it was
+taken. That gives a continuous ramp rather than a few discrete rings, and
+it needs nothing but the region.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>region</strong> (<cite>divtel.region.SkyRegion</cite>) – placed over the array. Sets the frame, and is what gets shaded when
+<cite>bands</cite> is None.</p></li>
+<li><p><strong>bands</strong> (dict of float to <cite>divtel.region.SkyRegion</cite>, optional) – nested credible regions, keyed by level, drawn as discrete rings
+instead. <strong>Place them with one shared rotation</strong> –
+<cite>divtel.region.SkyRegion.placement_rotation</cite> and <cite>rotate</cite> – or they
+will not nest.</p></li>
+<li><p><strong>ax</strong> (<cite>matplotlib.axes.Axes</cite>, optional)</p></li>
+<li><p><strong>frame</strong> (<cite>Projection</cite>, optional)</p></li>
+<li><p><strong>color</strong> (<em>str</em>) – the hue the bands are shaded in, light to dark</p></li>
+<li><p><strong>size</strong> (<em>float</em>) – marker area</p></li>
+<li><p><strong>align</strong> (<em>bool</em>) – see <cite>projection_frame</cite>; ignored when <cite>frame</cite> is given</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>frame</strong> – the frame everything was drawn in, to pass to <cite>camera_rims</cite></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>Projection</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="divtel.visualization.project_directions">
+<span class="sig-prename descclassname"><span class="pre">divtel.visualization.</span></span><span class="sig-name descname"><span class="pre">project_directions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.visualization.project_directions" title="Link to this definition">¶</a></dt>
+<dd><p>Arbitrary unit vectors on the page, in a region’s frame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>directions</strong> (<cite>numpy.ndarray</cite>) – shape (n, 3)</p></li>
+<li><p><strong>frame</strong> (<cite>Projection</cite>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>x, y</strong></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>numpy.ndarray</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="divtel.visualization.project_region">
+<span class="sig-prename descclassname"><span class="pre">divtel.visualization.</span></span><span class="sig-name descname"><span class="pre">project_region</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">region</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">align</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.visualization.project_region" title="Link to this definition">¶</a></dt>
+<dd><p>A placed region as x and y on the page, in degrees.</p>
+<p>Shared rather than inlined because a figure’s <em>size</em> has to be chosen from
+the same projection its <em>contents</em> are drawn in, and the two drifting apart
+is not a visible failure – it is a panel that is quietly the wrong shape.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>region</strong> (<cite>divtel.region.SkyRegion</cite>) – placed over the array</p></li>
+<li><p><strong>align</strong> (<em>bool</em>) – see <cite>projection_frame</cite>; ignored when <cite>frame</cite> is given</p></li>
+<li><p><strong>frame</strong> (<cite>Projection</cite>, optional) – draw in this frame instead of the region’s own. Pass one region’s frame
+when projecting another – a narrower credible band, say – so the two
+land on top of each other.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>x, y</strong> – degrees from the frame’s centre</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>numpy.ndarray</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="divtel.visualization.projection_frame">
+<span class="sig-prename descclassname"><span class="pre">divtel.visualization.</span></span><span class="sig-name descname"><span class="pre">projection_frame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">region</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">align</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.visualization.projection_frame" title="Link to this definition">¶</a></dt>
+<dd><p>The equal-area frame a region is drawn in.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>region</strong> (<cite>divtel.region.SkyRegion</cite>) – placed over the array. The frame is centred on its centroid.</p></li>
+<li><p><strong>align</strong> (<em>bool</em>) – turn the region so its long axis lies along x. The rotation is rigid
+and happens in the equal-area plane, so areas and camera shapes are
+untouched; only the frame the reader sees turns, which is why the axes
+stop being azimuth and altitude when this is on.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><cite>Projection</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="divtel.visualization.region_extent">
+<span class="sig-prename descclassname"><span class="pre">divtel.visualization.</span></span><span class="sig-name descname"><span class="pre">region_extent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">region</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">align</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.visualization.region_extent" title="Link to this definition">¶</a></dt>
+<dd><p>Where a region falls on the page.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>region</strong> (<cite>divtel.region.SkyRegion</cite>)</p></li>
+<li><p><strong>frame</strong> (<cite>Projection</cite>, optional)</p></li>
+<li><p><strong>align</strong> (<em>bool</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">(x_min,</span> <span class="pre">x_max,</span> <span class="pre">y_min,</span> <span class="pre">y_max)</span></code>, in degrees</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="divtel.visualization.region_span">
+<span class="sig-prename descclassname"><span class="pre">divtel.visualization.</span></span><span class="sig-name descname"><span class="pre">region_span</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">region</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">align</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.visualization.region_span" title="Link to this definition">¶</a></dt>
+<dd><p>Height over width of a region on the page, for choosing a figure’s shape.</p>
+<p>Panels drawn by <cite>multiplicity_over_region</cite> are equal-aspect, so a figure not
+shaped like the region leaves its axes shrunk inside their slots with the
+colour bars standing beside empty space.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>region</strong> (<cite>divtel.region.SkyRegion</cite>)</p></li>
+<li><p><strong>align</strong> (<em>bool</em>) – must match what the panels are drawn with</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="divtel.visualization.sky_bands">
+<span class="sig-prename descclassname"><span class="pre">divtel.visualization.</span></span><span class="sig-name descname"><span class="pre">sky_bands</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bands</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">centre_ra</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'#2a78d6'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.visualization.sky_bands" title="Link to this definition">¶</a></dt>
+<dd><p>Credible bands of one localization, all-sky.</p>
+<p>Shaded by credible level rather than by raw probability density. Density
+spans orders of magnitude and plots as a thin bright thread with nothing
+around it; the bands answer the question actually being asked, which is
+where the source is likely to be and how confident that is.</p>
+<p>An all-sky Mollweide, because a region that runs a hundred degrees does not
+fit in anything smaller. For the close-up that keeps areas true, see
+<cite>multiplicity_over_region</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bands</strong> (dict of float to <cite>divtel.region.SkyRegion</cite>) – one region per credible level, in the sky’s own frame – not placed.
+Drawn outermost first so the darker inner bands land on top.</p></li>
+<li><p><strong>source</strong> (<cite>astropy.coordinates.SkyCoord</cite>, optional) – a true position, marked if given</p></li>
+<li><p><strong>centre_ra</strong> (<cite>astropy.Quantity</cite>, optional) – right ascension at the middle of the panel. Pass the same value across
+panels so several maps can be compared; the innermost band’s mean
+otherwise.</p></li>
+<li><p><strong>ax</strong> (<cite>matplotlib.axes.Axes</cite>, optional) – must have a Mollweide projection</p></li>
+<li><p><strong>color</strong> (<em>str</em>) – the hue the bands are shaded in, light to dark</p></li>
+<li><p><strong>title</strong> (<em>str</em><em>, </em><em>optional</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><cite>matplotlib.axes.Axes</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="divtel.visualization.sky_fov">
 <span class="sig-prename descclassname"><span class="pre">divtel.visualization.</span></span><span class="sig-name descname"><span class="pre">sky_fov</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">telescope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.visualization.sky_fov" title="Link to this definition">¶</a></dt>
 <dd><p>Display the telescope FoV in the sky</p>
@@ -1267,6 +3119,37 @@ area; pass 1 for the whole covered area.</p></li>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><cite>matplotlib.pyplot.axes</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="divtel.visualization.type_colors">
+<span class="sig-prename descclassname"><span class="pre">divtel.visualization.</span></span><span class="sig-name descname"><span class="pre">type_colors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">palette</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('#2a78d6',</span> <span class="pre">'#eb6834',</span> <span class="pre">'#1baf7a',</span> <span class="pre">'#eda100')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#divtel.visualization.type_colors" title="Link to this definition">¶</a></dt>
+<dd><p>A colour per telescope, by the angular radius of its camera.</p>
+<p>What every pointing strategy means by a telescope’s type – the same split
+<cite>Array.group_by(“fov_radius”)</cite> makes – so a figure coloured this way shows
+which instrument is being sent where. Free pointing puts the narrow cameras
+where the map is sharp and the wide ones on the tails, which is a degree of
+freedom neither divergence nor an even sub-array split can use, and it is
+invisible without the colours.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<cite>divtel.telescope.Array</cite>)</p></li>
+<li><p><strong>palette</strong> (<em>sequence</em><em> of </em><em>str</em>) – colours to draw from, widest camera first</p></li>
+<li><p><strong>names</strong> (<em>sequence</em><em> of </em><em>str</em><em>, </em><em>optional</em>) – one name per camera type, widest first, used in the legend instead of
+the angular radius (e.g. <code class="docutils literal notranslate"><span class="pre">(&quot;SST&quot;,</span> <span class="pre">&quot;MST&quot;)</span></code> for CTAO-South). Left out,
+the legend names each group by its field-of-view radius, which is all
+<cite>fov_radius</cite> knows – it has no notion of “SST” or “MST”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>colors</strong> (<em>list of str</em>) – one per telescope, in <code class="docutils literal notranslate"><span class="pre">array.telescopes</span></code> order</p></li>
+<li><p><strong>labels</strong> (<em>dict</em>) – colour to a legend label for that camera type</p></li>
+</ul>
+</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1366,17 +3249,74 @@ area; pass 1 for the whole covered area.</p></li>
 <li><a class="reference internal" href="#divtel.layout.load_table"><code class="docutils literal notranslate"><span class="pre">load_table()</span></code></a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#divtel-region"><code class="docutils literal notranslate"><span class="pre">divtel.region</span></code></a><ul>
+<li><a class="reference internal" href="#frames">Frames</a></li>
+<li><a class="reference internal" href="#sizes">Sizes</a></li>
+<li><a class="reference internal" href="#divtel.region.SkyRegion"><code class="docutils literal notranslate"><span class="pre">SkyRegion</span></code></a><ul>
+<li><a class="reference internal" href="#divtel.region.SkyRegion.area"><code class="docutils literal notranslate"><span class="pre">SkyRegion.area</span></code></a></li>
+<li><a class="reference internal" href="#divtel.region.SkyRegion.centroid"><code class="docutils literal notranslate"><span class="pre">SkyRegion.centroid</span></code></a></li>
+<li><a class="reference internal" href="#divtel.region.SkyRegion.containment_radius"><code class="docutils literal notranslate"><span class="pre">SkyRegion.containment_radius()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.region.SkyRegion.coord"><code class="docutils literal notranslate"><span class="pre">SkyRegion.coord</span></code></a></li>
+<li><a class="reference internal" href="#divtel.region.SkyRegion.covered"><code class="docutils literal notranslate"><span class="pre">SkyRegion.covered()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.region.SkyRegion.describe_extent"><code class="docutils literal notranslate"><span class="pre">SkyRegion.describe_extent()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.region.SkyRegion.directions"><code class="docutils literal notranslate"><span class="pre">SkyRegion.directions</span></code></a></li>
+<li><a class="reference internal" href="#divtel.region.SkyRegion.equivalent_radius"><code class="docutils literal notranslate"><span class="pre">SkyRegion.equivalent_radius</span></code></a></li>
+<li><a class="reference internal" href="#divtel.region.SkyRegion.from_coords"><code class="docutils literal notranslate"><span class="pre">SkyRegion.from_coords()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.region.SkyRegion.from_lonlat"><code class="docutils literal notranslate"><span class="pre">SkyRegion.from_lonlat()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.region.SkyRegion.from_table"><code class="docutils literal notranslate"><span class="pre">SkyRegion.from_table()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.region.SkyRegion.max_separation"><code class="docutils literal notranslate"><span class="pre">SkyRegion.max_separation</span></code></a></li>
+<li><a class="reference internal" href="#divtel.region.SkyRegion.meta"><code class="docutils literal notranslate"><span class="pre">SkyRegion.meta</span></code></a></li>
+<li><a class="reference internal" href="#divtel.region.SkyRegion.multiplicity"><code class="docutils literal notranslate"><span class="pre">SkyRegion.multiplicity()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.region.SkyRegion.pixel_area"><code class="docutils literal notranslate"><span class="pre">SkyRegion.pixel_area</span></code></a></li>
+<li><a class="reference internal" href="#divtel.region.SkyRegion.place"><code class="docutils literal notranslate"><span class="pre">SkyRegion.place()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.region.SkyRegion.placement_rotation"><code class="docutils literal notranslate"><span class="pre">SkyRegion.placement_rotation()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.region.SkyRegion.rotate"><code class="docutils literal notranslate"><span class="pre">SkyRegion.rotate()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.region.SkyRegion.to_table"><code class="docutils literal notranslate"><span class="pre">SkyRegion.to_table()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.region.SkyRegion.visible_fraction"><code class="docutils literal notranslate"><span class="pre">SkyRegion.visible_fraction()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.region.SkyRegion.visible_part"><code class="docutils literal notranslate"><span class="pre">SkyRegion.visible_part()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.region.SkyRegion.weights"><code class="docutils literal notranslate"><span class="pre">SkyRegion.weights</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#divtel.region.as_altaz"><code class="docutils literal notranslate"><span class="pre">as_altaz()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.region.rotation_between"><code class="docutils literal notranslate"><span class="pre">rotation_between()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#divtel-strategy"><code class="docutils literal notranslate"><span class="pre">divtel.strategy</span></code></a><ul>
+<li><a class="reference internal" href="#the-rule-behind-shaped-pointing">The rule behind shaped pointing</a></li>
+<li><a class="reference internal" href="#where-the-budget-runs-out">Where the budget runs out</a></li>
+<li><a class="reference internal" href="#what-it-costs">What it costs</a></li>
+<li><a class="reference internal" href="#divtel.strategy.camera_blur"><code class="docutils literal notranslate"><span class="pre">camera_blur()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.strategy.describe"><code class="docutils literal notranslate"><span class="pre">describe()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.strategy.multiplicity_by_probability"><code class="docutils literal notranslate"><span class="pre">multiplicity_by_probability()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.strategy.point_subarrays"><code class="docutils literal notranslate"><span class="pre">point_subarrays()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.strategy.point_subarrays_by_type"><code class="docutils literal notranslate"><span class="pre">point_subarrays_by_type()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.strategy.reach"><code class="docutils literal notranslate"><span class="pre">reach()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.strategy.shaped_pointing"><code class="docutils literal notranslate"><span class="pre">shaped_pointing()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.strategy.shaped_pointing_by_type"><code class="docutils literal notranslate"><span class="pre">shaped_pointing_by_type()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.strategy.split_into_subarrays"><code class="docutils literal notranslate"><span class="pre">split_into_subarrays()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.strategy.stereo_radius"><code class="docutils literal notranslate"><span class="pre">stereo_radius()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.strategy.target_field"><code class="docutils literal notranslate"><span class="pre">target_field()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.strategy.tile_region"><code class="docutils literal notranslate"><span class="pre">tile_region()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.strategy.weighted_split"><code class="docutils literal notranslate"><span class="pre">weighted_split()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#divtel-pointing"><code class="docutils literal notranslate"><span class="pre">divtel.pointing</span></code></a><ul>
 <li><a class="reference internal" href="#divtel.pointing.alt_az_to_vector"><code class="docutils literal notranslate"><span class="pre">alt_az_to_vector()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.pointing.as_altaz"><code class="docutils literal notranslate"><span class="pre">as_altaz()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.pointing.best_pointing"><code class="docutils literal notranslate"><span class="pre">best_pointing()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.pointing.div_for_half_angle"><code class="docutils literal notranslate"><span class="pre">div_for_half_angle()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.pointing.div_for_multiplicity"><code class="docutils literal notranslate"><span class="pre">div_for_multiplicity()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.pointing.div_scan"><code class="docutils literal notranslate"><span class="pre">div_scan()</span></code></a></li>
 <li><a class="reference internal" href="#divtel.pointing.local_frame"><code class="docutils literal notranslate"><span class="pre">local_frame()</span></code></a></li>
 <li><a class="reference internal" href="#divtel.pointing.pointG_position"><code class="docutils literal notranslate"><span class="pre">pointG_position()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.pointing.pointing_spread"><code class="docutils literal notranslate"><span class="pre">pointing_spread()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.pointing.solve_div"><code class="docutils literal notranslate"><span class="pre">solve_div()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.pointing.spread_scan"><code class="docutils literal notranslate"><span class="pre">spread_scan()</span></code></a></li>
 <li><a class="reference internal" href="#divtel.pointing.tel_div_pointing"><code class="docutils literal notranslate"><span class="pre">tel_div_pointing()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#divtel-observation"><code class="docutils literal notranslate"><span class="pre">divtel.observation</span></code></a><ul>
 <li><a class="reference internal" href="#divtel.observation.Observation"><code class="docutils literal notranslate"><span class="pre">Observation</span></code></a><ul>
-<li><a class="reference internal" href="#divtel.observation.Observation.location"><code class="docutils literal notranslate"><span class="pre">Observation.location</span></code></a></li>
-<li><a class="reference internal" href="#divtel.observation.Observation.time"><code class="docutils literal notranslate"><span class="pre">Observation.time</span></code></a></li>
 <li><a class="reference internal" href="#divtel.observation.Observation.after"><code class="docutils literal notranslate"><span class="pre">Observation.after()</span></code></a></li>
 <li><a class="reference internal" href="#divtel.observation.Observation.altaz"><code class="docutils literal notranslate"><span class="pre">Observation.altaz</span></code></a></li>
 <li><a class="reference internal" href="#divtel.observation.Observation.altaz_of"><code class="docutils literal notranslate"><span class="pre">Observation.altaz_of()</span></code></a></li>
@@ -1386,14 +3326,40 @@ area; pass 1 for the whole covered area.</p></li>
 <li><a class="reference internal" href="#divtel.observation.Observation.sun"><code class="docutils literal notranslate"><span class="pre">Observation.sun</span></code></a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#divtel.observation.Window"><code class="docutils literal notranslate"><span class="pre">Window</span></code></a><ul>
+<li><a class="reference internal" href="#divtel.observation.Window.alt_end"><code class="docutils literal notranslate"><span class="pre">Window.alt_end</span></code></a></li>
+<li><a class="reference internal" href="#divtel.observation.Window.alt_max"><code class="docutils literal notranslate"><span class="pre">Window.alt_max</span></code></a></li>
+<li><a class="reference internal" href="#divtel.observation.Window.alt_start"><code class="docutils literal notranslate"><span class="pre">Window.alt_start</span></code></a></li>
+<li><a class="reference internal" href="#divtel.observation.Window.duration"><code class="docutils literal notranslate"><span class="pre">Window.duration</span></code></a></li>
+<li><a class="reference internal" href="#divtel.observation.Window.end"><code class="docutils literal notranslate"><span class="pre">Window.end</span></code></a></li>
+<li><a class="reference internal" href="#divtel.observation.Window.start"><code class="docutils literal notranslate"><span class="pre">Window.start</span></code></a></li>
+<li><a class="reference internal" href="#divtel.observation.Window.time_best"><code class="docutils literal notranslate"><span class="pre">Window.time_best</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#divtel.observation.altaz_track"><code class="docutils literal notranslate"><span class="pre">altaz_track()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.observation.observable_windows"><code class="docutils literal notranslate"><span class="pre">observable_windows()</span></code></a></li>
 <li><a class="reference internal" href="#divtel.observation.pointing_coord"><code class="docutils literal notranslate"><span class="pre">pointing_coord()</span></code></a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#divtel-skymap"><code class="docutils literal notranslate"><span class="pre">divtel.skymap</span></code></a></li>
 <li><a class="reference internal" href="#divtel-visualization"><code class="docutils literal notranslate"><span class="pre">divtel.visualization</span></code></a><ul>
+<li><a class="reference internal" href="#divtel.visualization.Projection"><code class="docutils literal notranslate"><span class="pre">Projection</span></code></a></li>
+<li><a class="reference internal" href="#divtel.visualization.camera_rims"><code class="docutils literal notranslate"><span class="pre">camera_rims()</span></code></a></li>
 <li><a class="reference internal" href="#divtel.visualization.display_groups"><code class="docutils literal notranslate"><span class="pre">display_groups()</span></code></a></li>
 <li><a class="reference internal" href="#divtel.visualization.display_hyper_fov"><code class="docutils literal notranslate"><span class="pre">display_hyper_fov()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.visualization.frame_on"><code class="docutils literal notranslate"><span class="pre">frame_on()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.visualization.multiplicity_by_probability"><code class="docutils literal notranslate"><span class="pre">multiplicity_by_probability()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.visualization.multiplicity_over_region"><code class="docutils literal notranslate"><span class="pre">multiplicity_over_region()</span></code></a></li>
 <li><a class="reference internal" href="#divtel.visualization.multiplicity_plot"><code class="docutils literal notranslate"><span class="pre">multiplicity_plot()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.visualization.probability_over_region"><code class="docutils literal notranslate"><span class="pre">probability_over_region()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.visualization.project_directions"><code class="docutils literal notranslate"><span class="pre">project_directions()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.visualization.project_region"><code class="docutils literal notranslate"><span class="pre">project_region()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.visualization.projection_frame"><code class="docutils literal notranslate"><span class="pre">projection_frame()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.visualization.region_extent"><code class="docutils literal notranslate"><span class="pre">region_extent()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.visualization.region_span"><code class="docutils literal notranslate"><span class="pre">region_span()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.visualization.sky_bands"><code class="docutils literal notranslate"><span class="pre">sky_bands()</span></code></a></li>
 <li><a class="reference internal" href="#divtel.visualization.sky_fov"><code class="docutils literal notranslate"><span class="pre">sky_fov()</span></code></a></li>
+<li><a class="reference internal" href="#divtel.visualization.type_colors"><code class="docutils literal notranslate"><span class="pre">type_colors()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -1407,7 +3373,7 @@ area; pass 1 for the whole covered area.</p></li>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=c0fcf57f"></script>
+</div><script src="_static/documentation_options.js?v=47e2e85d"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>

@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="The divergence spread and ceiling" href="ceiling.html"><link rel="prev" title="Introduction" href="introduction.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>Definitions - divtel 1.1.1.dev3+g956316cc6 documentation</title>
+        <title>Definitions - divtel 1.1.1.dev5+gb6ce429db documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">divtel 1.1.1.dev3+g956316cc6 documentation</div></a>
+      <a href="index.html"><div class="brand">divtel 1.1.1.dev5+gb6ce429db documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -202,6 +202,7 @@
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Definitions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ceiling.html">The divergence spread and ceiling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tracking.html">Tracking a source</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gw170817.html">GW alerts follow-up: divergence is not the way</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Project</span></p>
 <ul>
@@ -248,9 +249,8 @@
 <h1>Definitions<a class="headerlink" href="#definitions" title="Link to this heading">¶</a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">divtel</span></code> works entirely in geometry and solid angle. It contains no
 shower physics, no effective area, no night-sky background and no energy
-threshold — see <span class="xref std std-doc">capabilities</span> for where that stops and a shower
-simulation has to take over. This page sets out the quantities it
-computes, since the rest of this section is written in them. For the
+threshold - for these a shower simulation has to take over.
+This page sets out the quantities it computes, since the rest of this section is written in them. For the
 package’s actual interface, see the <a class="reference internal" href="guide.html"><span class="doc">User guide</span></a>.</p>
 <section id="pointing">
 <h2>Pointing<a class="headerlink" href="#pointing" title="Link to this heading">¶</a></h2>
@@ -276,7 +276,7 @@ which turns the package from a divergence calculator into a general
 planning tool. Not covered in this section yet.</p></li>
 </ul>
 <p>A telescope can also be aimed at a named object or a sky coordinate rather
-than an alt-azimuth direction: <span class="xref std std-doc">capabilities</span> covers tracking a real
+than an alt-azimuth direction: <a class="reference internal" href="tracking.html"><span class="doc">Tracking a source</span></a> covers tracking a real
 source across a night.</p>
 </section>
 <section id="what-the-array-sees">
@@ -324,7 +324,7 @@ shaded by multiplicity.</p>
 <h2>The array and the sky it sees<a class="headerlink" href="#the-array-and-the-sky-it-sees" title="Link to this heading">¶</a></h2>
 <p>CTAO-North at <code class="docutils literal notranslate"><span class="pre">div</span></code> = 0.03, 70° altitude: four LSTs inside nine MSTs, each
 with its own camera size.</p>
-<a class="reference internal image-reference" href="_static/studies/array_and_sky.png"><img alt="CTAO-North on the ground and the sky it covers, shaded by multiplicity" src="_static/studies/array_and_sky.png" style="width: 100%;" />
+<a class="reference internal image-reference" href="_images/array_and_sky.png"><img alt="CTAO-North on the ground and the sky it covers, shaded by multiplicity" src="_images/array_and_sky.png" style="width: 100%;" />
 </a>
 <p>Left, the array on the ground, with each telescope’s pointing direction as
 an arrow and the two camera sizes distinguished. Right, the sky the array
@@ -351,7 +351,7 @@ the divergence acquired by a telescope at perpendicular offset <span class="math
 from the barycentre. At <code class="docutils literal notranslate"><span class="pre">div</span></code> = 0, <span class="math notranslate nohighlight">\(G\)</span> recedes to infinity and the
 array points in parallel; at <code class="docutils literal notranslate"><span class="pre">div</span></code> = 1 it sits at the barycentre and the
 telescopes point radially outward.</p>
-<a class="reference internal image-reference" href="_static/studies/div_schema.png"><img alt="Schematic of the divergent pointing construction, telescopes aiming away from a point G behind the array" src="_static/studies/div_schema.png" style="width: 70%;" />
+<a class="reference internal image-reference" href="_images/div_schema.png"><img alt="Schematic of the divergent pointing construction, telescopes aiming away from a point G behind the array" src="_images/div_schema.png" style="width: 70%;" />
 </a>
 <p>Telescopes sit on the ground line through the barycentre <span class="math notranslate nohighlight">\(B\)</span>; each
 aims along the line from its own position through the aim point <span class="math notranslate nohighlight">\(G\)</span>.
@@ -436,7 +436,7 @@ handles that directly.</p>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=c0fcf57f"></script>
+</div><script src="_static/documentation_options.js?v=47e2e85d"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>

@@ -1,0 +1,942 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="./">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="divtel: Divergent pointing mode for Imaging Atmospheric Cherenkov Telescopes arrays" href="README.html"><link rel="prev" title="Tracking a source" href="tracking.html">
+
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
+        <title>GW alerts follow-up: divergence is not the way - divtel 1.1.1.dev5+gb6ce429db documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=8758fcc1" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">divtel 1.1.1.dev5+gb6ce429db documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
+  
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="guide.html">User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Interactive Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docstring.html">API documentation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Studies</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="definitions.html">Definitions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ceiling.html">The divergence spread and ceiling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tracking.html">Tracking a source</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">GW alerts follow-up: divergence is not the way</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="README.html">divtel: Divergent pointing mode for Imaging Atmospheric Cherenkov Telescopes arrays</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="_sources/gw170817.rst.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="gw-alerts-follow-up-divergence-is-not-the-way">
+<h1>GW alerts follow-up: divergence is not the way<a class="headerlink" href="#gw-alerts-follow-up-divergence-is-not-the-way" title="Link to this heading">¶</a></h1>
+<p class="lead">A gravitational-wave localization is a probability distribution, and the
+first alerts can cover long, narrow arcs on the sky. We use GW170817 as a
+case study and examine how the CTAO-South array could have covered the
+localization available at the time of the alert. Divergent pointing covers
+at most 69.8 % of the localization for this configuration.
+Splitting the array into 10 sub-arrays covers
+99.8 % in a single exposure, with every telescope assigned
+to a target. Allowing the telescope multiplicity to vary across the
+localization further concentrates observing time where the probability is
+highest, from 5.0 telescopes in the least probable fifth to
+11.5 in the most probable fifth.</p>
+<p>The analysis is purely geometrical. It considers the telescope pointings and
+camera footprints, using the definitions introduced in <a class="reference internal" href="definitions.html"><span class="doc">Definitions</span></a> and
+the coverage limit discussed in <a class="reference internal" href="ceiling.html"><span class="doc">The divergence spread and ceiling</span></a>. All quantities are computed by
+<code class="docutils literal notranslate"><span class="pre">docs/scripts/make_gw170817.py</span></code> when the documentation is built. The
+localization maps are included in <code class="docutils literal notranslate"><span class="pre">divtel/data/gw170817</span></code>, so the analysis can
+be reproduced for this event or applied to other localizations in the same
+format.</p>
+<section id="the-observational-constraint">
+<h2>The observational constraint<a class="headerlink" href="#the-observational-constraint" title="Link to this heading">¶</a></h2>
+<p>GW170817 was detected at 12:41 UTC on 17 August 2017. The localization was
+refined in several successive alerts. For a real-time follow-up, the relevant
+localization is the one available when the telescopes can start observing, not
+the final localization obtained later.</p>
+<p>There are therefore two independent timescales: the time required to obtain a
+useful localization and the time at which the source becomes observable from
+the site.</p>
+<figure class="align-default" id="fig-visibility">
+<a class="reference internal image-reference" href="_images/visibility.png"><img alt="Altitude of the GW170817 localization at both CTAO sites over the five nights after the merger" src="_images/visibility.png" style="width: 100%;" />
+</a>
+<figcaption>
+<p><span class="caption-number">Fig. 1 </span><span class="caption-text">Altitude of the GW170817 localization at both CTAO sites over the five nights
+after the merger.</span><a class="headerlink" href="#fig-visibility" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>At declination -23 degrees, the source culminates at La Palma during daylight
+in August. During the five nights following the merger (<a class="reference internal" href="#fig-visibility"><span class="std std-numref">Fig. 1</span></a>),
+CTAO-North had 2 h of astronomical darkness with the localization
+above the horizon. Its maximum altitude was only 5.2°. Observations
+at such low elevations would correspond to an air mass of roughly 15, making
+CTAO-North unsuitable for this event.</p>
+<p>At Paranal, the localization was observable for 13 h during the
+same period. The first observing window opened 11.1 h after the
+merger and reached a maximum altitude of 37°. The three-detector
+localization became available 5.2 h after the merger, leaving
+5.9 h before the first useful South-array observation.</p>
+<p>GW170817 therefore provides a favourable case in which the improved
+localization was available in time. The more relevant question for a general
+follow-up strategy is what could have been done if the source had become
+observable earlier, or if the improved localization had taken longer to
+produce.</p>
+</section>
+<section id="the-localization-regions">
+<h2>The localization regions<a class="headerlink" href="#the-localization-regions" title="Link to this heading">¶</a></h2>
+<p>The area of a localization does not describe its geometry. A two-detector
+gravitational-wave network generally produces an elongated localization because
+the timing information constrains the source to a broad arc rather than a
+compact region.</p>
+<p>The first GW170817 localization covered 187 deg² at the 90 % level. Its
+maximum extent was 124°, with two lobes separated by roughly
+100 degrees (<a class="reference internal" href="#fig-maps"><span class="std std-numref">Fig. 2</span></a>).</p>
+<figure class="align-default" id="fig-maps">
+<a class="reference internal image-reference" href="_images/maps.png"><img alt="The three GW170817 alert maps, all-sky and in equal-area close-up" src="_images/maps.png" style="width: 100%;" />
+</a>
+<figcaption>
+<p><span class="caption-number">Fig. 2 </span><span class="caption-text">The three GW170817 alert maps, shown on the full sky and in equal-area
+projections of the relevant region.</span><a class="headerlink" href="#fig-maps" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<div class="table-wrapper colwidths-given docutils container" id="id1">
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-number">Table 1 </span><span class="caption-text">The three sky maps circulated for GW170817, as measured here</span><a class="headerlink" href="#id1" title="Link to this table">¶</a></caption>
+<colgroup>
+<col style="width: 25.5%" />
+<col style="width: 10.6%" />
+<col style="width: 12.8%" />
+<col style="width: 14.9%" />
+<col style="width: 14.9%" />
+<col style="width: 10.6%" />
+<col style="width: 10.6%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Map</p></th>
+<th class="head"><p>Since merger</p></th>
+<th class="head"><p>90 % area [deg²]</p></th>
+<th class="head"><p>Equivalent radius [deg]</p></th>
+<th class="head"><p>Containment radius [deg]</p></th>
+<th class="head"><p>Length [deg]</p></th>
+<th class="head"><p>Elongation</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference external" href="https://gcn.nasa.gov/circulars/21509">BAYESTAR H+L</a></p></td>
+<td><p>+0.7 h</p></td>
+<td><p>187</p></td>
+<td><p>7.7</p></td>
+<td><p><strong>62.1</strong></p></td>
+<td><p>124.3</p></td>
+<td><p>8.0</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://gcn.nasa.gov/circulars/21513">BAYESTAR H+L+V</a></p></td>
+<td><p>+5.2 h</p></td>
+<td><p>31</p></td>
+<td><p>3.1</p></td>
+<td><p><strong>8.3</strong></p></td>
+<td><p>16.5</p></td>
+<td><p>2.6</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://gcn.nasa.gov/circulars/21527">LALInference (preliminary)</a></p></td>
+<td><p>+16.3 h</p></td>
+<td><p>34</p></td>
+<td><p>3.3</p></td>
+<td><p><strong>9.6</strong></p></td>
+<td><p>19.2</p></td>
+<td><p>2.9</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>We use three geometrical quantities to characterize these regions.</p>
+<p>The <strong>equivalent radius</strong> is the radius of a circular region with the same
+area. The <strong>containment radius</strong> is the radius of the smallest cone containing
+the complete localization. This is the relevant quantity when asking whether
+an array can cover the whole region with one pointing. The <strong>length</strong> is the
+maximum angular separation between two points in the region.</p>
+<p>Including Virgo reduced the localization area by 6 and the
+containment radius by 8. The resulting regions were still
+larger than the maximum parallel extent of either array:
+4.4° at CTAO-South and 3.8° at CTAO-North. A conventional
+parallel pointing could therefore not cover the full localization.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The computed areas reproduce the published values of 190, 31 and
+33.6 deg² to better than 2 %. The three regions also contain the measured
+position of SSS17a in NGC 4993. These checks validate the treatment of the
+published sky maps.</p>
+</div>
+<p>For the remainder of the analysis we use the <strong>first 90 % alert map</strong>, placed
+at 60 degrees elevation at CTAO-South and truncated at the horizon.
+17 % of its probability lies below the horizon for this
+geometry and is excluded. The remaining region contains 150 deg² of
+the usable probability. Coverage fractions below refer to this visible
+region.</p>
+<p>The horizon cut is applied before evaluating the pointing strategies because
+it changes the geometry of the region itself; it is not equivalent to simply
+scaling down its area.</p>
+</section>
+<section id="divergent-pointing">
+<h2>Divergent pointing<a class="headerlink" href="#divergent-pointing" title="Link to this heading">¶</a></h2>
+<p>Divergent pointing describes the array using a single parameter: the angular
+offset of the telescopes from a common nominal direction. This produces a
+symmetric distribution of camera footprints. For the approximately circular
+CTAO-South layout, the resulting aspect ratio varies from about 1.2:1 near the
+zenith to 3.4:1 close to the horizon.</p>
+<p>The first GW170817 localization has an elongation of
+8 and is curved. Its geometry therefore differs
+substantially from the footprint produced by symmetric divergence. This
+geometrical mismatch limits the achievable coverage independently of the
+specific divergence chosen.</p>
+<figure class="align-default" id="fig-coverage">
+<a class="reference internal image-reference" href="_images/coverage.png"><img alt="Coverage against divergence, and against the number of tiles or sub-arrays" src="_images/coverage.png" style="width: 100%;" />
+</a>
+<figcaption>
+<p><span class="caption-number">Fig. 3 </span><span class="caption-text">Coverage as a function of divergence and as a function of the number of
+independent tiles or sub-arrays.</span><a class="headerlink" href="#fig-coverage" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>The left panel of <a class="reference internal" href="#fig-coverage"><span class="std std-numref">Fig. 3</span></a> shows the resulting coverage as a
+function of divergence. Coverage reaches a maximum of 69.8 % at
+<em>d</em> = 0.025, corresponding to 14° of spread. Increasing
+the divergence beyond this value separates the camera footprints sufficiently
+that parts of the localization are observed only once while other parts are
+missed.</p>
+<p>At the optimum, only 30 of the 51 telescopes have
+part of the localization in their field of view. The remaining telescopes
+observe outside the localization. Consequently, 80 % of the usable
+localization cannot be covered by symmetric divergent pointing for this map.</p>
+<p>This is a geometrical upper limit for the chosen pointing model, rather than
+the result of an unsuccessful optimization.</p>
+</section>
+<section id="sequential-tiling">
+<h2>Sequential tiling<a class="headerlink" href="#sequential-tiling" title="Link to this heading">¶</a></h2>
+<p>A simpler alternative is to keep the telescopes parallel and observe the
+localization sequentially. Each pointing is placed on the part of the
+probability distribution that remains uncovered.</p>
+<p>This approach uses the full array for every pointing: all telescopes observe
+the same target region, and no telescope is deliberately placed outside the
+localization.</p>
+<p>4 pointings are sufficient to match the best divergent configuration,
+while 9 pointings reach 99 % coverage. Unlike divergent pointing,
+this result does not depend on the zenith angle. For a fixed camera size, the
+problem is equivalent to covering a rigid region with circular footprints and
+is therefore invariant under rotation (<a class="reference internal" href="tracking.html"><span class="doc">Tracking a source</span></a>).</p>
+<p>The disadvantage is temporal rather than geometrical. A divergent
+configuration observes the whole covered region continuously during the
+exposure. With sequential tiling, each part of the region receives only a
+fraction of the total observing time. For a steady source this reduces the
+exposure at each position. For a rapidly fading transient, however, the
+relative importance depends on the source timescale and on the tiling
+cadence.</p>
+</section>
+<section id="simultaneous-tiling-with-sub-arrays">
+<h2>Simultaneous tiling with sub-arrays<a class="headerlink" href="#simultaneous-tiling-with-sub-arrays" title="Link to this heading">¶</a></h2>
+<p>The CTAO array can also be divided into several groups. Each group is pointed
+at a different part of the localization, allowing the full array to observe
+the region simultaneously.</p>
+<p>Every telescope is assigned to a target, each sub-array operates with a
+conventional parallel pointing, and the different parts of the localization
+are observed at the same time.</p>
+<div class="table-wrapper colwidths-given docutils container" id="id2">
+<table class="docutils align-default" id="id2">
+<caption><span class="caption-number">Table 2 </span><span class="caption-text">Five ways of covering the first GW170817 credible region from CTAO-South. Coverage is stereoscopic, and the mean is taken over the part covered</span><a class="headerlink" href="#id2" title="Link to this table">¶</a></caption>
+<colgroup>
+<col style="width: 34.1%" />
+<col style="width: 15.9%" />
+<col style="width: 20.5%" />
+<col style="width: 15.9%" />
+<col style="width: 13.6%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Strategy</p></th>
+<th class="head"><p>Coverage</p></th>
+<th class="head"><p>Telescopes per shower</p></th>
+<th class="head"><p>On target</p></th>
+<th class="head"><p>Exposures</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Parallel</p></td>
+<td><p>28 %</p></td>
+<td><p>49</p></td>
+<td><p>51 of 51</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>Divergence, <em>d</em> = 0.025</p></td>
+<td><p>70 %</p></td>
+<td><p>6</p></td>
+<td><p>30 of 51</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>Sequential tiling</p></td>
+<td><p>77 %</p></td>
+<td><p>49</p></td>
+<td><p>51 of 51</p></td>
+<td><p>4</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sub-arrays, 10 groups</p></td>
+<td><p>100 %</p></td>
+<td><p>5</p></td>
+<td><p>51 of 51</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>Shaped pointing</p></td>
+<td><p>100 %</p></td>
+<td><p>8</p></td>
+<td><p>51 of 51</p></td>
+<td><p>1</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>For this geometry, sub-array tiling provides higher coverage than divergent
+pointing while retaining full telescope assignment. It also increases the
+average telescope multiplicity over the covered region.</p>
+<p>There is a simple geometrical limit behind this result. Divergent pointing
+preserves the total solid angle of the individual camera fields of view. If
+the mean multiplicity is two, the maximum area that can be covered is</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[A(2) = \frac{\Omega}{2},\]</div>
+</div>
+<p>where <span class="math notranslate nohighlight">\(\Omega\)</span> is the camera solid angle.</p>
+<p>This limit can be reached by dividing the array into pairs and placing the
+pairs at non-overlapping positions. Each pair provides multiplicity two over
+one camera footprint, while the different footprints cover distinct parts of
+the localization.</p>
+<p>Divergent pointing does not reach this limit because its multiplicity is not
+uniform. Some regions are covered by a single telescope, while others receive
+three or more telescopes. The latter provide more depth than required to
+maintain multiplicity two, while the former represent unused coverage
+capacity.</p>
+<p>CTAO-North reaches 54 % of this geometrical limit and
+CTAO-South reaches 59 %.</p>
+<p>For CTAO-South, the corresponding values are 1434 deg² for the
+two-telescope limit and 839 deg² for the best divergent
+configuration. At equal observing time and equal mean multiplicity,
+sub-array tiling therefore covers 1.7 times more usable
+sky than divergent pointing.</p>
+<p>The main advantage of divergent pointing is operational simplicity: the
+configuration is specified by a single parameter. This can be useful for
+scheduling and for situations in which the target localization changes during
+an observation.</p>
+</section>
+<section id="shaped-pointing">
+<h2>Shaped pointing<a class="headerlink" href="#shaped-pointing" title="Link to this heading">¶</a></h2>
+<p>A localization map contains more information than its boundary. The
+probability density varies across the region, so telescope multiplicity does
+not necessarily need to be uniform. More telescopes can be assigned to the
+most probable parts of the map and fewer to its tails.</p>
+<p>This motivates optimizing the telescope pointings directly rather than
+restricting them to a symmetric divergent configuration or to equally sized
+sub-arrays. We maximize</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[J = \sum_k w_k \, \log\!\left[\max(m_k - m_\mathrm{cut} + 1,\, 0)
++ \epsilon\right]\]</div>
+</div>
+<p>where <span class="math notranslate nohighlight">\(w_k\)</span> is the probability assigned to direction <em>k</em> and
+<span class="math notranslate nohighlight">\(m_k\)</span> is the telescope multiplicity at that position.</p>
+<p>The objective has three useful properties.</p>
+<p><strong>The logarithm favours a multiplicity proportional to probability.</strong>
+Ignoring the cut and the finite discretisation, maximizing</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\sum_k w_k \log m_k\]</div>
+</div>
+<p>subject to a fixed multiplicity budget</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\sum_k m_k = B\]</div>
+</div>
+<p>gives</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[m_k \propto w_k.\]</div>
+</div>
+<p>The probability-weighted multiplicity therefore follows from the objective
+rather than being imposed as a constraint.</p>
+<p><strong>The finite value of :math:`epsilon` controls the cost of uncovered
+probability.</strong> In the ideal logarithmic objective, <span class="math notranslate nohighlight">\(m_k=0\)</span> gives an
+undefined value. A small positive <span class="math notranslate nohighlight">\(\epsilon\)</span> provides a finite
+penalty. Increasing it makes the optimization relatively more tolerant of
+uncovered low-probability regions and allows more multiplicity to accumulate
+in the core.</p>
+<p><strong>The multiplicity cut enforces useful stereoscopic coverage.</strong> A direction
+observed by fewer than <span class="math notranslate nohighlight">\(m_\mathrm{cut}\)</span> telescopes should not contribute
+as useful coverage. Without this term, the optimization can favour spreading
+single telescopes over the whole localization. Such a configuration maximizes
+geometrical coverage but does not provide the intended stereoscopic
+performance.</p>
+<p>The resulting configurations are shown below. The camera footprints are drawn
+at their actual size and area, using the same angular scale for all strategies.</p>
+<figure class="align-default" id="fig-footprints">
+<a class="reference internal image-reference" href="_images/footprints.png"><img alt="The camera footprints of four pointing strategies drawn over the GW170817 credible region" src="_images/footprints.png" style="width: 100%;" />
+</a>
+<figcaption>
+<p><span class="caption-number">Fig. 4 </span><span class="caption-text">Camera footprints of four pointing strategies over the GW170817
+localization.</span><a class="headerlink" href="#fig-footprints" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>The difference between the four strategies is primarily geometrical.
+<strong>Parallel pointing</strong> places all 51 cameras at the same position.
+<strong>Divergent pointing</strong> produces a symmetric footprint, which cannot reproduce
+the elongated and curved localization. <strong>Sub-arrays</strong> distribute groups of
+cameras along the localization. <strong>Shaped pointing</strong> removes the common
+pointing constraint and distributes the cameras according to the probability
+map, including different telescope multiplicities in different parts of the
+region.</p>
+<p>The same configurations are shown below in terms of telescope multiplicity.</p>
+<figure class="align-default" id="fig-strategies">
+<a class="reference internal image-reference" href="_images/strategies.png"><img alt="Four strategies over the first GW170817 credible region, shaded by telescope multiplicity" src="_images/strategies.png" style="width: 100%;" />
+</a>
+<figcaption>
+<p><span class="caption-number">Fig. 5 </span><span class="caption-text">Telescope multiplicity for four pointing strategies over the first
+GW170817 localization.</span><a class="headerlink" href="#fig-strategies" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>Parallel pointing produces high multiplicity in a small region and leaves most
+of the localization uncovered. Divergent pointing increases the covered area
+but retains a relatively broad and symmetric multiplicity distribution.
+Sub-array tiling covers the localization in separate regions with approximately
+uniform multiplicity. Shaped pointing follows the probability distribution
+more closely.</p>
+<figure class="align-default" id="fig-gradient">
+<a class="reference internal image-reference" href="_images/gradient.png"><img alt="Mean telescope multiplicity in each fifth of the localization's probability, for four strategies" src="_images/gradient.png" style="width: 100%;" />
+</a>
+<figcaption>
+<p><span class="caption-number">Fig. 6 </span><span class="caption-text">Mean telescope multiplicity in successive fifths of the localization
+probability, from least to most probable.</span><a class="headerlink" href="#fig-gradient" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>Allowing independent pointings removes the main geometrical limitation of
+divergent pointing. Free pointing covers 99.7 % of the region,
+compared with 69.8 % for the best divergent configuration. However,
+sub-array tiling already reaches 99.8 %.</p>
+<p>The main difference is therefore the distribution of multiplicity. With shaped
+pointing, the mean multiplicity increases from 5.0 telescopes in
+the least probable fifth to 11.5 in the most probable fifth. The
+equal sub-array configuration ranges from 5.4 to 5.5 and
+is approximately flat.</p>
+<p>At equal total multiplicity, the probability-weighted configuration sacrifices
+only a small amount of geometrical coverage while increasing the mean
+multiplicity from 5.2 to 8.2. The available
+multiplicity is therefore distributed more closely to the probability
+distribution rather than being spent uniformly.</p>
+</section>
+<section id="how-much-of-this-requires-free-pointing">
+<h2>How much of this requires free pointing?<a class="headerlink" href="#how-much-of-this-requires-free-pointing" title="Link to this heading">¶</a></h2>
+<p>The previous comparison uses sub-arrays of equal size. This restriction is
+important because it fixes the multiplicity within each sub-array footprint.
+An unequal division of the array can already produce a non-uniform
+multiplicity profile.</p>
+<p><a class="reference internal" href="docstring.html#divtel.strategy.weighted_split" title="divtel.strategy.weighted_split"><code class="xref py py-func docutils literal notranslate"><span class="pre">divtel.strategy.weighted_split()</span></code></a> implements this idea. It keeps the
+pointing positions obtained from the equal sub-array configuration and changes
+only the number of telescopes assigned to each group. The group sizes are
+chosen approximately in proportion to the probability covered by each group,
+subject to a minimum multiplicity of <span class="math notranslate nohighlight">\(m_\mathrm{cut}\)</span>.</p>
+<div class="table-wrapper colwidths-given docutils container" id="id3">
+<table class="docutils align-default" id="id3">
+<caption><span class="caption-number">Table 3 </span><span class="caption-text">Unequal sub-array splits against free pointing. Quintiles are mean multiplicity from the least to the most probable fifth</span><a class="headerlink" href="#id3" title="Link to this table">¶</a></caption>
+<colgroup>
+<col style="width: 34.9%" />
+<col style="width: 14.0%" />
+<col style="width: 11.6%" />
+<col style="width: 39.5%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Strategy</p></th>
+<th class="head"><p>Coverage</p></th>
+<th class="head"><p>Mean</p></th>
+<th class="head"><p>Quintiles</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Even split, 10 groups</p></td>
+<td><p>99.8 %</p></td>
+<td><p>5.22</p></td>
+<td><p>5.4  4.9  5.0  5.2  5.5</p></td>
+</tr>
+<tr class="row-odd"><td><p>Even split, 17 groups</p></td>
+<td><p>100.0 %</p></td>
+<td><p>5.99</p></td>
+<td><p>4.9  5.5  6.1  5.9  7.5</p></td>
+</tr>
+<tr class="row-even"><td><p>Weighted split, 14 groups</p></td>
+<td><p>99.5 %</p></td>
+<td><p>7.29</p></td>
+<td><p>5.0  5.7  7.3  8.4  9.8</p></td>
+</tr>
+<tr class="row-odd"><td><p>Weighted split, 17 groups</p></td>
+<td><p>99.9 %</p></td>
+<td><p>7.03</p></td>
+<td><p>4.9  5.9  7.3  7.7  9.3</p></td>
+</tr>
+<tr class="row-even"><td><p>Shaped pointing</p></td>
+<td><p>99.7 %</p></td>
+<td><p>8.21</p></td>
+<td><p>5.0  6.4  8.0  10.0  11.5</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The resulting gradient does not require free pointing. 14
+weighted groups place 9.8 telescopes on the most probable fifth,
+compared with 11.5 for the fully optimized configuration.</p>
+<p>This separates two effects that are otherwise easy to conflate. Unequal
+allocation is responsible for much of the multiplicity gradient. Free
+pointing provides an additional improvement by allowing the telescope
+footprints themselves to move independently, rather than restricting them to
+a predefined set of sub-array positions.</p>
+<p>The practical consequence is that an observatory that does not want to
+schedule 51 independent telescope directions can still recover
+much of the benefit by assigning different numbers of telescopes to different
+parts of the probability map. This requires a different scheduling heuristic,
+not a fundamentally different pointing algorithm.</p>
+</section>
+<section id="is-proportional-multiplicity-really-optimal">
+<h2>Is proportional multiplicity really optimal?<a class="headerlink" href="#is-proportional-multiplicity-really-optimal" title="Link to this heading">¶</a></h2>
+<p>The logarithmic objective predicts</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[m \propto w.\]</div>
+</div>
+<p>We can test this by replacing the target probability distribution with
+<span class="math notranslate nohighlight">\(w^\beta\)</span>. If the argument above is correct, the best agreement with the
+actual probability distribution should occur at <span class="math notranslate nohighlight">\(\beta=1\)</span>.</p>
+<div class="table-wrapper colwidths-given docutils container" id="id4">
+<table class="docutils align-default" id="id4">
+<caption><span class="caption-number">Table 4 </span><span class="caption-text">Sweeping the tracking exponent β. Mismatch is the Kullback-Leibler divergence from the probability to the normalised multiplicity; zero would be exact proportionality</span><a class="headerlink" href="#id4" title="Link to this table">¶</a></caption>
+<colgroup>
+<col style="width: 11.8%" />
+<col style="width: 17.6%" />
+<col style="width: 14.7%" />
+<col style="width: 17.6%" />
+<col style="width: 38.2%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>β</p></th>
+<th class="head"><p>Coverage</p></th>
+<th class="head"><p>Mean</p></th>
+<th class="head"><p>Mismatch</p></th>
+<th class="head"><p>Least to most likely fifth</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0.0</p></td>
+<td><p>100.0 %</p></td>
+<td><p>6.3</p></td>
+<td><p>0.247</p></td>
+<td><p>5.5 → 7.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>0.5</p></td>
+<td><p>99.9 %</p></td>
+<td><p>7.2</p></td>
+<td><p>0.188</p></td>
+<td><p>5.2 → 8.9</p></td>
+</tr>
+<tr class="row-even"><td><p>1.0</p></td>
+<td><p>99.7 %</p></td>
+<td><p>8.2</p></td>
+<td><p><strong>0.163</strong></p></td>
+<td><p>5.0 → 11.5</p></td>
+</tr>
+<tr class="row-odd"><td><p>1.5</p></td>
+<td><p>98.9 %</p></td>
+<td><p>9.1</p></td>
+<td><p>0.172</p></td>
+<td><p>4.8 → 14.0</p></td>
+</tr>
+<tr class="row-even"><td><p>2.0</p></td>
+<td><p>97.1 %</p></td>
+<td><p>10.2</p></td>
+<td><p>0.204</p></td>
+<td><p>4.6 → 16.6</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Mismatch</strong> is the Kullback-Leibler divergence between the normalized
+probability distribution and the normalized telescope multiplicity, evaluated
+over the part of the map satisfying the stereoscopic cut. A value of zero
+would correspond to an exactly proportional multiplicity distribution.</p>
+<p>The minimum occurs at <span class="math notranslate nohighlight">\(\beta=1\)</span>, as expected from the analytic
+derivation. This is primarily a consistency check rather than an independent
+optimization result. For <span class="math notranslate nohighlight">\(\beta&gt;1\)</span>, more multiplicity is concentrated in
+the high-probability core, while coverage of the low-probability tails
+decreases.</p>
+<p>Mismatch must nevertheless be interpreted together with coverage. An array
+that observes only the highest-probability part of the localization can match
+the shape of the probability distribution while leaving most of the
+localization uncovered.</p>
+<p>There is also a finite angular resolution associated with the camera itself.
+Telescope multiplicity is obtained by summing camera footprints, so the
+resulting multiplicity distribution cannot reproduce structures substantially
+smaller than one camera field. Convolving the probability distribution with a
+representative CTAO-South camera changes it by 0.172, compared with
+0.163 for the shaped configuration. The camera footprint is
+therefore a fundamental resolution scale for this approach.</p>
+</section>
+<section id="try-it-yourself">
+<h2>Try it yourself<a class="headerlink" href="#try-it-yourself" title="Link to this heading">¶</a></h2>
+<p>The results above use one localization, one site and one elevation. The
+interactive example allows these parameters to be changed. The same
+quantities are computed by <a class="reference internal" href="docstring.html#divtel.visualization.camera_rims" title="divtel.visualization.camera_rims"><code class="xref py py-func docutils literal notranslate"><span class="pre">divtel.visualization.camera_rims()</span></code></a>,
+<a class="reference internal" href="docstring.html#divtel.visualization.multiplicity_over_region" title="divtel.visualization.multiplicity_over_region"><code class="xref py py-func docutils literal notranslate"><span class="pre">divtel.visualization.multiplicity_over_region()</span></code></a> and
+<a class="reference internal" href="docstring.html#divtel.strategy.multiplicity_by_probability" title="divtel.strategy.multiplicity_by_probability"><code class="xref py py-func docutils literal notranslate"><span class="pre">divtel.strategy.multiplicity_by_probability()</span></code></a>.</p>
+<div class="divtel-demo">
+  <iframe src="marimo/gw170817_strategies/index.html"
+          title="GW170817 pointing strategies, interactive"
+          loading="lazy"></iframe>
+  <p class="divtel-demo__fallback">
+    <a href="marimo/gw170817_strategies/index.html" target="_blank" rel="noopener">Open it
+    in its own tab</a>
+  </p>
+</div><p>The interactive shaped-pointing example uses a reduced telescope budget and
+runs a coordinate-ascent optimization in the browser. It therefore takes
+longer to evaluate and can produce a slightly different, generally weaker,
+solution than the configuration used for the results above.</p>
+</section>
+<section id="limitations">
+<h2>Limitations<a class="headerlink" href="#limitations" title="Link to this heading">¶</a></h2>
+<p><strong>Geometry only.</strong> <code class="docutils literal notranslate"><span class="pre">divtel</span></code> models camera footprints and telescope
+pointings. It does not include effective area, energy threshold, background
+rates or event reconstruction performance. The CTAO-South observations of
+GW170817 would have occurred at relatively large zenith angles, where the
+energy threshold increases significantly. Divergent or low-multiplicity
+configurations can further affect the reconstruction performance. Geometrical
+coverage is therefore a necessary condition for a detection, but it is not a
+measure of sensitivity. None of the coverage fractions reported here should
+be interpreted as sensitivity estimates.</p>
+<p><strong>One localization at one time.</strong> Each configuration is optimized for a
+single localization at a single instant. During an observation the sky
+continues to move and gravitational-wave localizations can be updated within
+hours. A fixed set of independent pointings can therefore become suboptimal
+after an alert update. Divergent pointing is less sensitive to small changes
+in the target geometry because it is described by a single parameter, while
+sub-array strategies provide a compromise between flexibility and operational
+complexity.</p>
+<p><strong>Local optimization.</strong> The shaped configurations are obtained with
+coordinate ascent from multiple starting points. Each proposed change is
+evaluated using the exact objective, and the optimization stops when no local
+change improves it. The result can therefore depend on the initial
+configuration. Sub-array configurations provide useful starting points
+because they are already good solutions according to the independent
+geometrical argument above.</p>
+<p><strong>Bounded pointing search.</strong> For each divergence, the pointing direction is
+optimized over the localization and one camera field of view beyond it. It is
+not searched over the entire sky. This bound is deliberate. An unrestricted
+optimization can place a widely divergent array far from the localization,
+allowing a small part of the camera ring to intersect the target while leaving
+most telescopes on empty sky. Such a solution has a high geometrical coverage
+score but is not useful for follow-up. See
+<a class="reference internal" href="docstring.html#divtel.pointing.best_pointing" title="divtel.pointing.best_pointing"><code class="xref py py-func docutils literal notranslate"><span class="pre">divtel.pointing.best_pointing()</span></code></a>.</p>
+</section>
+<section id="reproducing-this-analysis">
+<h2>Reproducing this analysis<a class="headerlink" href="#reproducing-this-analysis" title="Link to this heading">¶</a></h2>
+<p>The following reproduces the main sub-array calculation:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">astropy.units</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">u</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">importlib.resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">files</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">divtel</span><span class="w"> </span><span class="kn">import</span> <span class="n">strategy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">divtel.layout</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_array</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">divtel.region</span><span class="w"> </span><span class="kn">import</span> <span class="n">SkyRegion</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="n">files</span><span class="p">(</span><span class="s2">"divtel"</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"data"</span>
+<span class="n">array</span> <span class="o">=</span> <span class="n">load_array</span><span class="p">(</span><span class="n">data</span> <span class="o">/</span> <span class="s2">"cta-south-paranal-alpha-prod6.ecsv"</span><span class="p">)</span>
+
+<span class="c1"># The first alert map, placed at 60 degrees and cut at the horizon.</span>
+<span class="n">whole</span> <span class="o">=</span> <span class="n">SkyRegion</span><span class="o">.</span><span class="n">from_table</span><span class="p">(</span><span class="n">data</span> <span class="o">/</span> <span class="s2">"gw170817"</span> <span class="o">/</span> <span class="s2">"bayestar_hl_90.ecsv.gz"</span><span class="p">)</span>
+<span class="n">region</span><span class="p">,</span> <span class="n">underground</span> <span class="o">=</span> <span class="n">whole</span><span class="o">.</span><span class="n">place</span><span class="p">(</span><span class="mi">60</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span> <span class="mi">180</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">)</span><span class="o">.</span><span class="n">visible_part</span><span class="p">()</span>
+
+<span class="n">strategy</span><span class="o">.</span><span class="n">point_subarrays</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">region</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">m_cut</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">strategy</span><span class="o">.</span><span class="n">describe</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">region</span><span class="p">,</span> <span class="n">m_cut</span><span class="o">=</span><span class="mi">2</span><span class="p">)[</span><span class="s2">"covered_stereo"</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The GW170817 credible regions are included with <code class="docutils literal notranslate"><span class="pre">divtel</span></code>, so no additional
+data are required for this example.</p>
+<p>To construct regions from published HEALPix localizations, install the
+optional dependency:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip install divtel[skymap]</span>
+</pre></div>
+</div>
+<p>The script <code class="docutils literal notranslate"><span class="pre">divtel/data/gw170817/make_regions.py</span></code> generates the bundled
+GW170817 regions and provides a minimal example of this workflow.</p>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="README.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">divtel: Divergent pointing mode for Imaging Atmospheric Cherenkov Telescopes arrays</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="tracking.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Tracking a source</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2022, Thomas Vuillaume
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="_static/documentation_options.js?v=47e2e85d"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/scripts/furo.js?v=46bd48cc"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    </body>
+</html>
