@@ -22,11 +22,15 @@ happens anywhere in here, and a test pins that down by pointing an array at a
 source and reading its right ascension and declination back off the telescopes.
 """
 
+from dataclasses import dataclass
+
 import astropy.units as u
-from astropy.coordinates import AltAz, EarthLocation, SkyCoord, get_body
+import numpy as np
+from astropy.coordinates import AltAz, EarthLocation, SkyCoord, get_body, get_sun
 from astropy.time import Time
 
-__all__ = ["Observation", "SITES", "pointing_coord"]
+__all__ = ["Observation", "SITES", "pointing_coord", "Window", "altaz_track",
+           "observable_windows", "DARK_SUN_ALTITUDE"]
 
 
 # The CTAO array-centre reference positions, as used to configure the
@@ -255,3 +259,129 @@ def pointing_coord(array, observation, icrs=True):
     coord = SkyCoord(alt=altaz[:, 0], az=altaz[:, 1], frame=observation.altaz)
 
     return coord.icrs if icrs else coord
+
+
+# The Sun this far below the horizon is astronomical twilight, the point at
+# which its light no longer adds to the night-sky background an air-shower
+# camera integrates. IACTs do not observe brighter than this.
+DARK_SUN_ALTITUDE = -18 * u.deg
+
+
+@dataclass(frozen=True)
+class Window:
+    """
+    A stretch of time when a target is observable.
+
+    Attributes
+    ----------
+    start, end: `astropy.time.Time`
+    duration: `astropy.Quantity`
+    alt_max: `astropy.Quantity`
+        highest altitude the target reaches inside the window
+    alt_start, alt_end: `astropy.Quantity`
+    time_best: `astropy.time.Time`
+        when it is highest -- the moment to plan the pointing for
+    """
+
+    start: Time
+    end: Time
+    duration: u.Quantity
+    alt_max: u.Quantity
+    alt_start: u.Quantity
+    alt_end: u.Quantity
+    time_best: Time
+
+    def __repr__(self):
+        return (f"Window({self.start.isot[:16]} -> {self.end.isot[11:16]}, "
+                f"{self.duration.to_value(u.hour):.2f} h, "
+                f"alt <= {self.alt_max.to_value(u.deg):.1f} deg)")
+
+
+def altaz_track(target, site, times):
+    """
+    Altitude of a target and of the Sun, over a series of times.
+
+    Parameters
+    ----------
+    target: `astropy.coordinates.SkyCoord`
+    site: str or `astropy.coordinates.EarthLocation`
+        as `Observation` takes it, e.g. ``"south"``
+    times: `astropy.time.Time`
+        an array of times
+
+    Returns
+    -------
+    (target_alt, sun_alt): tuple of `astropy.Quantity`
+        in degrees, one entry per time
+    """
+    location = _resolve_site(site)
+    frame = AltAz(obstime=times, location=location)
+    return (target.transform_to(frame).alt.to(u.deg),
+            get_sun(times).transform_to(frame).alt.to(u.deg))
+
+
+def observable_windows(target, site, start, duration, step=5 * u.min,
+                       min_altitude=0 * u.deg, sun_altitude=DARK_SUN_ALTITUDE):
+    """
+    Every stretch in which a target is up and the sky is dark.
+
+    A Cherenkov telescope needs a dark sky and a source above the horizon, and a
+    transient alert arrives whenever it arrives. Between the two there is often
+    no overlap at all: GW170817 merged at 12:41 UTC with its localization already
+    low in the western sky, and by the time either CTAO site was dark the region
+    was setting. So before any question about pointing, there is a question about
+    whether there is anything to point at.
+
+    Parameters
+    ----------
+    target: `astropy.coordinates.SkyCoord`
+    site: str or `astropy.coordinates.EarthLocation`
+    start: str or `astropy.time.Time`
+        when to start looking
+    duration: `astropy.Quantity`
+        how far ahead to look, e.g. ``5 * u.day``
+    step: `astropy.Quantity`
+        sampling; window edges are resolved to this
+    min_altitude: `astropy.Quantity`
+        lowest altitude counted as observable. Zero is the geometric horizon,
+        which is generous -- an air shower seen through that much atmosphere is
+        far above any useful energy threshold.
+    sun_altitude: `astropy.Quantity`
+        how far the Sun must be below the horizon
+
+    Returns
+    -------
+    [`Window`]
+        in time order; empty if the target is never observable
+    """
+    start = Time(start, scale="utc")
+    n_steps = int(np.ceil((duration / step).to_value(u.dimensionless_unscaled))) + 1
+    times = start + np.arange(n_steps) * step
+
+    target_alt, sun_alt = altaz_track(target, site, times)
+    up = (target_alt >= min_altitude) & (sun_alt <= sun_altitude)
+
+    windows = []
+    for first, last in _runs(up):
+        inside = slice(first, last + 1)
+        best = first + int(np.argmax(target_alt[inside]))
+        windows.append(Window(
+            start=times[first],
+            end=times[last],
+            duration=(times[last] - times[first]).to(u.hour),
+            alt_max=target_alt[best],
+            alt_start=target_alt[first],
+            alt_end=target_alt[last],
+            time_best=times[best],
+        ))
+
+    return windows
+
+
+def _runs(flags):
+    """(first, last) index of each run of True in a boolean array."""
+    flags = np.asarray(flags)
+    padded = np.r_[False, flags, False]
+    change = np.diff(padded.astype(int))
+    return list(zip(np.flatnonzero(change == 1), np.flatnonzero(change == -1) - 1,
+                    strict=True))

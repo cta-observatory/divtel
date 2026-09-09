@@ -248,9 +248,19 @@ class Array:
         Parameters
         ----------
         groups: dict or str
-            either a mapping of group name to the telescope ids in it, e.g.
-            ``{"LST": [1, 2, 3, 4], "MST": range(5, 20)}``, or the string
-            ``"camera_radius"`` to group telescopes by the camera they carry.
+            a mapping of group name to the telescope ids in it, e.g.
+            ``{"LST": [1, 2, 3, 4], "MST": range(5, 20)}``, or one of two
+            strings that find the groups without being told them:
+            ``"camera_radius"`` groups by the camera a telescope carries, and
+            ``"fov_radius"`` by the angular radius that camera subtends.
+
+            The two agree on the CTAO layouts shipped here and need not agree
+            in general: what a telescope sees off-axis is set by camera radius
+            *over* focal length, so two designs with different cameras can share
+            an angular radius and two with the same camera can differ. The angle
+            is what the geometry uses -- `divtel.strategy` treats it as a
+            telescope's type throughout -- so prefer ``"fov_radius"`` when the
+            question is about reach rather than about hardware.
 
         Returns
         -------
@@ -284,11 +294,14 @@ class Array:
         <Quantity [ 0.895 , 44.8475, 44.925 ] m>
         """
         if isinstance(groups, str):
-            if groups != "camera_radius":
-                raise ValueError(
-                    f"group_by takes a dict of ids or 'camera_radius', got {groups!r}"
-                )
-            return self._group_by_camera_radius()
+            if groups == "camera_radius":
+                return self._group_by_camera_radius()
+            if groups == "fov_radius":
+                return self._group_by_fov_radius()
+            raise ValueError(
+                "group_by takes a dict of ids, 'camera_radius' or "
+                f"'fov_radius', got {groups!r}"
+            )
 
         by_id = {tel.id: tel for tel in self.telescopes}
         seen = {}
@@ -330,6 +343,24 @@ class Array:
         return {
             f"{radius.to_value(u.m):.4g} m": self._sub_array(
                 [tel for tel in self.telescopes if tel.camera_radius == radius]
+            )
+            for radius in radii
+        }
+
+    def _group_by_fov_radius(self):
+        """
+        One sub-array per distinct field-of-view radius, widest camera first.
+
+        Groups by what a telescope can reach rather than by what it carries.
+        Angular radius is camera radius over focal length, so this and
+        `_group_by_camera_radius` can disagree, and it is this one the strategies
+        in `divtel.strategy` mean when they speak of a telescope's type.
+        """
+        radii = sorted({tel.fov_radius for tel in self.telescopes}, reverse=True)
+
+        return {
+            f"{radius.to_value(u.deg):.2f} deg": self._sub_array(
+                [tel for tel in self.telescopes if tel.fov_radius == radius]
             )
             for radius in radii
         }

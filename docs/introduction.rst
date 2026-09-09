@@ -51,7 +51,7 @@ as far as the divergence ceiling:
   hyper field of view, the multiplicity, and the mean multiplicity — since
   everything that follows is written in them, and shows what an array and
   its coverage look like.
-* :doc:`capabilities` points at a real source and tracks it across a
+* :doc:`tracking` points at a real source and tracks it across a
   night, interactively.
 * :doc:`ceiling` answers the question the rest of this section builds
   towards: how far an array can usefully be spread, and what that is worth

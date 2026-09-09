@@ -45,6 +45,11 @@ extensions = [
     'myst_parser',
 ]
 
+# A dataclass's fields are documented twice otherwise: once by autodoc from the
+# annotations, once by napoleon from the Attributes section. Rendering the
+# section as :ivar: fields on the class leaves one description of each.
+napoleon_use_ivar = True
+
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -52,12 +57,21 @@ templates_path = ['_templates']
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '_generated']
 
 source_suffix = [
     '.rst',
     '.md',
 ]
+
+# Figures get numbered captions, and :numref: in the prose resolves to
+# "Figure N" rather than a bare "the figure below".
+numfig = True
+
+# The generated numbers are substitutions, and a substitution has to be defined
+# in the document that uses it. Putting them in the prolog defines them once for
+# every page rather than making each page include them.
+rst_prolog = '.. include:: /_generated/gw170817_numbers.rst\n'
 
 # -- Interactive (marimo / WebAssembly) --------------------------------------
 # GitHub Pages only serves static files, so the interactive demo is a marimo
@@ -72,7 +86,234 @@ MARIMO_NOTEBOOKS = [
     'two_sites',
     'observing_a_source',
     'choosing_div',
+    'gw170817_strategies',
 ]
+
+# -- Static study plots -------------------------------------------------------
+# The ceiling and studies pages illustrate the argument with matplotlib
+# figures that are not the interactive marimo demos above. They are rendered
+# here rather than committed, for the same reason the gw170817 figures are:
+# a plot in the repository can silently drift from the code that made it.
+
+STATIC_PLOTS = [
+    HERE / '_static' / 'studies' / 'array_and_sky.png',
+    HERE / '_static' / 'studies' / 'div_schema.png',
+    HERE / '_static' / 'studies' / 'tracking.png',
+    HERE / '_static' / 'ceiling' / 'fig3_north.png',
+    HERE / '_static' / 'ceiling' / 'fig3_south.png',
+    HERE / '_static' / 'ceiling' / 'ceiling_maps.png',
+]
+
+
+def _sweep(array, groups, divs, alts):
+    """Coverage and mean multiplicity against divergence, whole array and by
+    telescope type, at each of ``alts``."""
+    import numpy as np
+    import astropy.units as u
+
+    whole, by_type = {}, {}
+    for alt in alts:
+        areas, means = [], []
+        for div in divs:
+            array.divergent_pointing(div, alt, 180 * u.deg)
+            area, patches = array.hyper_fov(min_telescopes=2)
+            areas.append(area.to_value(u.deg**2))
+            means.append(array.multiplicity_moments(patches=patches)[0])
+        whole[int(alt.to_value(u.deg))] = (np.array(areas), np.array(means))
+
+    for name, subset in array.group_by(groups).items():
+        areas, means = [], []
+        for div in divs:
+            subset.divergent_pointing(div, 90 * u.deg, 180 * u.deg)
+            area, patches = subset.hyper_fov(min_telescopes=2)
+            areas.append(area.to_value(u.deg**2))
+            means.append(subset.multiplicity_moments(patches=patches)[0])
+        by_type[name] = (np.array(areas), np.array(means))
+    return whole, by_type
+
+
+def _find_ceiling_div(divs, means):
+    """The first divergence at which mean multiplicity drops to 2."""
+    import numpy as np
+
+    below = np.where(means <= 2)[0]
+    if len(below) == 0:
+        return divs[-1]
+    i = below[0]
+    if i == 0:
+        return divs[0]
+    x0, x1 = divs[i - 1], divs[i]
+    y0, y1 = means[i - 1], means[i]
+    return float(x0 + (2 - y0) * (x1 - x0) / (y1 - y0))
+
+
+def _ceiling_div(array):
+    """The array's own ceiling divergence, at 60 degrees elevation."""
+    import numpy as np
+    import astropy.units as u
+
+    divs = np.linspace(0.001, 0.15, 80)
+    means = []
+    for div in divs:
+        array.divergent_pointing(div, 60 * u.deg, 180 * u.deg)
+        _, patches = array.hyper_fov(min_telescopes=2)
+        means.append(array.multiplicity_moments(patches=patches)[0])
+    return _find_ceiling_div(divs, np.array(means))
+
+
+def _generate_static_plots(app):
+    """Render the ceiling and studies pages' figures before Sphinx reads them."""
+    if app.builder.name != 'html':
+        return
+
+    import numpy as np
+    import astropy.units as u
+    import matplotlib.pyplot as plt
+    from importlib.resources import files
+    from astropy.coordinates import AltAz, SkyCoord, get_body
+    from astropy.utils import iers
+
+    from divtel.layout import load_array
+    from divtel.observation import Observation
+    from divtel.visualization import display_hyper_fov
+
+    for path in STATIC_PLOTS:
+        path.parent.mkdir(parents=True, exist_ok=True)
+
+    array_n = load_array(files('divtel') / 'data' / 'cta-north-lapalma-alpha-prod6.ecsv')
+    array_s = load_array(files('divtel') / 'data' / 'cta-south-paranal-alpha-prod6.ecsv')
+
+    fig, axes = plt.subplots(1, 2, figsize=(11, 4.5))
+    array_n.divergent_pointing(0.03, 70 * u.deg, 180 * u.deg)
+    array_n.display_2d(projection='xy', ax=axes[0])
+    axes[0].set_title('CTAO-North on the ground')
+    display_hyper_fov(array_n, ax=axes[1])
+    fig.tight_layout()
+    fig.savefig(HERE / '_static' / 'studies' / 'array_and_sky.png', dpi=200)
+    plt.close(fig)
+
+    fig, ax = plt.subplots(figsize=(8, 4.5))
+    barycentre = np.array([0.0, 0.0])
+    ground_point = np.array([0.0, -4.0])
+    tel_x = np.array([-3.0, -1.5, 0.0, 1.5, 3.0])
+    for x in tel_x:
+        point = np.array([x, 0.0])
+        ax.plot([ground_point[0], point[0]], [ground_point[1], point[1]],
+                '--', color='tab:orange', lw=1)
+        direction = (point - ground_point) / np.linalg.norm(point - ground_point)
+        ax.arrow(point[0], point[1], direction[0] * 1.8, direction[1] * 1.8,
+                 width=0.02, head_width=0.18, head_length=0.22, color='k',
+                 length_includes_head=True)
+    ax.scatter(tel_x, np.zeros_like(tel_x), color='tab:blue', s=35,
+               label='telescopes')
+    ax.scatter([barycentre[0]], [barycentre[1]], color='tab:red', marker='+',
+               s=180, linewidths=2.5, label='B')
+    ax.scatter([ground_point[0]], [ground_point[1]], color='tab:orange',
+               marker='D', s=65, label='G')
+    ax.annotate('D', xy=(1.5, 0), xytext=(1.5, -0.6), ha='center')
+    ax.annotate(r'$\theta_D$', xy=(1.5, 0.7), xytext=(2.0, 1.25),
+                arrowprops=dict(arrowstyle='->', lw=1), fontsize=11)
+    ax.set_xlim(-3.8, 3.8)
+    ax.set_ylim(-4.8, 2.8)
+    ax.set_xlabel('ground axis')
+    ax.set_ylabel('mean-pointing plane')
+    ax.set_title('Divergent pointing schematic')
+    ax.grid(alpha=0.25)
+    ax.legend(frameon=False, loc='upper right')
+    fig.tight_layout()
+    fig.savefig(HERE / '_static' / 'studies' / 'div_schema.png', dpi=200)
+    plt.close(fig)
+
+    divs = np.linspace(0.002, 0.16, 40)
+    alts = np.array([30, 50, 70, 90]) * u.deg
+    whole_n, by_type_n = _sweep(array_n, {'LST': range(1, 5), 'MST': range(5, 14)},
+                                divs, alts)
+    whole_s, by_type_s = _sweep(array_s, {'MST': range(1, 15), 'SST': range(15, 52)},
+                                divs, alts)
+
+    for whole, by_type, site, path in (
+        (whole_n, by_type_n, 'CTAO-North', 'fig3_north.png'),
+        (whole_s, by_type_s, 'CTAO-South', 'fig3_south.png'),
+    ):
+        fig, (left, right) = plt.subplots(1, 2, figsize=(11, 4.5))
+        for alt, (areas, means) in whole.items():
+            line, = left.plot(divs, areas, label=f'{alt}° (whole array)')
+            right.plot(divs, means, color=line.get_color())
+        for name, (areas, means) in by_type.items():
+            line, = left.plot(divs, areas, '--', label=f'{name} (zenith)')
+            right.plot(divs, means, '--', color=line.get_color())
+        right.axhline(2, color='k', linewidth=1, linestyle=':',
+                      label='stereoscopic floor')
+        left.set_xlabel('div')
+        left.set_ylabel('stereoscopic hyper FoV [deg$^2$]')
+        right.set_xlabel('div')
+        right.set_ylabel('mean multiplicity')
+        left.grid(alpha=0.3)
+        right.grid(alpha=0.3)
+        left.legend(frameon=False, fontsize=8)
+        right.legend(frameon=False, fontsize=8)
+        fig.suptitle(f'{site}: stereoscopic coverage and mean multiplicity '
+                     'against div')
+        fig.tight_layout()
+        fig.savefig(HERE / '_static' / 'ceiling' / path, dpi=200)
+        plt.close(fig)
+
+    div_n = _ceiling_div(array_n)
+    div_s = _ceiling_div(array_s)
+    array_n.divergent_pointing(div_n, 60 * u.deg, 180 * u.deg)
+    array_s.divergent_pointing(div_s, 60 * u.deg, 180 * u.deg)
+    fig, (left, right) = plt.subplots(1, 2, figsize=(12, 5))
+    display_hyper_fov(array_n, ax=left)
+    left.set_title(f'CTAO-North, div = {div_n:.3f}')
+    display_hyper_fov(array_s, ax=right)
+    right.set_title(f'CTAO-South, div = {div_s:.3f}')
+    fig.suptitle('Coverage at the ceiling divergence, shaded by multiplicity')
+    fig.tight_layout()
+    fig.savefig(HERE / '_static' / 'ceiling' / 'ceiling_maps.png', dpi=200)
+    plt.close(fig)
+
+    # IERS tables would otherwise be fetched over the network at build time,
+    # which CI cannot rely on; the bundled tables are close enough for a
+    # single illustrative night.
+    iers.conf.auto_download = False
+    iers.conf.auto_max_age = None
+    target = SkyCoord(ra=83.633 * u.deg, dec=22.015 * u.deg)
+    start = Observation(site='north', time='2026-12-01T00:00:00')
+    coarse = start.time + np.linspace(-12, 12, 49) * u.hour
+    sun = get_body('sun', coarse, location=start.location).transform_to(
+        AltAz(obstime=coarse, location=start.location))
+    midnight = Observation(site='north', time=coarse[sun.alt.argmin()])
+    hours = np.arange(-6, 6.01, 0.5)
+    times, areas, means = [], [], []
+    for offset in hours:
+        moment = midnight.after(offset * u.hour)
+        alt, az = moment.altaz_of(target)
+        if alt <= 0 * u.deg:
+            continue
+        array_n.divergent_pointing(0.04, alt, az)
+        times.append(offset)
+        areas.append(array_n.hyper_fov()[0].to_value(u.deg**2))
+        means.append(array_n.multiplicity_moments()[0])
+    fig, ax = plt.subplots(figsize=(9, 4.5))
+    ax.plot(times, areas, marker='o', color='tab:blue')
+    ax.set_xlabel('hours from the middle of the night')
+    ax.set_ylabel('hyper FoV [deg$^2$]', color='tab:blue')
+    ax.tick_params(axis='y', labelcolor='tab:blue')
+    twin = ax.twinx()
+    twin.plot(times, means, marker='s', color='tab:red')
+    twin.set_ylabel('mean multiplicity', color='tab:red')
+    twin.tick_params(axis='y', labelcolor='tab:red')
+    ax.set_title('Tracking Crab Nebula at div = 0.04')
+    ax.grid(alpha=0.3)
+    fig.tight_layout()
+    fig.savefig(HERE / '_static' / 'studies' / 'tracking.png', dpi=200)
+    plt.close(fig)
+
+
+def _cleanup_static_plots(app, exception):
+    """Drop the rendered figures from the source tree once the build is done."""
+    for path in STATIC_PLOTS:
+        path.unlink(missing_ok=True)
 
 
 def _build_divtel_wheel(destination):
@@ -178,7 +419,37 @@ def _export_marimo(app, exception):
     shutil.rmtree(staging)
 
 
+# -- Generated study material -------------------------------------------------
+# The GW170817 page quotes a great many numbers and must not be able to disagree
+# with the code. None of them is typed into the page: this script computes them,
+# writes the figures, and writes the tables and substitutions the page includes.
+# It runs before Sphinx reads a source file, so the fragments exist by the time
+# the page is parsed.
+
+GW170817_SCRIPT = HERE / 'scripts' / 'make_gw170817.py'
+
+
+def _make_gw170817(app):
+    """Compute the GW170817 study's figures, tables and numbers."""
+    if os.environ.get('DIVTEL_DOCS_SKIP_GW170817'):
+        # Worth setting while editing prose. Not worth setting before
+        # publishing: the page then carries whatever the last run left behind.
+        return
+
+    result = subprocess.run([sys.executable, str(GW170817_SCRIPT)],
+                            capture_output=True, text=True)
+    if result.returncode != 0:
+        raise RuntimeError(
+            f'{GW170817_SCRIPT.name} failed (exit {result.returncode}):\n'
+            f'{result.stdout}\n{result.stderr}'
+        )
+    print(result.stdout, end='')
+
+
 def setup(app):
+    app.connect('builder-inited', _make_gw170817)
+    app.connect('builder-inited', _generate_static_plots)
+    app.connect('build-finished', _cleanup_static_plots)
     app.connect('build-finished', _export_marimo)
 
 

@@ -44,6 +44,7 @@ counts only the part still seen by at least two.
    definitions
    ceiling
    tracking
+   gw170817
 
 .. toctree::
    :maxdepth: 1

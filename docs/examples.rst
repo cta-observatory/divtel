@@ -21,6 +21,11 @@ Interactive Examples
      - Pick a source and a night. When is it up, when is the sun down, and what
        happens to the array's coverage as it tracks a source across the sky.
        Uses :class:`~divtel.observation.Observation`.
+   * - `Covering GW170817 <marimo/gw170817_strategies/index.html>`_
+     - Four ways to put an array on a real gravitational-wave localization:
+       parallel, divergent, tiling, sub-arrays and shaped pointing. Pick a map
+       and a strategy and watch the multiplicity change shape. The argument
+       these figures belong to is in :doc:`gw170817`.
    * - `Choosing div <marimo/choosing_div/index.html>`_
      - The question the guide leaves open. Decide what field of view you want
        and what multiplicity you can live with, and those two fix ``div`` --

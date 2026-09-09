@@ -4,9 +4,8 @@ Definitions
 
 ``divtel`` works entirely in geometry and solid angle. It contains no
 shower physics, no effective area, no night-sky background and no energy
-threshold — see :doc:`capabilities` for where that stops and a shower
-simulation has to take over. This page sets out the quantities it
-computes, since the rest of this section is written in them. For the
+threshold - for these a shower simulation has to take over. 
+This page sets out the quantities it computes, since the rest of this section is written in them. For the
 package's actual interface, see the :doc:`guide`.
 
 Pointing
@@ -35,7 +34,7 @@ used here:
   planning tool. Not covered in this section yet.
 
 A telescope can also be aimed at a named object or a sky coordinate rather
-than an alt-azimuth direction: :doc:`capabilities` covers tracking a real
+than an alt-azimuth direction: :doc:`tracking` covers tracking a real
 source across a night.
 
 What the array sees
