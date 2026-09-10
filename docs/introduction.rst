@@ -40,12 +40,7 @@ coverage stops improving. What geometry cannot supply is the map from
 multiplicity to sensitivity, which is a separate measurement, not an
 assumption this package makes.
 
-``divtel`` is the open-source package that computes these geometric
-quantities for an arbitrary array under arbitrary per-telescope pointing.
-This section of the documentation follows the structure of the paper that
-introduces it, T. Vuillaume, *Planning divergent and non-traditional
-pointing for imaging atmospheric Cherenkov telescope arrays with divtel*,
-as far as the divergence ceiling:
+In this studies section, you will find:
 
 * :doc:`definitions` sets out the quantities ``divtel`` computes — the
   hyper field of view, the multiplicity, and the mean multiplicity — since
@@ -57,6 +52,4 @@ as far as the divergence ceiling:
   towards: how far an array can usefully be spread, and what that is worth
   for CTAO-North and CTAO-South.
 
-The paper's later sections — tiling against divergence, shaped pointing
-that follows a sky map, and matching a configuration to a science case —
-are not covered here yet.
+
