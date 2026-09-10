@@ -251,7 +251,7 @@ def _generate_static_plots(app):
     angles = np.linspace(np.pi / 2, np.arctan2(vz_ref, vx_ref), 20)
     ax.plot(x_ref + arc_r * np.cos(angles), z_ref + arc_r * np.sin(angles),
             color='k', lw=1)
-    ax.annotate(r'$\theta_D$', xy=(x_ref + arc_r * 1.5, z_ref + arc_r * 1.1))
+    ax.annotate(r'$\theta_D$', xy=(x_ref*0.75, z_ref + arc_r * 1.1))
 
     ax.set_xlim(-420, 420)
     ax.set_ylim(-1050, 300)
